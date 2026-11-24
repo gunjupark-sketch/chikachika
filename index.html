@@ -84,9 +84,10 @@ header{
 .totlabel{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:5px;}
 /* ---------- mouth svg ---------- */
 .stage{position:relative; padding:4px 6px 2px; display:flex; justify-content:center;}
-#mouthSvg{width:100%; max-width:300px; height:auto; display:block; touch-action:manipulation;}
-.hi{fill:var(--mint-l); opacity:0; pointer-events:all; cursor:pointer; transition:opacity .35s;}
-.hi.active{opacity:.52; filter:drop-shadow(0 0 5px rgba(14,140,126,.75));}
+#mouthSvg{width:100%; max-width:324px; height:auto; display:block; touch-action:manipulation;}
+.hi{fill:#1BC6B2; opacity:0; pointer-events:none; transition:opacity .35s;}
+.hi.active{opacity:.5; filter:drop-shadow(0 0 6px rgba(14,140,126,.85));}
+.hit{fill:transparent; pointer-events:all; cursor:pointer;}
 /* brush animation groups  (left-right sweep is CSS; the gum->tip roll is JS-driven) */
 #brushSweep{animation:sweep 2.6s ease-in-out infinite;}
 .foam{animation:foam 1.3s ease-in-out infinite;}
@@ -448,64 +449,164 @@ footer{
 (function(){
 "use strict";
 
-/* ---------------- geometry: build the mouth ---------------- */
-var UA={cx:150,cy:150,a0:200,a1:340};   // upper arch (top sector)
-var LA={cx:150,cy:150,a0:20,a1:160};    // lower arch (bottom sector)
-var RO=96, RI=58;
-var B1=RI+(RO-RI)/3, B2=RI+2*(RO-RI)/3; // third boundaries
+/* ---------------- geometry: realistic dental arches ----------------
+   Occlusal (model) view: two gentle arcs. Large radius => big, clear teeth.
+   For each arch, larger radius = gum/buccal side (outer), smaller = biting edge (inner). */
+var UA={cx:150,cy:270,a0:232,a1:308};   // upper arch: center below, teeth across the top
+var LA={cx:150,cy:30, a0:52, a1:128};   // lower arch: center above, teeth across the bottom
+var RO=200, RI=172;                      // outer (gum) / inner (biting) radii
+var B1=RI+(RO-RI)/3, B2=RI+2*(RO-RI)/3;  // third boundaries (buccal / occlusal / lingual)
 
 function pt(cx,cy,ang,r){var a=ang*Math.PI/180; return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
-function arcPts(cx,cy,a0,a1,r,step){
-  var s='', dir=a1>=a0?1:-1, a=a0;
-  for(;dir>0?a<=a1:a>=a1;a+=dir*step){var p=pt(cx,cy,a,r); s+=p[0].toFixed(2)+','+p[1].toFixed(2)+' ';}
-  var pe=pt(cx,cy,a1,r); s+=pe[0].toFixed(2)+','+pe[1].toFixed(2)+' ';
-  return s;
+function f(x){return x.toFixed(1);}
+
+// closed annular-sector path between two radii, spanning the arch
+function arcSeg(ar,a0,a1,r){
+  var dir=a1>=a0?1:-1, s='';
+  for(var a=a0; dir>0?a<a1:a>a1; a+=dir*2){var p=pt(ar.cx,ar.cy,a,r); s+='L'+f(p[0])+' '+f(p[1]);}
+  var pe=pt(ar.cx,ar.cy,a1,r); return s+'L'+f(pe[0])+' '+f(pe[1]);
 }
-function bandPoly(ar,rIn,rOut){return (arcPts(ar.cx,ar.cy,ar.a0,ar.a1,rOut,3)+arcPts(ar.cx,ar.cy,ar.a1,ar.a0,rIn,3)).trim();}
+function annSector(ar,rIn,rOut){
+  var p0=pt(ar.cx,ar.cy,ar.a0,rOut);
+  return 'M'+f(p0[0])+' '+f(p0[1])+arcSeg(ar,ar.a0,ar.a1,rOut)+arcSeg(ar,ar.a1,ar.a0,rIn)+'Z';
+}
+
+// tooth row layout: central->molar on each side, mirrored
+function layoutTeeth(ar){
+  var tF=['incisorC','incisorL','canine','premolar','molar'];
+  var wF=[1.1,0.92,0.84,1.0,1.32];
+  var types=tF.slice().reverse().concat(tF), ws=wF.slice().reverse().concat(wF);
+  var tot=0; ws.forEach(function(w){tot+=w;});
+  var span=ar.a1-ar.a0, cum=0, out=[];
+  for(var i=0;i<types.length;i++){
+    var tw=span*ws[i]/tot;
+    out.push({type:types[i], ang:ar.a0+cum+tw/2, aw:tw});
+    cum+=tw;
+  }
+  return out;
+}
+
+// crown outline (local coords: origin=crown center, +y = outward/buccal, x = mesiodistal)
+function toothShape(type,hw,hh){
+  var d, det='';
+  var sheen='<ellipse cx="0" cy="'+f(hh*0.42)+'" rx="'+f(hw*0.6)+'" ry="'+f(hh*0.46)+'" fill="url(#cuspG)"/>';
+  if(type==='incisorC'||type==='incisorL'){
+    d='M'+f(-hw)+' '+f(hh*0.45)+'C'+f(-hw)+' '+f(hh*0.95)+' '+f(-hw*0.5)+' '+f(hh)+' 0 '+f(hh)
+     +'C'+f(hw*0.5)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.95)+' '+f(hw)+' '+f(hh*0.45)
+     +'L'+f(hw*0.72)+' '+f(-hh*0.8)+'Q'+f(hw*0.7)+' '+f(-hh)+' '+f(hw*0.46)+' '+f(-hh)
+     +'L'+f(-hw*0.46)+' '+f(-hh)+'Q'+f(-hw*0.7)+' '+f(-hh)+' '+f(-hw*0.72)+' '+f(-hh*0.8)+'Z';
+    det=sheen+'<g stroke="#D6E6E1" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.7">'
+      +'<path d="M'+f(-hw*0.34)+' '+f(hh*0.72)+'L'+f(-hw*0.34)+' '+f(hh*0.1)+'"/>'
+      +'<path d="M0 '+f(hh*0.78)+'L0 '+f(hh*0.12)+'"/>'
+      +'<path d="M'+f(hw*0.34)+' '+f(hh*0.72)+'L'+f(hw*0.34)+' '+f(hh*0.1)+'"/></g>';
+  } else if(type==='canine'){
+    d='M0 '+f(hh*1.0)+'Q'+f(hw*0.5)+' '+f(hh*0.86)+' '+f(hw*0.9)+' '+f(hh*0.28)
+     +'L'+f(hw*0.72)+' '+f(-hh*0.8)+'Q'+f(hw*0.7)+' '+f(-hh)+' '+f(hw*0.46)+' '+f(-hh)
+     +'L'+f(-hw*0.46)+' '+f(-hh)+'Q'+f(-hw*0.7)+' '+f(-hh)+' '+f(-hw*0.72)+' '+f(-hh*0.8)
+     +'L'+f(-hw*0.9)+' '+f(hh*0.28)+'Q'+f(-hw*0.5)+' '+f(hh*0.86)+' 0 '+f(hh*1.0)+'Z';
+    det='<ellipse cx="0" cy="'+f(hh*0.35)+'" rx="'+f(hw*0.5)+'" ry="'+f(hh*0.5)+'" fill="url(#cuspG)"/>'
+      +'<path d="M0 '+f(hh*0.96)+'L0 '+f(-hh*0.2)+'" stroke="#D6E6E1" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.75"/>';
+  } else if(type==='premolar'){
+    d='M'+f(-hw)+' 0C'+f(-hw)+' '+f(hh*0.78)+' '+f(-hw*0.5)+' '+f(hh)+' 0 '+f(hh)
+     +'C'+f(hw*0.5)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.78)+' '+f(hw)+' 0'
+     +'C'+f(hw)+' '+f(-hh*0.78)+' '+f(hw*0.5)+' '+f(-hh)+' 0 '+f(-hh)
+     +'C'+f(-hw*0.5)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.78)+' '+f(-hw)+' 0Z';
+    det='<ellipse cx="0" cy="'+f(hh*0.42)+'" rx="'+f(hw*0.5)+'" ry="'+f(hh*0.33)+'" fill="url(#cuspG)"/>'
+      +'<ellipse cx="0" cy="'+f(-hh*0.42)+'" rx="'+f(hw*0.5)+'" ry="'+f(hh*0.33)+'" fill="url(#cuspG)"/>'
+      +'<path d="M'+f(-hw*0.55)+' 0L'+f(hw*0.55)+' 0" stroke="#C6D8D3" stroke-width="1" stroke-linecap="round" opacity="0.75"/>';
+  } else { // molar
+    d='M'+f(-hw)+' '+f(-hh*0.5)+'Q'+f(-hw)+' '+f(-hh)+' '+f(-hw*0.5)+' '+f(-hh)
+     +'L'+f(hw*0.5)+' '+f(-hh)+'Q'+f(hw)+' '+f(-hh)+' '+f(hw)+' '+f(-hh*0.5)
+     +'L'+f(hw)+' '+f(hh*0.5)+'Q'+f(hw)+' '+f(hh)+' '+f(hw*0.5)+' '+f(hh)
+     +'L'+f(-hw*0.5)+' '+f(hh)+'Q'+f(-hw)+' '+f(hh)+' '+f(-hw)+' '+f(hh*0.5)+'Z';
+    var cx=hw*0.44, cy=hh*0.44, rx=hw*0.42, ry=hh*0.42;
+    det='<g fill="url(#cuspG)">'
+      +'<ellipse cx="'+f(-cx)+'" cy="'+f(-cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/>'
+      +'<ellipse cx="'+f(cx)+'" cy="'+f(-cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/>'
+      +'<ellipse cx="'+f(-cx)+'" cy="'+f(cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/>'
+      +'<ellipse cx="'+f(cx)+'" cy="'+f(cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/></g>'
+      +'<g stroke="#C6D8D3" stroke-width="1" stroke-linecap="round" opacity="0.75">'
+      +'<path d="M'+f(-hw*0.62)+' 0L'+f(hw*0.62)+' 0"/><path d="M0 '+f(-hh*0.62)+'L0 '+f(hh*0.62)+'"/></g>';
+  }
+  return {d:d, det:det};
+}
+
+function papilla(ar,ang,rBase,rTip){
+  var w=2.0, a=pt(ar.cx,ar.cy,ang-w,rBase), b=pt(ar.cx,ar.cy,ang,rTip), c=pt(ar.cx,ar.cy,ang+w,rBase);
+  return '<path d="M'+f(a[0])+' '+f(a[1])+'L'+f(b[0])+' '+f(b[1])+'L'+f(c[0])+' '+f(c[1])+'Z" fill="url(#gumG)"/>';
+}
 
 function buildMouth(){
-  var h='';
-  // gum (outer, both arches)
-  h+='<polygon points="'+bandPoly(UA,RO-2,RO+12)+'" fill="#F4C3C7"/>';
-  h+='<polygon points="'+bandPoly(LA,RO-2,RO+12)+'" fill="#F4C3C7"/>';
-  // teeth band
-  h+='<polygon points="'+bandPoly(UA,RI,RO)+'" fill="#ffffff" stroke="#D4ECE7" stroke-width="1.5"/>';
-  h+='<polygon points="'+bandPoly(LA,RI,RO)+'" fill="#ffffff" stroke="#D4ECE7" stroke-width="1.5"/>';
-  // tooth dividers
-  [UA,LA].forEach(function(ar){
-    for(var i=1;i<10;i++){
-      var ang=ar.a0+i*(ar.a1-ar.a0)/10;
-      var p1=pt(ar.cx,ar.cy,ang,RI+1), p2=pt(ar.cx,ar.cy,ang,RO-1);
-      h+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#DBEFEB" stroke-width="1.3" stroke-linecap="round"/>';
-    }
+  var defs='<defs>'
+    +'<linearGradient id="enamel" x1="0" y1="1" x2="0" y2="0">'
+      +'<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#F1F7F4"/><stop offset="1" stop-color="#D6E5E0"/></linearGradient>'
+    +'<linearGradient id="gumG" x1="0" y1="0" x2="0" y2="1">'
+      +'<stop offset="0" stop-color="#F7C3C8"/><stop offset="1" stop-color="#E298A0"/></linearGradient>'
+    +'<radialGradient id="cuspG" cx="0.5" cy="0.42" r="0.6">'
+      +'<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.65"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>'
+    +'<filter id="toothShadow" x="-15%" y="-15%" width="130%" height="140%">'
+      +'<feDropShadow dx="0" dy="1.3" stdDeviation="1.5" flood-color="#4C6B65" flood-opacity="0.26"/></filter>'
+    +'</defs>';
+
+  var gum='', teeth='', clipU='', clipL='';
+  [{ar:UA,key:'U'},{ar:LA,key:'L'}].forEach(function(o){
+    var ar=o.ar, row=layoutTeeth(ar);
+    // gum: buccal band + lingual sliver + inter-tooth papillae (scallop)
+    gum+='<path d="'+annSector(ar,RO-6,RO+15)+'" fill="url(#gumG)"/>';
+    gum+='<path d="'+annSector(ar,RI-11,RI+3)+'" fill="url(#gumG)" opacity="0.9"/>';
+    for(var p=0;p<row.length-1;p++){ gum+=papilla(ar,row[p].ang+row[p].aw/2,RO+1,RO-10); }
+    // interproximal shadow backing (shows through tooth gaps)
+    teeth+='<path d="'+annSector(ar,RI-1,RO+1)+'" fill="#BCCDC8"/>';
+    var grp='';
+    row.forEach(function(t){
+      var rc=(RI+RO)/2, P=pt(ar.cx,ar.cy,t.ang,rc), deg=t.ang-90;
+      var depth={incisorC:0.78,incisorL:0.78,canine:0.86,premolar:0.94,molar:1.0}[t.type];
+      var hw=(t.aw*Math.PI/180)*rc*0.49, hh=(RO-RI)/2*depth;
+      var sh=toothShape(t.type,hw,hh);
+      var tf='translate('+f(P[0])+' '+f(P[1])+') rotate('+f(deg)+')';
+      grp+='<g transform="'+tf+'"><path d="'+sh.d+'" fill="url(#enamel)" stroke="#C6D9D3" stroke-width="0.8"/>'+sh.det+'</g>';
+      var clip='<path transform="'+tf+'" d="'+sh.d+'"/>';  // transform on path (clipPath ignores <g>)
+      if(o.key==='U') clipU+=clip; else clipL+=clip;
+    });
+    teeth+='<g filter="url(#toothShadow)">'+grp+'</g>';
   });
-  // subtle gumline accent
-  h+='<polyline points="'+arcPts(UA.cx,UA.cy,UA.a0,UA.a1,RO,3)+'" fill="none" stroke="#E9A5AA" stroke-width="2.2" stroke-linecap="round"/>';
-  h+='<polyline points="'+arcPts(LA.cx,LA.cy,LA.a0,LA.a1,RO,3)+'" fill="none" stroke="#E9A5AA" stroke-width="2.2" stroke-linecap="round"/>';
-  // highlight regions (outer=buccal, mid=occlusal, inner=lingual)
-  h+='<polygon class="hi" id="hiUO" data-idx="0" points="'+bandPoly(UA,B2,RO)+'"/>';
-  h+='<polygon class="hi" id="hiUI" data-idx="1" points="'+bandPoly(UA,RI,B1)+'"/>';
-  h+='<polygon class="hi" id="hiUC" data-idx="2" points="'+bandPoly(UA,B1,B2)+'"/>';
-  h+='<polygon class="hi" id="hiLO" data-idx="3" points="'+bandPoly(LA,B2,RO)+'"/>';
-  h+='<polygon class="hi" id="hiLI" data-idx="4" points="'+bandPoly(LA,RI,B1)+'"/>';
-  h+='<polygon class="hi" id="hiLC" data-idx="5" points="'+bandPoly(LA,B1,B2)+'"/>';
-  document.getElementById('mouthLayer').innerHTML=h;
+
+  var clips='<defs><clipPath id="clipU">'+clipU+'</clipPath><clipPath id="clipL">'+clipL+'</clipPath></defs>';
+
+  // visual highlights: thick, overlapping bands (only one active at a time) clipped
+  // to the real teeth so the tint colors the whole buccal / occlusal / lingual area.
+  var rng=RO-RI, oO=RI+rng*0.42, cC1=RI+rng*0.24, cC2=RI+rng*0.76, iI=RI+rng*0.58;
+  var hi=''
+    +'<path class="hi" id="hiUO" d="'+annSector(UA,oO,RO)+'" clip-path="url(#clipU)"/>'
+    +'<path class="hi" id="hiUI" d="'+annSector(UA,RI,iI)+'" clip-path="url(#clipU)"/>'
+    +'<path class="hi" id="hiUC" d="'+annSector(UA,cC1,cC2)+'" clip-path="url(#clipU)"/>'
+    +'<path class="hi" id="hiLO" d="'+annSector(LA,oO,RO)+'" clip-path="url(#clipL)"/>'
+    +'<path class="hi" id="hiLI" d="'+annSector(LA,RI,iI)+'" clip-path="url(#clipL)"/>'
+    +'<path class="hi" id="hiLC" d="'+annSector(LA,cC1,cC2)+'" clip-path="url(#clipL)"/>'
+    +'<path class="hit" data-idx="0" d="'+annSector(UA,B2,RO)+'"/>'
+    +'<path class="hit" data-idx="1" d="'+annSector(UA,RI,B1)+'"/>'
+    +'<path class="hit" data-idx="2" d="'+annSector(UA,B1,B2)+'"/>'
+    +'<path class="hit" data-idx="3" d="'+annSector(LA,B2,RO)+'"/>'
+    +'<path class="hit" data-idx="4" d="'+annSector(LA,RI,B1)+'"/>'
+    +'<path class="hit" data-idx="5" d="'+annSector(LA,B1,B2)+'"/>';
+
+  document.getElementById('mouthLayer').innerHTML = defs+clips+gum+teeth+hi;
 }
 
 /* ---------------- region data ---------------- */
 var REGIONS=[
-  {name:'윗니 바깥쪽', chip:'윗니 바깥',  arch:'U', tip:'칫솔모를 잇몸에 대고, 위에서 아래로 쓸어내리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:59,r:-28},  hi:'hiUO'},
-  {name:'윗니 안쪽',   chip:'윗니 안쪽',  arch:'U', tip:'안쪽도 잇몸에서 아래로 쓸어내려요. 앞니 안쪽은 칫솔을 세로로 세워서.',   brush:{x:150,y:88,r:156},  hi:'hiUI'},
-  {name:'윗니 씹는 면',chip:'윗니 씹는면',arch:'U', tip:'씹는 면은 앞뒤로 가볍게 문질러요.',                               brush:{x:150,y:72,r:-6},   hi:'hiUC'},
-  {name:'아랫니 바깥쪽',chip:'아랫니 바깥',arch:'L', tip:'칫솔모를 잇몸에 대고, 아래에서 위로 쓸어올리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:238,r:208}, hi:'hiLO'},
-  {name:'아랫니 안쪽', chip:'아랫니 안쪽',arch:'L', tip:'안쪽도 잇몸에서 위로 쓸어올려요. 앞니 안쪽은 칫솔을 세워서.',          brush:{x:150,y:212,r:28},  hi:'hiLI'},
-  {name:'아랫니 씹는 면',chip:'아랫니 씹는면',arch:'L', tip:'씹는 면을 앞뒤로 문질러 마무리해요.',                           brush:{x:150,y:228,r:186}, hi:'hiLC'}
+  {name:'윗니 바깥쪽', chip:'윗니 바깥',  arch:'U', tip:'칫솔모를 잇몸에 대고, 위에서 아래로 쓸어내리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:74,r:-28},  hi:'hiUO'},
+  {name:'윗니 안쪽',   chip:'윗니 안쪽',  arch:'U', tip:'안쪽도 잇몸에서 아래로 쓸어내려요. 앞니 안쪽은 칫솔을 세로로 세워서.',   brush:{x:150,y:94,r:156},  hi:'hiUI'},
+  {name:'윗니 씹는 면',chip:'윗니 씹는면',arch:'U', tip:'씹는 면은 앞뒤로 가볍게 문질러요.',                               brush:{x:150,y:84,r:-6},   hi:'hiUC'},
+  {name:'아랫니 바깥쪽',chip:'아랫니 바깥',arch:'L', tip:'칫솔모를 잇몸에 대고, 아래에서 위로 쓸어올리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:226,r:208}, hi:'hiLO'},
+  {name:'아랫니 안쪽', chip:'아랫니 안쪽',arch:'L', tip:'안쪽도 잇몸에서 위로 쓸어올려요. 앞니 안쪽은 칫솔을 세워서.',          brush:{x:150,y:206,r:28},  hi:'hiLI'},
+  {name:'아랫니 씹는 면',chip:'아랫니 씹는면',arch:'L', tip:'씹는 면을 앞뒤로 문질러 마무리해요.',                           brush:{x:150,y:216,r:186}, hi:'hiLC'}
 ];
 var REGION_SECONDS=30, TOTAL=180;
 
 /* ---------------- state ---------------- */
 var elapsed=0, running=false, completed=false, lastTs=0;
-var cur={x:150,y:59,r:-28}, tgt={x:150,y:59,r:-28};
+var cur={x:150,y:74,r:-28}, tgt={x:150,y:74,r:-28};
 var brushPos=document.getElementById('brushPos');
 var subRing=document.getElementById('subRing');
 var RING_C=2*Math.PI*37;
@@ -524,7 +625,7 @@ var RING_C=2*Math.PI*37;
 
 /* ---------------- interactions ---------------- */
 document.getElementById('mouthLayer').addEventListener('click',function(e){
-  var el=e.target.closest('.hi'); if(!el) return; jumpTo(+el.getAttribute('data-idx'));
+  var el=e.target.closest('.hit'); if(!el) return; jumpTo(+el.getAttribute('data-idx'));
 });
 
 function jumpTo(i){
