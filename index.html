@@ -1,413 +1,680 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>치카치카 — 구강 촬영</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#18B9A6">
+<title>치카치카 · 양치 선생님</title>
 <style>
-  :root{
-    --mint:#18B9A6; --mint-d:#0E8C7E; --mint-l:#5FE3D1;
-    --ink:#10322E; --ink-soft:#5B7470; --paper:#F2FBF9; --card:#FFFFFF;
-    --line:#D8EEEA; --warn:#E7F7F3; --danger:#E4573C; --shadow:0 10px 30px rgba(16,50,46,.12);
-    --gum:#F6B8C4; --gum-d:#E890A2;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
-  body{font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
-    background:var(--paper);color:var(--ink);overflow:hidden;
-    display:flex;align-items:center;justify-content:center;}
-  .app{width:100%;max-width:440px;height:100dvh;max-height:920px;position:relative;
-    background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
-
-  /* ---- header ---- */
-  .topbar{display:flex;align-items:center;gap:9px;padding:12px 16px 6px}
-  .logo{display:flex;align-items:center;gap:8px}
-  .tooth{width:26px;height:26px;flex:none}
-  .brand{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--mint-d)}
-  .brand b{color:var(--mint)}
-  .tag{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--mint-d);background:#E2F7F3;
-    border:1px solid var(--line);padding:3px 9px;border-radius:999px}
-
-  /* ---- privacy (slim) ---- */
-  .privacy{margin:2px 14px 8px;background:var(--warn);border:1px solid var(--line);
-    border-radius:11px;padding:7px 11px;display:flex;gap:7px;align-items:center}
-  .privacy svg{flex:none}
-  .privacy p{font-size:11px;line-height:1.35;color:var(--ink-soft)}
-  .privacy b{color:var(--mint-d);font-weight:700}
-
-  /* ---- guide panel (TOP) ---- */
-  .guide{flex:1 1 0;min-height:168px;margin:0 14px 8px;border-radius:20px;overflow:hidden;
-    position:relative;background:linear-gradient(160deg,#EAFBF8,#D4F4EE);
-    border:1px solid var(--line);display:flex;flex-direction:column}
-  .guide-head{display:flex;align-items:center;gap:8px;padding:10px 14px 4px}
-  .g-ttl{font-size:13px;font-weight:800;color:var(--mint-d)}
-  .g-step{margin-left:auto;font-size:12.5px;font-weight:800;color:#fff;background:var(--mint);
-    padding:4px 11px;border-radius:999px;box-shadow:0 4px 12px rgba(24,185,166,.3);
-    transition:background .3s;white-space:nowrap}
-  .g-stage{flex:1;position:relative;min-height:0}
-  .g-stage svg.mouth{width:100%;height:100%;display:block}
-  .brush{position:absolute;left:50%;top:40%;width:58px;height:58px;margin-left:-29px;margin-top:-29px;
-    transition:left .8s cubic-bezier(.4,.1,.3,1), top .8s cubic-bezier(.4,.1,.3,1);pointer-events:none;z-index:3}
-  .brush::before{content:"";position:absolute;inset:6px;border-radius:50%;
-    background:radial-gradient(circle,rgba(24,185,166,.35),transparent 70%);animation:pulse 1s ease-in-out infinite alternate}
-  @keyframes pulse{from{transform:scale(.8);opacity:.5}to{transform:scale(1.15);opacity:.9}}
-  .brushInner{width:100%;height:100%;transform-origin:50% 86%;
-    animation:scrub .5s ease-in-out infinite alternate}
-  @keyframes scrub{from{transform:rotate(-11deg) translateX(-3px)}to{transform:rotate(11deg) translateX(3px)}}
-  .guide-steps{display:flex;gap:5px;padding:4px 12px 11px;justify-content:center}
-  .gchip{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;border:1.5px solid var(--line);
-    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ink-soft);
-    transition:.25s}
-  .gchip.active{background:var(--mint);border-color:var(--mint);color:#fff;transform:scale(1.14);
-    box-shadow:0 4px 12px rgba(24,185,166,.4)}
-  .gchip.done{background:#CDEDE7;border-color:#CDEDE7;color:var(--mint-d)}
-
-  /* ---- camera stage (BOTTOM, zoomed to teeth) ---- */
-  .stage{flex:1.15 1 0;min-height:190px;margin:0 14px;border-radius:22px;overflow:hidden;position:relative;
-    background:#09201C;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
-  video{width:100%;height:100%;object-fit:cover;background:#09201C;transition:transform .2s}
-  .stage .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:12px;text-align:center;padding:22px;color:#BFE9E2}
-  .placeholder .big{font-size:15px;font-weight:700;color:#EAFBF8}
-  .placeholder .sm{font-size:12px;line-height:1.5;color:#9FD4CC}
-  /* teeth framing guide */
-  .frame{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
-  .frame .oval{width:72%;height:42%;border:2px dashed rgba(255,255,255,.7);border-radius:50%/42%;
-    box-shadow:0 0 0 2000px rgba(9,32,28,.18)}
-  .frame .lbl{position:absolute;bottom:12%;font-size:11.5px;font-weight:700;color:#EAFBF8;
-    background:rgba(9,32,28,.5);backdrop-filter:blur(4px);padding:4px 10px;border-radius:999px}
-  .recdot{position:absolute;top:12px;left:12px;display:none;align-items:center;gap:7px;
-    background:rgba(9,32,28,.55);backdrop-filter:blur(6px);padding:6px 11px;border-radius:999px;
-    font-size:12.5px;font-weight:700;color:#fff;z-index:4}
-  .recdot i{width:9px;height:9px;border-radius:50%;background:#ff4d4d;animation:blink 1s steps(2) infinite}
-  @keyframes blink{50%{opacity:.25}}
-  .flip{position:absolute;top:10px;right:10px;width:38px;height:38px;border:0;border-radius:50%;
-    background:rgba(9,32,28,.5);backdrop-filter:blur(6px);color:#fff;display:flex;align-items:center;
-    justify-content:center;cursor:pointer;z-index:4}
-  .zoomctl{position:absolute;left:10px;bottom:10px;display:flex;align-items:center;gap:0;z-index:4;
-    background:rgba(9,32,28,.5);backdrop-filter:blur(6px);border-radius:999px;overflow:hidden}
-  .zoomctl button{width:38px;height:34px;border:0;background:transparent;color:#fff;font-size:19px;
-    font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .zoomctl span{min-width:40px;text-align:center;font-size:12.5px;font-weight:800;color:#fff}
-
-  /* ---- controls ---- */
-  .controls{padding:12px 18px calc(12px + env(safe-area-inset-bottom));display:flex;
-    align-items:center;justify-content:center;gap:26px}
-  .recbtn{width:72px;height:72px;border-radius:50%;border:5px solid #fff;background:var(--danger);
-    box-shadow:0 8px 22px rgba(228,87,60,.4);cursor:pointer;position:relative;flex:none;transition:.15s}
-  .recbtn:active{transform:scale(.94)}
-  .recbtn::after{content:"";position:absolute;inset:0;margin:auto;width:26px;height:26px;border-radius:50%;
-    background:#fff;transition:.2s}
-  .recbtn.recording{background:#fff;border-color:var(--danger)}
-  .recbtn.recording::after{width:24px;height:24px;border-radius:7px;background:var(--danger)}
-  .sidebtn{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--card);
-    color:var(--mint-d);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-weight:700;font-size:13px}
-
-  /* ---- modal ---- */
-  .scrim{position:absolute;inset:0;background:rgba(10,34,30,.55);backdrop-filter:blur(3px);
-    display:none;align-items:flex-end;z-index:30}
-  .scrim.show{display:flex;animation:fade .2s}
-  @keyframes fade{from{opacity:0}}
-  .sheet{background:var(--card);width:100%;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));
-    box-shadow:0 -10px 40px rgba(0,0,0,.2);animation:up .28s cubic-bezier(.2,.8,.2,1)}
-  @keyframes up{from{transform:translateY(100%)}}
-  .sheet h2{font-size:18px;font-weight:800;margin-bottom:6px}
-  .sheet .dur{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
-  .preview{width:100%;border-radius:14px;background:#09201C;margin-bottom:14px;max-height:200px;object-fit:contain}
-  .notice2{background:var(--warn);border:1px solid var(--line);border-radius:12px;padding:10px 12px;
-    font-size:12px;line-height:1.5;color:var(--ink-soft);margin-bottom:16px}
-  .notice2 b{color:var(--mint-d)}
-  .row{display:flex;gap:10px}
-  .btn{flex:1;border:0;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer}
-  .btn.save{background:var(--mint);color:#fff;box-shadow:0 8px 20px rgba(24,185,166,.35)}
-  .btn.save:active{transform:translateY(1px)}
-  .btn.del{background:#F3F6F5;color:var(--danger)}
-  .done{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:10px 0}
-  .done .circ{width:62px;height:62px;border-radius:50%;background:#E2F7F3;display:flex;align-items:center;justify-content:center}
-  .done p{font-size:13.5px;color:var(--ink-soft);line-height:1.55}
-  .done b{color:var(--ink)}
-
-  .foot{padding:2px 18px 10px;text-align:center;font-size:10px;line-height:1.45;color:#9DB4B0}
+:root{
+  --mint:#18B9A6; --mint-d:#0E8C7E; --mint-l:#5FE3D1;
+  --ink:#10322E; --ink-soft:#5B7470; --paper:#F2FBF9;
+  --card:#FFFFFF; --line:#D8EEEA; --danger:#E4573C;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; height:100%;}
+body{
+  background:#DCEFEC;
+  font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+#app{
+  max-width:440px; margin:0 auto; height:100dvh;
+  display:flex; flex-direction:column;
+  background:
+    radial-gradient(130% 70% at 50% -10%, #ffffff 0%, var(--paper) 46%, #E9F7F4 100%);
+  position:relative; overflow:hidden;
+}
+/* ---------- header ---------- */
+header{
+  padding:12px 16px 8px; display:flex; align-items:center; gap:10px; flex:0 0 auto;
+}
+.logo{
+  width:38px; height:38px; border-radius:12px; flex:0 0 auto;
+  background:linear-gradient(145deg,var(--mint-l),var(--mint));
+  box-shadow:0 5px 12px rgba(24,185,166,.33);
+  display:flex; align-items:center; justify-content:center;
+}
+.brand{line-height:1.1;}
+.brand h1{font-size:20px; margin:0; font-weight:800; letter-spacing:-.5px; color:var(--ink);}
+.brand h1 b{color:var(--mint-d);}
+.brand .tag{font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
+.order-hint{
+  margin-left:auto; font-size:10.5px; font-weight:700; color:var(--mint-d);
+  background:#E4F7F3; border:1px solid var(--line); padding:5px 9px; border-radius:20px; white-space:nowrap;
+}
+/* ---------- tabs ---------- */
+.tabs{
+  flex:0 0 auto; display:flex; gap:6px; margin:4px 14px 0;
+  background:#E3F4F0; padding:5px; border-radius:16px; border:1px solid var(--line);
+}
+.tab{
+  flex:1; border:0; background:transparent; font-family:inherit;
+  font-size:13.5px; font-weight:700; color:var(--ink-soft); white-space:nowrap;
+  padding:9px 0; border-radius:12px; cursor:pointer; transition:.22s; touch-action:manipulation;
+}
+.tab.active{background:var(--card); color:var(--mint-d); box-shadow:0 3px 9px rgba(16,50,46,.1);}
+/* ---------- content ---------- */
+.content{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px 4px;}
+.mode{display:none; animation:fade .3s ease;}
+.mode.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  box-shadow:0 6px 18px rgba(16,50,46,.06); padding:14px; margin-bottom:12px;
+}
+/* ---------- brushing: timer ---------- */
+.timerwrap{display:flex; align-items:center; gap:14px; padding:12px 14px;}
+.ring{position:relative; width:84px; height:84px; flex:0 0 auto;}
+.ring svg{transform:rotate(-90deg);}
+.ring .rtxt{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; line-height:1;
+}
+.ring .rtxt b{font-size:21px; font-weight:800; letter-spacing:-.5px; font-variant-numeric:tabular-nums;}
+.ring .rtxt span{font-size:9.5px; color:var(--ink-soft); font-weight:700; margin-top:3px;}
+.tinfo{flex:1 1 auto; min-width:0;}
+.tinfo .step{font-size:12px; font-weight:700; color:var(--mint-d);}
+.tinfo .stepname{font-size:17px; font-weight:800; letter-spacing:-.4px; margin:2px 0 8px;}
+.bar{height:8px; background:#E6F4F1; border-radius:6px; overflow:hidden;}
+.bar>i{display:block; height:100%; width:0%; border-radius:6px;
+  background:linear-gradient(90deg,var(--mint),var(--mint-l)); transition:width .25s linear;}
+.bar .lbl{}
+.totlabel{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:5px;}
+/* ---------- mouth svg ---------- */
+.stage{position:relative; padding:4px 6px 2px; display:flex; justify-content:center;}
+#mouthSvg{width:100%; max-width:300px; height:auto; display:block; touch-action:manipulation;}
+.hi{fill:var(--mint-l); opacity:0; pointer-events:all; cursor:pointer; transition:opacity .35s;}
+.hi.active{opacity:.52; filter:drop-shadow(0 0 5px rgba(14,140,126,.75));}
+/* brush animation groups */
+#brushSweep{animation:sweep 2.6s ease-in-out infinite;}
+#brushScrub{animation:scrub .12s linear infinite;}
+.foam{animation:foam 1.3s ease-in-out infinite;}
+@keyframes sweep{0%,100%{transform:translateX(-13px);} 50%{transform:translateX(13px);}}
+@keyframes scrub{
+  0%{transform:translate(0,0);}
+  25%{transform:translate(2.4px,.6px);}
+  50%{transform:translate(.4px,2.1px);}
+  75%{transform:translate(-2.4px,.6px);}
+  100%{transform:translate(0,0);}
+}
+@keyframes foam{0%,100%{opacity:.25; transform:translateY(0);} 50%{opacity:.85; transform:translateY(-3px);}}
+/* ---------- chips ---------- */
+.chips{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:4px;}
+.chip{
+  border:1.5px solid var(--line); background:var(--card); font-family:inherit;
+  font-size:12.5px; font-weight:700; color:var(--ink-soft);
+  padding:9px 2px; border-radius:12px; cursor:pointer; transition:.2s; touch-action:manipulation;
+}
+.chip .n{display:block; font-size:9.5px; color:var(--mint); font-weight:800; margin-bottom:1px;}
+.chip.active{background:var(--mint); border-color:var(--mint); color:#fff; box-shadow:0 5px 12px rgba(24,185,166,.33);}
+.chip.active .n{color:#CFF6EF;}
+/* ---------- instruction ---------- */
+.instruct{
+  display:flex; gap:10px; align-items:flex-start;
+  background:#EAF8F5; border:1px solid var(--line); border-radius:14px; padding:12px 13px;
+}
+.instruct .ic{width:26px; height:26px; flex:0 0 auto; border-radius:9px; background:var(--mint);
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:800;}
+.instruct p{margin:0; font-size:13.5px; line-height:1.5; font-weight:600; color:var(--ink);}
+.instruct.done{background:#E4F9EE; border-color:#B9ECCF;}
+.instruct.done p{font-size:15px; font-weight:800; color:#17864E;}
+/* ---------- controls ---------- */
+.controls{display:flex; gap:8px; margin-top:12px;}
+.btn{
+  flex:1; border:0; font-family:inherit; font-weight:800; font-size:14.5px;
+  padding:13px 6px; border-radius:14px; cursor:pointer; transition:.18s; touch-action:manipulation;
+}
+.btn.primary{background:var(--mint); color:#fff; box-shadow:0 6px 14px rgba(24,185,166,.34);}
+.btn.primary:active{transform:translateY(1px);}
+.btn.ghost{flex:0 0 auto; background:#EAF4F2; color:var(--ink-soft); padding:13px 16px;}
+.btn.ghost.on{background:var(--mint-d); color:#fff;}
+/* ---------- camera ---------- */
+.cam{margin-top:12px; display:none;}
+.cam.show{display:block;}
+.cambox{
+  position:relative; width:100%; aspect-ratio:16/10; border-radius:16px; overflow:hidden;
+  background:#0E2B27; border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+}
+.cambox video{width:100%; height:100%; object-fit:cover; transform:scaleX(-1.9) scaleY(1.9); display:none;}
+.cambox.live video{display:block;}
+.cammsg{color:#CDEFEA; font-size:12.5px; text-align:center; padding:0 22px; line-height:1.55; font-weight:600;}
+.camtag{position:absolute; top:9px; left:10px; background:rgba(14,43,39,.72); color:#fff;
+  font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:20px;}
+/* ---------- floss / tongue ---------- */
+.ill{display:flex; justify-content:center; padding:4px 0 2px;}
+.ill svg{width:100%; max-width:300px; height:auto;}
+.lead{font-size:13.5px; line-height:1.55; font-weight:600; color:var(--ink); margin:2px 2px 0;}
+.steps{list-style:none; margin:12px 0 0; padding:0;}
+.steps li{display:flex; gap:11px; align-items:flex-start; padding:9px 0; border-top:1px dashed var(--line);}
+.steps li:first-child{border-top:0;}
+.steps .num{
+  width:25px; height:25px; flex:0 0 auto; border-radius:50%; background:var(--mint);
+  color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center;
+}
+.steps p{margin:0; font-size:13.5px; line-height:1.48; font-weight:600;}
+.steps small{color:var(--ink-soft); font-weight:600;}
+.tipbox{margin-top:12px; background:#EAF8F5; border:1px solid var(--line); border-radius:14px;
+  padding:11px 13px; font-size:12.8px; line-height:1.5; font-weight:700; color:var(--mint-d);}
+.sectitle{font-size:15px; font-weight:800; letter-spacing:-.4px; margin:0 2px 8px;}
+@keyframes flossSaw{
+  0%{transform:translate(-2px,-7px);} 25%{transform:translate(2px,0);}
+  50%{transform:translate(-2px,7px);} 75%{transform:translate(2px,0);}
+  100%{transform:translate(-2px,-7px);}
+}
+#flossG{animation:flossSaw 1.5s ease-in-out infinite;}
+@keyframes scrape{
+  0%{transform:translateY(0); opacity:0;}
+  12%{opacity:1;}
+  80%{transform:translateY(70px); opacity:1;}
+  100%{transform:translateY(70px); opacity:0;}
+}
+#scraperG{animation:scrape 1.9s ease-in-out infinite;}
+@keyframes swish{0%,100%{transform:translateX(-13px);} 50%{transform:translateX(13px);}}
+#swishG{animation:swish 1.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);}}
+.bubbleUp{animation:foam 1.5s ease-in-out infinite;}
+/* ---------- footer ---------- */
+footer{
+  flex:0 0 auto; padding:7px 16px calc(8px + env(safe-area-inset-bottom));
+  font-size:9.3px; line-height:1.45; color:var(--ink-soft); text-align:center;
+  border-top:1px solid var(--line); background:rgba(242,251,249,.9);
+}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div class="logo">
-      <svg class="tooth" viewBox="0 0 48 48" fill="none"><path d="M24 7c-5-4-11-3-14 0-3.2 3.2-3 8-1.6 14 1 4.3 1.3 8 2.2 12.5.6 3 1.3 6 3.4 6 2.3 0 2.6-3.2 3.3-6.4.5-2.2 1-3.6 2.7-3.6s2.2 1.4 2.7 3.6c.7 3.2 1 6.4 3.3 6.4 2.1 0 2.8-3 3.4-6C36.8 29 37.1 25.3 38 21c1.4-6 1.6-10.8-1.6-14-3-3-9-4-12.4 0Z" fill="#18B9A6" stroke="#0E8C7E" stroke-width="1.6" stroke-linejoin="round"/></svg>
-      <span class="brand">치카<b>치카</b></span>
-    </div>
-    <span class="tag">구강 촬영</span>
-  </div>
-
-  <div class="privacy">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" fill="#CDEDE7" stroke="#0E8C7E" stroke-width="1.4" stroke-linejoin="round"/><path d="m8.7 12 2.2 2.2 4.4-4.6" stroke="#0E8C7E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <p><b>촬영 영상은 서버 전송·저장 없이</b> 본인 기기에서만 처리됩니다.</p>
-  </div>
-
-  <!-- ========== TOP: 양치 순서 가이드 ========== -->
-  <div class="guide">
-    <div class="guide-head">
-      <span class="g-ttl">양치 순서 따라하기</span>
-      <span class="g-step" id="gstep">① 윗니 바깥쪽</span>
-    </div>
-    <div class="g-stage">
-      <svg class="mouth" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <defs>
-          <linearGradient id="lip" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#FBD0D8"/><stop offset="1" stop-color="#F3A9B8"/>
-          </linearGradient>
-        </defs>
-        <!-- mouth opening -->
-        <ellipse cx="150" cy="92" rx="118" ry="72" fill="url(#lip)"/>
-        <ellipse cx="150" cy="94" rx="100" ry="58" fill="#7D2740"/>
-        <!-- upper gum + teeth -->
-        <path d="M54 58 Q150 24 246 58 L246 78 Q150 54 54 78 Z" fill="#F6B8C4"/>
-        <g fill="#fff" stroke="#E6EEF0" stroke-width="1">
-          <rect x="60" y="56" width="20" height="26" rx="7"/>
-          <rect x="84" y="52" width="22" height="30" rx="7"/>
-          <rect x="110" y="49" width="24" height="33" rx="8"/>
-          <rect x="138" y="48" width="24" height="34" rx="8"/>
-          <rect x="166" y="49" width="24" height="33" rx="8"/>
-          <rect x="194" y="52" width="22" height="30" rx="7"/>
-          <rect x="220" y="56" width="20" height="26" rx="7"/>
-        </g>
-        <!-- lower gum + teeth -->
-        <path d="M58 130 Q150 160 242 130 L242 112 Q150 140 58 112 Z" fill="#F0A6B6"/>
-        <g fill="#fff" stroke="#E6EEF0" stroke-width="1">
-          <rect x="64" y="108" width="19" height="24" rx="7"/>
-          <rect x="87" y="110" width="21" height="28" rx="7"/>
-          <rect x="112" y="112" width="23" height="30" rx="8"/>
-          <rect x="139" y="113" width="23" height="31" rx="8"/>
-          <rect x="166" y="112" width="23" height="30" rx="8"/>
-          <rect x="193" y="110" width="21" height="28" rx="7"/>
-          <rect x="217" y="108" width="19" height="24" rx="7"/>
-        </g>
-        <!-- tongue -->
-        <ellipse cx="150" cy="120" rx="52" ry="22" fill="#E8657E"/>
-        <path d="M150 100 Q156 118 150 140" stroke="#D44E67" stroke-width="3" fill="none" stroke-linecap="round"/>
+<div id="app">
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3.4c-2.1-1.6-5.2-1.5-6.8.6-1.5 2-1 4.4-.2 7 .6 1.9.5 3.4 1.2 4.9.5 1.1 1.3 1.9 2.1 1.9 1 0 1.1-1.3 1.3-2.6.2-1.1.5-2 1.4-2s1.2.9 1.4 2c.2 1.3.3 2.6 1.3 2.6.8 0 1.6-.8 2.1-1.9.7-1.5.6-3 1.2-4.9.8-2.6 1.3-5-.2-7-1.6-2.1-4.7-2.2-6.8-.6z" fill="#fff"/>
       </svg>
-      <div class="brush" id="brush">
-        <svg class="brushInner" viewBox="0 0 64 64" fill="none">
-          <rect x="27" y="4" width="10" height="34" rx="5" fill="#18B9A6"/>
-          <rect x="24" y="36" width="16" height="12" rx="4" fill="#0E8C7E"/>
-          <g stroke="#CFF3EC" stroke-width="2.6" stroke-linecap="round">
-            <line x1="27" y1="48" x2="27" y2="58"/><line x1="32" y1="48" x2="32" y2="59"/>
-            <line x1="37" y1="48" x2="37" y2="58"/>
-          </g>
-        </svg>
-      </div>
     </div>
-    <div class="guide-steps" id="gsteps">
-      <div class="gchip active">1</div><div class="gchip">2</div><div class="gchip">3</div>
-      <div class="gchip">4</div><div class="gchip">5</div>
+    <div class="brand">
+      <h1>치카<b>치카</b></h1>
+      <div class="tag">하루 2번, 선생님과 함께 닦아요</div>
     </div>
-  </div>
+    <div class="order-hint">양치 → 치실 → 혀닦기</div>
+  </header>
 
-  <!-- ========== BOTTOM: 카메라 (치아 확대) ========== -->
-  <div class="stage">
-    <video id="cam" playsinline muted autoplay></video>
-    <div class="frame" id="frame" style="display:none">
-      <div class="oval"></div>
-      <div class="lbl">치아를 원 안에 맞춰 주세요</div>
-    </div>
-    <div class="placeholder" id="ph">
-      <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 0 1 2-2h2l1.2-1.6A2 2 0 0 1 11 3.6h2a2 2 0 0 1 1.8 1l1.2 1.4h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="#5FE3D1" stroke-width="1.5"/><circle cx="12" cy="12.5" r="3.6" stroke="#5FE3D1" stroke-width="1.5"/></svg>
-      <div class="big">구강 촬영을 시작하세요</div>
-      <div class="sm">아래 <b>켜기</b>를 누르면 카메라 권한을 요청합니다.<br>치아가 크게 보이도록 자동 확대됩니다.</div>
-    </div>
-    <div class="recdot" id="recdot"><i></i><span id="timer">0:00</span></div>
-    <button class="flip" id="flip" title="카메라 전환" aria-label="카메라 전환">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M4 7h3l1.5-2h7L17 7h3v12H4V7Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.5 13a2.5 2.5 0 0 1 4.3-1.7M14.5 13a2.5 2.5 0 0 1-4.3 1.7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="m13.8 10.5.1 1.4-1.4-.2M10.2 15.5l-.1-1.4 1.4.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div class="zoomctl" id="zoomctl" style="display:none">
-      <button id="zout" aria-label="축소">−</button><span id="zlabel">2.0×</span><button id="zin" aria-label="확대">+</button>
-    </div>
-  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-mode="brush" role="tab">양치</button>
+    <button class="tab" data-mode="floss" role="tab">치실</button>
+    <button class="tab" data-mode="tongue" role="tab">혀닦기</button>
+    <button class="tab" data-mode="rinse" role="tab">구강청결</button>
+  </nav>
 
-  <div class="controls">
-    <button class="sidebtn" id="startbtn" title="카메라 켜기">켜기</button>
-    <button class="recbtn" id="rec" aria-label="녹화"></button>
-    <div style="width:50px"></div>
-  </div>
-  <div class="foot">구강 건강 습관 형성을 돕기 위한 앱입니다 · 질병의 진단·치료 목적이 아닙니다 · 영상은 전적으로 본인 기기에서만 처리됩니다</div>
+  <div class="content">
 
-  <!-- save/delete sheet -->
-  <div class="scrim" id="scrim">
-    <div class="sheet" id="sheet">
-      <div id="ask">
-        <h2>촬영을 저장하시겠어요?</h2>
-        <div class="dur" id="askdur">촬영 길이 0:00</div>
-        <video class="preview" id="preview" playsinline controls></video>
-        <div class="notice2"><b>저장 = 본인 기기에만 저장됩니다.</b> 이 영상은 서버로 전송되거나 외부에 공유되지 않습니다. 삭제를 누르면 기기에도 남지 않습니다.</div>
-        <div class="row">
-          <button class="btn del" id="del">삭제</button>
-          <button class="btn save" id="save">기기에 저장</button>
+    <!-- ============ MODE 1: 양치 ============ -->
+    <section class="mode active" id="mode-brush">
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="timerwrap">
+          <div class="ring">
+            <svg viewBox="0 0 84 84" width="84" height="84">
+              <circle cx="42" cy="42" r="37" fill="none" stroke="#E6F4F1" stroke-width="8"/>
+              <circle id="subRing" cx="42" cy="42" r="37" fill="none" stroke="url(#rg)" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="232.5"/>
+              <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#5FE3D1"/><stop offset="1" stop-color="#0E8C7E"/>
+              </linearGradient></defs>
+            </svg>
+            <div class="rtxt"><b id="bigTime">3:00</b><span>남은 시간</span></div>
+          </div>
+          <div class="tinfo">
+            <div class="step" id="stepNo">1 / 6 단계</div>
+            <div class="stepname" id="stepName">윗니 바깥쪽</div>
+            <div class="bar"><i id="totBar"></i></div>
+            <div class="totlabel" id="totLabel">전체 진행 0%</div>
+          </div>
         </div>
       </div>
-      <div id="doneView" style="display:none">
-        <div class="done">
-          <div class="circ"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-11" stroke="#0E8C7E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <h2>기기에 저장했어요</h2>
-          <p id="donemsg"><b>본인 기기</b>에만 저장되었습니다.<br>서버 전송·외부 공유는 없습니다.</p>
-          <button class="btn save" id="closeDone" style="margin-top:6px;width:100%">확인</button>
+
+      <div class="card">
+        <div class="stage">
+          <svg id="mouthSvg" viewBox="0 0 300 300" aria-label="치아 그림">
+            <g id="mouthLayer"></g>
+            <g id="brushPos">
+              <g id="brushSweep">
+                <g class="foam">
+                  <circle cx="-14" cy="-4" r="3.4" fill="#CFF6EF" opacity=".7"/>
+                  <circle cx="13" cy="-9" r="2.6" fill="#EAFBF8" opacity=".7"/>
+                  <circle cx="-6" cy="-15" r="2.2" fill="#CFF6EF" opacity=".6"/>
+                </g>
+                <g id="brushScrub">
+                  <!-- toothbrush: bristle tips at (0,0), extends up -y -->
+                  <rect x="-11" y="-108" width="22" height="70" rx="11" fill="url(#handle)"/>
+                  <rect x="-4.5" y="-104" width="4.5" height="60" rx="2.3" fill="#fff" opacity=".35"/>
+                  <circle cx="0" cy="-60" r="2" fill="#0A6E63" opacity=".55"/>
+                  <circle cx="0" cy="-70" r="2" fill="#0A6E63" opacity=".55"/>
+                  <circle cx="0" cy="-80" r="2" fill="#0A6E63" opacity=".55"/>
+                  <rect x="-9" y="-46" width="18" height="12" rx="5" fill="var(--mint-d)"/>
+                  <rect x="-26" y="-33" width="52" height="22" rx="10" fill="#fff" stroke="var(--mint)" stroke-width="2.4"/>
+                  <rect x="-23" y="-15" width="46" height="14" rx="4" fill="#EAF8F5"/>
+                  <g stroke="#9FDDD2" stroke-width="2.3" stroke-linecap="round">
+                    <line x1="-18" y1="-1" x2="-18" y2="-14"/><line x1="-13" y1="-1" x2="-13" y2="-14"/>
+                    <line x1="-8" y1="-1" x2="-8" y2="-14"/><line x1="-3" y1="-1" x2="-3" y2="-14"/>
+                    <line x1="3" y1="-1" x2="3" y2="-14"/><line x1="8" y1="-1" x2="8" y2="-14"/>
+                    <line x1="13" y1="-1" x2="13" y2="-14"/><line x1="18" y1="-1" x2="18" y2="-14"/>
+                  </g>
+                  <defs>
+                    <linearGradient id="handle" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0" stop-color="#17B2A0"/><stop offset="1" stop-color="#0C7F72"/>
+                    </linearGradient>
+                  </defs>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="chips" id="chips"></div>
+      </div>
+
+      <div class="instruct" id="instruct">
+        <div class="ic">!</div>
+        <p id="instructText">칫솔을 잇몸 경계에 45도로 대고, 작게 진동하듯 흔들며 쓸어내리세요.</p>
+      </div>
+
+      <div class="controls">
+        <button class="btn primary" id="btnPlay">시작</button>
+        <button class="btn ghost" id="btnReset">처음부터</button>
+        <button class="btn ghost" id="btnCam">거울 보기</button>
+      </div>
+
+      <div class="cam" id="cam">
+        <div class="cambox" id="cambox">
+          <span class="camtag">거울 보기</span>
+          <video id="video" playsinline muted autoplay></video>
+          <div class="cammsg" id="camMsg">버튼을 누르면 앞 카메라로 내 입을 비춰 볼 수 있어요.</div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- ============ MODE 2: 치실 ============ -->
+    <section class="mode" id="mode-floss">
+      <div class="card">
+        <div class="ill">
+          <svg viewBox="0 0 300 200" aria-label="치실 사용 그림">
+            <!-- gum -->
+            <path d="M20 58 Q150 36 280 58 L280 44 Q150 24 20 44 Z" fill="#F4C3C7"/>
+            <rect x="20" y="52" width="260" height="10" fill="#EBA9AE"/>
+            <!-- two teeth -->
+            <path d="M70 60 q0 -14 20 -14 q20 0 20 14 l-4 78 q-2 18 -16 18 q-14 0 -16 -18 Z"
+                  fill="#fff" stroke="#DCEFEB" stroke-width="2"/>
+            <path d="M190 60 q0 -14 20 -14 q20 0 20 14 l-4 78 q-2 18 -16 18 q-14 0 -16 -18 Z"
+                  fill="#fff" stroke="#DCEFEB" stroke-width="2"/>
+            <!-- shading -->
+            <path d="M104 64 q6 40 2 86" fill="none" stroke="#EAF6F3" stroke-width="5" stroke-linecap="round"/>
+            <path d="M224 64 q6 40 2 86" fill="none" stroke="#EAF6F3" stroke-width="5" stroke-linecap="round"/>
+            <!-- fingers hint -->
+            <circle cx="150" cy="30" r="0" />
+            <!-- floss -->
+            <g id="flossG">
+              <line x1="150" y1="6" x2="150" y2="150" stroke="#8FD9CE" stroke-width="2.4" stroke-linecap="round"/>
+              <!-- C-wrap around right side of left tooth -->
+              <path d="M150 150 C120 150 108 128 110 104 C111 86 120 74 136 70"
+                    fill="none" stroke="#17B2A0" stroke-width="3.4" stroke-linecap="round"/>
+              <circle cx="150" cy="150" r="4" fill="#0E8C7E"/>
+            </g>
+            <text x="150" y="190" text-anchor="middle" font-size="12" font-weight="700" fill="#5B7470">치아 옆면을 'C'자로 감아 위아래로</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sectitle">치실은 왜 쓸까요?</h2>
+        <p class="lead">치실은 칫솔이 닿지 않는 치아 사이의 치태(세균막)를 닦는 도구예요. 음식물만 빼는 게 아니에요.</p>
+        <ol class="steps">
+          <li><span class="num">1</span><p>치실을 40cm 정도 끊어 양손 가운데 손가락에 감아요.</p></li>
+          <li><span class="num">2</span><p>치아 사이에 톱질하듯 부드럽게 넣어요. <small>(잇몸을 세게 찍지 마세요.)</small></p></li>
+          <li><span class="num">3</span><p>한쪽 치아 옆면에 'C'자로 감아 붙이고 위아래로 닦아요.</p></li>
+          <li><span class="num">4</span><p>반대쪽 치아 옆면도 똑같이 'C'자로 닦아요. <small>(한 사이에 양쪽 모두!)</small></p></li>
+          <li><span class="num">5</span><p>깨끗한 부분으로 옮겨가며 모든 치아 사이를 닦아요.</p></li>
+        </ol>
+        <div class="tipbox">매일 한 번, 양쪽 옆면을 빠짐없이. 아프거나 어려우면 치과에서 방법을 확인하세요.</div>
+      </div>
+    </section>
+
+    <!-- ============ MODE 3: 혀닦기 ============ -->
+    <section class="mode" id="mode-tongue">
+      <div class="card">
+        <div class="ill">
+          <svg viewBox="0 0 300 200" aria-label="혀닦기 그림">
+            <!-- mouth opening -->
+            <path d="M40 92 Q150 44 260 92 Q150 150 40 92 Z" fill="#B9433E"/>
+            <!-- tongue -->
+            <path d="M150 58 C112 58 92 82 92 112 C92 142 118 162 150 162 C182 162 208 142 208 112 C208 82 188 58 150 58 Z"
+                  fill="#F28C92"/>
+            <path d="M150 64 C120 64 102 84 102 112 C102 138 124 154 150 154 C176 154 198 138 198 112 C198 84 180 64 150 64 Z"
+                  fill="#F7A6AB"/>
+            <!-- midline + texture -->
+            <path d="M150 72 L150 150" stroke="#E07F85" stroke-width="3" stroke-linecap="round"/>
+            <g stroke="#EC9398" stroke-width="2" stroke-linecap="round" opacity=".7">
+              <path d="M128 86 q-6 26 2 54"/><path d="M172 86 q6 26 -2 54"/>
+            </g>
+            <!-- scraper sweeping back(top) -> front(bottom) -->
+            <g id="scraperG">
+              <rect x="108" y="70" width="84" height="12" rx="6" fill="#17B2A0"/>
+              <rect x="108" y="76" width="84" height="6" rx="3" fill="#0E8C7E"/>
+              <rect x="146" y="56" width="8" height="16" rx="3" fill="#0C7F72"/>
+            </g>
+            <text x="150" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="#5B7470">안쪽에서 바깥(앞)으로 부드럽게</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sectitle">혀도 닦아요</h2>
+        <p class="lead">혀에도 세균과 설태가 쌓여요. 입냄새 예방을 위해 부드럽게 닦아요.</p>
+        <ol class="steps">
+          <li><span class="num">1</span><p>혀를 쭉 내밀어요.</p></li>
+          <li><span class="num">2</span><p>칫솔이나 혀클리너로 혀 안쪽에서 바깥(앞)으로 부드럽게 쓸어내려요.</p></li>
+          <li><span class="num">3</span><p>2~3번 반복하고 물로 헹궈요. <small>(너무 세게 하지 마세요.)</small></p></li>
+        </ol>
+        <div class="tipbox">혀 안쪽 깊이 넣으면 구역질이 날 수 있어요. 닿는 곳까지만 살살.</div>
+      </div>
+    </section>
+
+    <!-- ============ MODE 4: 구강청결 ============ -->
+    <section class="mode" id="mode-rinse">
+      <div class="card">
+        <div class="ill">
+          <svg viewBox="0 0 300 200" aria-label="가글 사용 그림">
+            <!-- measuring cup -->
+            <g>
+              <path d="M44 66 L54 150 Q55 160 65 160 L77 160 Q87 160 88 150 L98 66 Z"
+                    fill="#EDF9F6" stroke="#BFE4DD" stroke-width="2"/>
+              <clipPath id="cupClip"><path d="M44 66 L54 150 Q55 160 65 160 L77 160 Q87 160 88 150 L98 66 Z"/></clipPath>
+              <g clip-path="url(#cupClip)">
+                <rect x="40" y="100" width="64" height="70" fill="#8FE0D3"/>
+                <rect x="40" y="100" width="64" height="5" fill="#B8EDE4"/>
+                <g class="bubbleUp">
+                  <circle cx="60" cy="126" r="3" fill="#D6F5EF"/>
+                  <circle cx="78" cy="138" r="2.4" fill="#EAFBF8"/>
+                </g>
+              </g>
+              <!-- marks -->
+              <g stroke="#9FD6CD" stroke-width="1.6" stroke-linecap="round">
+                <line x1="88" y1="100" x2="97" y2="100"/>
+                <line x1="90" y1="116" x2="97" y2="116"/>
+              </g>
+              <text x="104" y="104" font-size="11" font-weight="800" fill="#0E8C7E">15</text>
+              <text x="104" y="120" font-size="11" font-weight="800" fill="#0E8C7E">10</text>
+              <text x="71" y="182" text-anchor="middle" font-size="11" font-weight="700" fill="#5B7470">10~15ml</text>
+            </g>
+            <!-- cheek + swishing liquid -->
+            <g transform="translate(208 108)">
+              <ellipse cx="0" cy="0" rx="54" ry="46" fill="#F4C3C7"/>
+              <ellipse cx="0" cy="3" rx="42" ry="34" fill="#B9433E"/>
+              <clipPath id="mouthClip"><ellipse cx="0" cy="3" rx="42" ry="34"/></clipPath>
+              <g clip-path="url(#mouthClip)">
+                <g id="swishG">
+                  <path d="M-62 12 Q0 -4 62 12 L62 42 L-62 42 Z" fill="#7FD9CC" opacity=".92"/>
+                  <circle cx="-20" cy="10" r="4.5" fill="#D6F5EF"/>
+                  <circle cx="16" cy="6" r="3.4" fill="#EAFBF8"/>
+                  <circle cx="2" cy="16" r="3.2" fill="#D6F5EF"/>
+                </g>
+              </g>
+              <text x="0" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="#5B7470">30초~1분 구석구석</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sectitle">헥사메딘 가글, 이렇게</h2>
+        <p class="lead">헥사메딘(클로르헥시딘) 가글은 잇몸질환·발치 후·구내염 등에 쓰는 소독용 가글이에요. 매일 쓰는 일반 관리용이 아니라, 필요할 때 단기간 사용해요.</p>
+        <ol class="steps">
+          <li><span class="num">1</span><p>양치하고 30분쯤 뒤에 사용해요. <small>(치약 성분과 바로 섞이면 효과가 줄어요.)</small></p></li>
+          <li><span class="num">2</span><p>원액 10~15ml를 입에 머금고 30초~1분간 구석구석 헹궈요.</p></li>
+          <li><span class="num">3</span><p>뱉은 뒤 물로 헹구지 않아요. <small>(약 성분이 남아 작용하도록)</small></p></li>
+          <li><span class="num">4</span><p>사용 후 30분간은 음식·음료를 피해요.</p></li>
+        </ol>
+        <div class="tipbox">하루 1~2회, 보통 1~2주 단기 사용. 오래 쓰면 치아가 착색될 수 있어요 — 치과 지시를 따르세요.</div>
+      </div>
+    </section>
+
   </div>
+
+  <footer>
+    올바른 구강관리 습관을 돕는 앱입니다 · 하루 2번 불소치약 · 질병의 진단·치료 목적이 아닙니다 · 영상은 기기에서만 처리됩니다 (ADA·NHS 가이드 참고)
+  </footer>
 </div>
 
 <script>
 (function(){
-  "use strict";
-  var cam=document.getElementById('cam'), ph=document.getElementById('ph'),
-      rec=document.getElementById('rec'), startbtn=document.getElementById('startbtn'),
-      flip=document.getElementById('flip'), recdot=document.getElementById('recdot'),
-      timerEl=document.getElementById('timer'), scrim=document.getElementById('scrim'),
-      preview=document.getElementById('preview'), save=document.getElementById('save'),
-      del=document.getElementById('del'), askdur=document.getElementById('askdur'),
-      askView=document.getElementById('ask'), doneView=document.getElementById('doneView'),
-      closeDone=document.getElementById('closeDone'), donemsg=document.getElementById('donemsg'),
-      frame=document.getElementById('frame'), zoomctl=document.getElementById('zoomctl'),
-      zin=document.getElementById('zin'), zout=document.getElementById('zout'), zlabel=document.getElementById('zlabel');
+"use strict";
 
-  var stream=null, mr=null, chunks=[], facing='user', recording=false,
-      t0=0, tick=null, lastBlob=null, lastUrl=null, lastDur=0, zoom=2.0;
+/* ---------------- geometry: build the mouth ---------------- */
+var UA={cx:150,cy:150,a0:200,a1:340};   // upper arch (top sector)
+var LA={cx:150,cy:150,a0:20,a1:160};    // lower arch (bottom sector)
+var RO=96, RI=58;
+var B1=RI+(RO-RI)/3, B2=RI+2*(RO-RI)/3; // third boundaries
 
-  var dlCap=null;
-  (async function(){ try{ if(window.claude&&window.claude.use){ dlCap=await claude.use('downloads'); } }catch(e){ dlCap=null; } })();
+function pt(cx,cy,ang,r){var a=ang*Math.PI/180; return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
+function arcPts(cx,cy,a0,a1,r,step){
+  var s='', dir=a1>=a0?1:-1, a=a0;
+  for(;dir>0?a<=a1:a>=a1;a+=dir*step){var p=pt(cx,cy,a,r); s+=p[0].toFixed(2)+','+p[1].toFixed(2)+' ';}
+  var pe=pt(cx,cy,a1,r); s+=pe[0].toFixed(2)+','+pe[1].toFixed(2)+' ';
+  return s;
+}
+function bandPoly(ar,rIn,rOut){return (arcPts(ar.cx,ar.cy,ar.a0,ar.a1,rOut,3)+arcPts(ar.cx,ar.cy,ar.a1,ar.a0,rIn,3)).trim();}
 
-  function fmt(s){var m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r;}
-
-  /* ---- camera zoom: crop to teeth (live view) ---- */
-  function applyCamTransform(){
-    var sx = (facing==='user') ? -zoom : zoom;   // negative X = mirror for front cam
-    cam.style.transform = 'scaleX('+sx+') scaleY('+zoom+')';
-    zlabel.textContent = zoom.toFixed(1)+'×';
-  }
-  zin.addEventListener('click', function(){ zoom=Math.min(3.5, Math.round((zoom+0.3)*10)/10); applyCamTransform(); });
-  zout.addEventListener('click', function(){ zoom=Math.max(1.0, Math.round((zoom-0.3)*10)/10); applyCamTransform(); });
-
-  function pickMime(){
-    var c=['video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
-    for(var i=0;i<c.length;i++){ if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i])) return c[i]; }
-    return '';
-  }
-
-  async function startCamera(){
-    try{
-      if(stream){ stream.getTracks().forEach(function(t){t.stop();}); }
-      stream=await navigator.mediaDevices.getUserMedia({
-        video:{facingMode:facing, width:{ideal:1280}, height:{ideal:720}}, audio:true});
-      cam.srcObject=stream;
-      applyCamTransform();
-      ph.style.display='none'; frame.style.display='flex'; zoomctl.style.display='flex';
-      startbtn.textContent='켜짐';
-    }catch(e){
-      ph.style.display='flex'; frame.style.display='none'; zoomctl.style.display='none';
-      ph.querySelector('.big').textContent='카메라를 열 수 없습니다';
-      ph.querySelector('.sm').innerHTML='브라우저에서 카메라 권한을 허용해 주세요.<br>(미리보기 환경에서는 차단될 수 있습니다 — 실제 기기에서는 정상 작동합니다.)';
+function buildMouth(){
+  var h='';
+  // gum (outer, both arches)
+  h+='<polygon points="'+bandPoly(UA,RO-2,RO+12)+'" fill="#F4C3C7"/>';
+  h+='<polygon points="'+bandPoly(LA,RO-2,RO+12)+'" fill="#F4C3C7"/>';
+  // teeth band
+  h+='<polygon points="'+bandPoly(UA,RI,RO)+'" fill="#ffffff" stroke="#D4ECE7" stroke-width="1.5"/>';
+  h+='<polygon points="'+bandPoly(LA,RI,RO)+'" fill="#ffffff" stroke="#D4ECE7" stroke-width="1.5"/>';
+  // tooth dividers
+  [UA,LA].forEach(function(ar){
+    for(var i=1;i<10;i++){
+      var ang=ar.a0+i*(ar.a1-ar.a0)/10;
+      var p1=pt(ar.cx,ar.cy,ang,RI+1), p2=pt(ar.cx,ar.cy,ang,RO-1);
+      h+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#DBEFEB" stroke-width="1.3" stroke-linecap="round"/>';
     }
-  }
-
-  startbtn.addEventListener('click', startCamera);
-
-  flip.addEventListener('click', function(){
-    if(recording) return;
-    facing = (facing==='user') ? 'environment' : 'user';
-    if(stream) startCamera(); else applyCamTransform();
   });
+  // subtle gumline accent
+  h+='<polyline points="'+arcPts(UA.cx,UA.cy,UA.a0,UA.a1,RO,3)+'" fill="none" stroke="#E9A5AA" stroke-width="2.2" stroke-linecap="round"/>';
+  h+='<polyline points="'+arcPts(LA.cx,LA.cy,LA.a0,LA.a1,RO,3)+'" fill="none" stroke="#E9A5AA" stroke-width="2.2" stroke-linecap="round"/>';
+  // highlight regions (outer=buccal, mid=occlusal, inner=lingual)
+  h+='<polygon class="hi" id="hiUO" data-idx="0" points="'+bandPoly(UA,B2,RO)+'"/>';
+  h+='<polygon class="hi" id="hiUI" data-idx="1" points="'+bandPoly(UA,RI,B1)+'"/>';
+  h+='<polygon class="hi" id="hiUC" data-idx="2" points="'+bandPoly(UA,B1,B2)+'"/>';
+  h+='<polygon class="hi" id="hiLO" data-idx="3" points="'+bandPoly(LA,B2,RO)+'"/>';
+  h+='<polygon class="hi" id="hiLI" data-idx="4" points="'+bandPoly(LA,RI,B1)+'"/>';
+  h+='<polygon class="hi" id="hiLC" data-idx="5" points="'+bandPoly(LA,B1,B2)+'"/>';
+  document.getElementById('mouthLayer').innerHTML=h;
+}
 
-  rec.addEventListener('click', async function(){
-    if(!stream){ await startCamera(); if(!stream) return; }
-    if(!recording){ startRec(); } else { stopRec(); }
+/* ---------------- region data ---------------- */
+var REGIONS=[
+  {name:'윗니 바깥쪽', chip:'윗니 바깥',  tip:'칫솔을 잇몸 경계에 45도로 대고, 작게 진동하듯 흔들며 쓸어내리세요.', brush:{x:150,y:59,r:-28},  hi:'hiUO'},
+  {name:'윗니 안쪽',   chip:'윗니 안쪽',  tip:'안쪽 면도 45도로. 앞니 안쪽은 칫솔을 세로로 세워서 쓸어내리세요.',   brush:{x:150,y:88,r:156},  hi:'hiUI'},
+  {name:'윗니 씹는 면',chip:'윗니 씹는면',tip:'씹는 면은 앞뒤로 가볍게 문질러 주세요.',                               brush:{x:150,y:72,r:-6},   hi:'hiUC'},
+  {name:'아랫니 바깥쪽',chip:'아랫니 바깥',tip:'아랫니 바깥쪽을 잇몸에서 위로 쓸어 올리듯 닦으세요.',                  brush:{x:150,y:238,r:208}, hi:'hiLO'},
+  {name:'아랫니 안쪽', chip:'아랫니 안쪽',tip:'아랫니 안쪽, 앞니 안쪽은 칫솔을 세워서.',                            brush:{x:150,y:212,r:28},  hi:'hiLI'},
+  {name:'아랫니 씹는 면',chip:'아랫니 씹는면',tip:'씹는 면을 앞뒤로 문질러 마무리하세요.',                           brush:{x:150,y:228,r:186}, hi:'hiLC'}
+];
+var REGION_SECONDS=30, TOTAL=180;
+
+/* ---------------- state ---------------- */
+var elapsed=0, running=false, completed=false, lastTs=0;
+var cur={x:150,y:59,r:-28}, tgt={x:150,y:59,r:-28};
+var brushPos=document.getElementById('brushPos');
+var subRing=document.getElementById('subRing');
+var RING_C=2*Math.PI*37;
+
+/* ---------------- chips ---------------- */
+(function(){
+  var c=document.getElementById('chips'), html='';
+  REGIONS.forEach(function(rg,i){
+    html+='<button class="chip" data-idx="'+i+'"><span class="n">'+(i+1)+'</span>'+rg.chip+'</button>';
   });
-
-  function startRec(){
-    chunks=[];
-    var mime=pickMime();
-    try{ mr = mime ? new MediaRecorder(stream,{mimeType:mime}) : new MediaRecorder(stream); }
-    catch(e){ alert('이 브라우저는 녹화를 지원하지 않습니다.'); return; }
-    mr.ondataavailable=function(ev){ if(ev.data&&ev.data.size>0) chunks.push(ev.data); };
-    mr.onstop=function(){
-      lastBlob=new Blob(chunks,{type:(mr.mimeType||'video/webm')});
-      if(lastUrl) URL.revokeObjectURL(lastUrl);
-      lastUrl=URL.createObjectURL(lastBlob);
-      openSheet();
-    };
-    mr.start();
-    recording=true; rec.classList.add('recording');
-    recdot.style.display='flex'; t0=Date.now();
-    timerEl.textContent='0:00';
-    tick=setInterval(function(){ lastDur=Math.floor((Date.now()-t0)/1000); timerEl.textContent=fmt(lastDur); },250);
-  }
-
-  function stopRec(){
-    if(mr&&mr.state!=='inactive') mr.stop();
-    recording=false; rec.classList.remove('recording');
-    recdot.style.display='none'; clearInterval(tick);
-    lastDur=Math.floor((Date.now()-t0)/1000);
-  }
-
-  function openSheet(){
-    askView.style.display='block'; doneView.style.display='none';
-    askdur.textContent='촬영 길이 '+fmt(lastDur);
-    preview.src=lastUrl;
-    scrim.classList.add('show');
-  }
-  function closeSheet(){ scrim.classList.remove('show'); try{preview.pause();}catch(e){} }
-
-  save.addEventListener('click', async function(){
-    if(!lastBlob) return;
-    var ext = (lastBlob.type.indexOf('mp4')>=0)?'mp4':'webm';
-    var d=new Date(), p=function(n){return (n<10?'0':'')+n;};
-    var name='chikachika_'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+'.'+ext;
-    var ok=false;
-    if(dlCap&&dlCap.save){
-      try{ await dlCap.save({filename:name, data:lastBlob}); ok=true; }
-      catch(e){ ok=false; }
-    }
-    if(!ok){
-      try{ var a=document.createElement('a'); a.href=lastUrl; a.download=name;
-           document.body.appendChild(a); a.click(); a.remove(); ok=true; }catch(e){ ok=false; }
-    }
-    if(!ok){ return; }
-    donemsg.innerHTML='<b>'+name+'</b><br>본인 기기에 저장되었습니다. 서버 전송·외부 공유는 없습니다.';
-    askView.style.display='none'; doneView.style.display='block';
+  c.innerHTML=html;
+  c.addEventListener('click',function(e){
+    var b=e.target.closest('.chip'); if(!b) return; jumpTo(+b.getAttribute('data-idx'));
   });
+})();
 
-  del.addEventListener('click', function(){
-    if(lastUrl) URL.revokeObjectURL(lastUrl);
-    lastBlob=null; lastUrl=null; chunks=[];
-    closeSheet();
-  });
-  closeDone.addEventListener('click', closeSheet);
+/* ---------------- interactions ---------------- */
+document.getElementById('mouthLayer').addEventListener('click',function(e){
+  var el=e.target.closest('.hi'); if(!el) return; jumpTo(+el.getAttribute('data-idx'));
+});
 
-  /* ---- 양치 순서 가이드 애니메이션 (자체 구동, 항상 재생) ---- */
-  var brush=document.getElementById('brush'), gstep=document.getElementById('gstep'),
-      chips=document.querySelectorAll('#gsteps .gchip');
-  var STEPS=[
-    {label:'① 윗니 바깥쪽', x:50, y:33},
-    {label:'② 아랫니 바깥쪽', x:50, y:66},
-    {label:'③ 씹는 면', x:36, y:50},
-    {label:'④ 안쪽 면', x:64, y:50},
-    {label:'⑤ 혀 닦기', x:50, y:72}
-  ];
-  var si=0;
-  function showStep(i){
-    var s=STEPS[i];
-    gstep.textContent=s.label;
-    brush.style.left=s.x+'%'; brush.style.top=s.y+'%';
-    for(var k=0;k<chips.length;k++){
-      chips[k].classList.remove('active','done');
-      if(k<i) chips[k].classList.add('done');
-      else if(k===i) chips[k].classList.add('active');
-    }
+function jumpTo(i){
+  i=Math.max(0,Math.min(5,i));
+  completed=false;
+  elapsed=i*REGION_SECONDS;        // resets this step's sub-timer
+  document.getElementById('instruct').classList.remove('done');
+  setRegion(i);
+  render();
+}
+
+function curIndex(){
+  if(elapsed>=TOTAL) return 5;
+  return Math.max(0,Math.min(5,Math.floor(elapsed/REGION_SECONDS)));
+}
+
+var activeIdx=-1;
+function setRegion(i){
+  if(i===activeIdx) return;
+  activeIdx=i;
+  var rg=REGIONS[i];
+  // chips
+  var chips=document.querySelectorAll('.chip');
+  chips.forEach(function(c,ci){c.classList.toggle('active',ci===i);});
+  // highlight
+  document.querySelectorAll('.hi').forEach(function(h){h.classList.remove('active');});
+  document.getElementById(rg.hi).classList.add('active');
+  // text
+  document.getElementById('stepNo').textContent=(i+1)+' / 6 단계';
+  document.getElementById('stepName').textContent=rg.name;
+  if(!completed) document.getElementById('instructText').textContent=rg.tip;
+  // brush target (shortest-angle rotation)
+  tgt={x:rg.brush.x,y:rg.brush.y,r:rg.brush.r};
+  while(tgt.r-cur.r>180) tgt.r-=360;
+  while(tgt.r-cur.r<-180) tgt.r+=360;
+}
+
+function applyBrush(){
+  brushPos.setAttribute('transform','translate('+cur.x.toFixed(2)+' '+cur.y.toFixed(2)+') rotate('+cur.r.toFixed(2)+')');
+}
+
+/* ---------------- render ---------------- */
+function fmt(s){s=Math.max(0,Math.ceil(s)); var m=Math.floor(s/60); var ss=s%60; return m+':'+(ss<10?'0':'')+ss;}
+
+function render(){
+  var i=curIndex();
+  setRegion(i);
+  var remain=Math.max(0,TOTAL-elapsed);
+  document.getElementById('bigTime').textContent=completed?'0:00':fmt(remain);
+  // total bar
+  var tp=Math.min(100,elapsed/TOTAL*100);
+  document.getElementById('totBar').style.width=tp.toFixed(1)+'%';
+  document.getElementById('totLabel').textContent='전체 진행 '+Math.round(tp)+'%';
+  // sub ring
+  var sub=completed?REGION_SECONDS:(elapsed-i*REGION_SECONDS);
+  var frac=Math.max(0,Math.min(1,sub/REGION_SECONDS));
+  subRing.setAttribute('stroke-dashoffset',(RING_C*(1-frac)).toFixed(2));
+  // play button label
+  document.getElementById('btnPlay').textContent=completed?'다시 하기':(running?'일시정지':(elapsed>0?'계속하기':'시작'));
+}
+
+function finish(){
+  completed=true; running=false; elapsed=TOTAL;
+  var ins=document.getElementById('instruct');
+  ins.classList.add('done');
+  document.getElementById('instructText').textContent='🎉 다 닦았어요! 잘했어요 👏';
+  render();
+}
+
+/* ---------------- loop ---------------- */
+function tick(ts){
+  if(lastTs===0) lastTs=ts;
+  var dt=(ts-lastTs)/1000; lastTs=ts;
+  if(dt>0.25) dt=0.25;
+  if(running && !completed){
+    elapsed+=dt;
+    if(elapsed>=TOTAL){ finish(); }
+    else render();
   }
-  showStep(0);
-  setInterval(function(){ si=(si+1)%STEPS.length; showStep(si); }, 2600);
+  // ease brush toward target
+  var k=0.16;
+  cur.x+=(tgt.x-cur.x)*k;
+  cur.y+=(tgt.y-cur.y)*k;
+  cur.r+=(tgt.r-cur.r)*k;
+  applyBrush();
+  requestAnimationFrame(tick);
+}
 
-  // never any network call — fully on-device. (no fetch/XHR/websocket used)
+/* ---------------- controls ---------------- */
+document.getElementById('btnPlay').addEventListener('click',function(){
+  if(completed){ resetAll(); return; }
+  running=!running;
+  if(running) lastTs=0;
+  render();
+});
+document.getElementById('btnReset').addEventListener('click',resetAll);
+function resetAll(){
+  running=false; completed=false; elapsed=0; lastTs=0;
+  document.getElementById('instruct').classList.remove('done');
+  setRegion(0);
+  render();
+}
+
+/* ---------------- camera (mirror) ---------------- */
+var camStream=null;
+document.getElementById('btnCam').addEventListener('click',function(){
+  var cam=document.getElementById('cam'), btn=this;
+  if(camStream){ stopCam(); cam.classList.remove('show'); btn.classList.remove('on'); btn.textContent='거울 보기'; return; }
+  cam.classList.add('show'); btn.classList.add('on'); btn.textContent='거울 끄기';
+  var msg=document.getElementById('camMsg'), box=document.getElementById('cambox'), video=document.getElementById('video');
+  msg.textContent='카메라를 준비하고 있어요...';
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    msg.textContent='이 기기에서는 카메라를 쓸 수 없어요. 괜찮아요, 거울 앞에서 함께 닦아도 좋아요!';
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(st){
+    camStream=st; video.srcObject=st; box.classList.add('live');
+    var play=video.play(); if(play&&play.catch) play.catch(function(){});
+  }).catch(function(){
+    box.classList.remove('live');
+    msg.textContent='카메라를 켤 수 없어요. 허용되지 않았거나 사용 중일 수 있어요. 거울 앞에서 함께 닦아도 좋아요!';
+  });
+});
+function stopCam(){
+  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+  var box=document.getElementById('cambox'); box.classList.remove('live');
+  document.getElementById('camMsg').textContent='버튼을 누르면 앞 카메라로 내 입을 비춰 볼 수 있어요.';
+}
+
+/* ---------------- tabs ---------------- */
+document.querySelector('.tabs').addEventListener('click',function(e){
+  var t=e.target.closest('.tab'); if(!t) return;
+  var mode=t.getAttribute('data-mode');
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('active',x===t);});
+  document.querySelectorAll('.mode').forEach(function(m){m.classList.remove('active');});
+  document.getElementById('mode-'+mode).classList.add('active');
+  if(mode!=='brush'){ running=false; stopCam();
+    document.getElementById('cam').classList.remove('show');
+    document.getElementById('btnCam').classList.remove('on');
+    document.getElementById('btnCam').textContent='거울 보기';
+    render();
+  }
+});
+
+/* ---------------- init ---------------- */
+buildMouth();
+setRegion(0);
+cur={x:REGIONS[0].brush.x,y:REGIONS[0].brush.y,r:REGIONS[0].brush.r};
+applyBrush();
+render();
+requestAnimationFrame(tick);
 })();
 </script>
 </body>
