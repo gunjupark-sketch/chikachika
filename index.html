@@ -4,17 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#18B9A6">
-<title>치카치카 · 양치 선생님</title>
+<title>루덴스 양치 인증 · 시연용 모의 프로토타입</title>
 <style>
 :root{
   --mint:#18B9A6; --mint-d:#0E8C7E; --mint-l:#5FE3D1;
   --ink:#10322E; --ink-soft:#5B7470; --paper:#F2FBF9;
-  --card:#FFFFFF; --line:#D8EEEA; --danger:#E4573C;
+  --card:#FFFFFF; --line:#D8EEEA; --danger:#E4573C; --warn:#E8923B;
+  --gold:#F2B705; --pt:#0E8C7E;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0; height:100%;}
 body{
-  background:#DCEFEC;
+  background:#CFE7E2;
   font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
   color:var(--ink);
   -webkit-font-smoothing:antialiased;
@@ -22,96 +23,123 @@ body{
 #app{
   max-width:440px; margin:0 auto; height:100dvh;
   display:flex; flex-direction:column;
-  background:
-    radial-gradient(130% 70% at 50% -10%, #ffffff 0%, var(--paper) 46%, #E9F7F4 100%);
+  background:radial-gradient(130% 70% at 50% -10%, #ffffff 0%, var(--paper) 46%, #E9F7F4 100%);
   position:relative; overflow:hidden;
 }
 /* ---------- header ---------- */
-header{
-  padding:12px 16px 8px; display:flex; align-items:center; gap:10px; flex:0 0 auto;
+#appHeader{
+  padding:11px 14px 9px; display:flex; align-items:center; gap:10px; flex:0 0 auto;
+  border-bottom:1px solid var(--line); background:rgba(242,251,249,.86); backdrop-filter:blur(4px); z-index:5;
 }
 .logo{
-  width:38px; height:38px; border-radius:12px; flex:0 0 auto;
+  width:36px; height:36px; border-radius:11px; flex:0 0 auto;
   background:linear-gradient(145deg,var(--mint-l),var(--mint));
   box-shadow:0 5px 12px rgba(24,185,166,.33);
   display:flex; align-items:center; justify-content:center;
 }
-.brand{line-height:1.1;}
-.brand h1{font-size:20px; margin:0; font-weight:800; letter-spacing:-.5px; color:var(--ink);}
+.hbtn-back{
+  width:34px; height:34px; border-radius:11px; flex:0 0 auto; border:1px solid var(--line);
+  background:var(--card); display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.hbtn-back svg{width:18px;height:18px;}
+.brand{line-height:1.12; min-width:0;}
+.brand h1{font-size:18px; margin:0; font-weight:800; letter-spacing:-.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .brand h1 b{color:var(--mint-d);}
-.brand .tag{font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
-.order-hint{
-  margin-left:auto; font-size:10.5px; font-weight:700; color:var(--mint-d);
-  background:#E4F7F3; border:1px solid var(--line); padding:5px 9px; border-radius:20px; white-space:nowrap;
+.brand .tag{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
+.draft-badge{
+  margin-left:auto; font-size:10px; font-weight:800; color:#9A5B12;
+  background:#FFF3DF; border:1px solid #F3D8A6; padding:5px 9px; border-radius:20px; white-space:nowrap;
 }
-/* ---------- tabs ---------- */
-.tabs{
-  flex:0 0 auto; display:flex; gap:6px; margin:4px 14px 0;
-  background:#E3F4F0; padding:5px; border-radius:16px; border:1px solid var(--line);
-}
-.tab{
-  flex:1; border:0; background:transparent; font-family:inherit;
-  font-size:13.5px; font-weight:700; color:var(--ink-soft); white-space:nowrap;
-  padding:9px 0; border-radius:12px; cursor:pointer; transition:.22s; touch-action:manipulation;
-}
-.tab.active{background:var(--card); color:var(--mint-d); box-shadow:0 3px 9px rgba(16,50,46,.1);}
-/* ---------- content ---------- */
-.content{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px 4px;}
-.mode{display:none; animation:fade .3s ease;}
-.mode.active{display:block;}
+/* ---------- screens ---------- */
+#screens{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; position:relative;}
+.screen{display:none; padding:14px 14px 20px; animation:fade .28s ease;}
+.screen.active{display:block;}
 @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
 .card{
   background:var(--card); border:1px solid var(--line); border-radius:18px;
   box-shadow:0 6px 18px rgba(16,50,46,.06); padding:14px; margin-bottom:12px;
 }
-/* ---------- brushing: timer ---------- */
-.timerwrap{display:flex; align-items:center; gap:14px; padding:12px 14px;}
-.ring{position:relative; width:84px; height:84px; flex:0 0 auto;}
-.ring svg{transform:rotate(-90deg);}
-.ring .rtxt{
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; line-height:1;
+.sectitle{font-size:15px; font-weight:800; letter-spacing:-.4px; margin:0 2px 8px;}
+.muted{color:var(--ink-soft);}
+.lead{font-size:13.5px; line-height:1.55; font-weight:600; color:var(--ink); margin:2px 2px 0;}
+/* ---------- buttons ---------- */
+.btn{
+  border:0; font-family:inherit; font-weight:800; font-size:14.5px;
+  padding:13px 10px; border-radius:14px; cursor:pointer; transition:.18s; touch-action:manipulation; width:100%;
 }
-.ring .rtxt b{font-size:21px; font-weight:800; letter-spacing:-.5px; font-variant-numeric:tabular-nums;}
-.ring .rtxt span{font-size:9.5px; color:var(--ink-soft); font-weight:700; margin-top:3px;}
-.tinfo{flex:1 1 auto; min-width:0;}
-.tinfo .step{font-size:12px; font-weight:700; color:var(--mint-d);}
-.tinfo .stepname{font-size:17px; font-weight:800; letter-spacing:-.4px; margin:2px 0 8px;}
-.bar{height:8px; background:#E6F4F1; border-radius:6px; overflow:hidden;}
-.bar>i{display:block; height:100%; width:0%; border-radius:6px;
-  background:linear-gradient(90deg,var(--mint),var(--mint-l)); transition:width .25s linear;}
-.bar .lbl{}
-.totlabel{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:5px;}
-/* ---------- mouth svg ---------- */
-.stage{position:relative; padding:4px 6px 2px; display:flex; justify-content:center;}
-#mouthSvg{width:100%; max-width:324px; height:auto; display:block; touch-action:manipulation;}
-.hi{fill:#C3F6EC; opacity:0; pointer-events:none; transition:opacity .35s ease, filter .35s ease;}
-.hi.active{opacity:.2; filter:drop-shadow(0 0 5px rgba(24,185,166,.8)) drop-shadow(0 0 10px rgba(24,185,166,.4));}
-.hit{fill:transparent; pointer-events:all; cursor:pointer;}
-/* brush animation groups  (left-right sweep is CSS; the gum->tip roll is JS-driven) */
-#brushSweep{animation:sweep 2.6s ease-in-out infinite;}
-.foam{animation:foam 1.3s ease-in-out infinite;}
-@keyframes sweep{0%,100%{transform:translateX(-13px);} 50%{transform:translateX(13px);}}
-@keyframes foam{0%,100%{opacity:.25; transform:translateY(0);} 50%{opacity:.85; transform:translateY(-3px);}}
-/* ---------- chips ---------- */
-.chips{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:4px;}
-.chip{
-  border:1.5px solid var(--line); background:var(--card); font-family:inherit;
-  font-size:12.5px; font-weight:700; color:var(--ink-soft);
-  padding:9px 2px; border-radius:12px; cursor:pointer; transition:.2s; touch-action:manipulation;
+.btn.primary{background:var(--mint); color:#fff; box-shadow:0 6px 14px rgba(24,185,166,.34);}
+.btn.primary:active{transform:translateY(1px);}
+.btn.ghost{background:#EAF4F2; color:var(--ink-soft);}
+.btn.warn{background:var(--warn); color:#fff; box-shadow:0 6px 14px rgba(232,146,59,.3);}
+.btn.sm{font-size:13px; padding:10px 12px; width:auto;}
+.btn:disabled{opacity:.5; cursor:default;}
+.btnrow{display:flex; gap:8px; margin-top:4px;}
+.pill{display:inline-block; font-size:10.5px; font-weight:800; padding:4px 9px; border-radius:20px; background:#E4F7F3; color:var(--mint-d); border:1px solid var(--line);}
+.pill.kid{background:#FFF0E0; color:#B5631A; border-color:#F3D8A6;}
+.pill.adult{background:#E7EEFF; color:#3A5BB0; border-color:#CBD8F5;}
+/* ---------- onboarding ---------- */
+.ob-hero{text-align:center; padding:12px 6px 4px;}
+.ob-hero .big{font-size:22px; font-weight:800; letter-spacing:-.6px; margin:10px 0 6px;}
+.ob-hero p{font-size:13.5px; color:var(--ink-soft); line-height:1.55; font-weight:600; margin:0;}
+.ob-emoji{font-size:46px;}
+.field{margin-bottom:14px;}
+.field > label{display:block; font-size:13px; font-weight:800; margin:0 2px 8px; color:var(--ink);}
+.opts{display:flex; gap:8px; flex-wrap:wrap;}
+.opt{
+  flex:1 1 0; min-width:62px; text-align:center; border:1.6px solid var(--line); background:var(--card);
+  font-family:inherit; font-size:13.5px; font-weight:700; color:var(--ink-soft);
+  padding:12px 4px; border-radius:13px; cursor:pointer; transition:.18s;
 }
-.chip .n{display:block; font-size:9.5px; color:var(--mint); font-weight:800; margin-bottom:1px;}
-.chip.active{background:var(--mint); border-color:var(--mint); color:#fff; box-shadow:0 5px 12px rgba(24,185,166,.33);}
-.chip.active .n{color:#CFF6EF;}
-/* ---------- method intro ---------- */
+.opt.active{background:var(--mint); border-color:var(--mint); color:#fff; box-shadow:0 5px 12px rgba(24,185,166,.3);}
+.opt .sub{display:block; font-size:10px; font-weight:700; margin-top:3px; opacity:.85;}
+.consent{
+  display:flex; gap:10px; align-items:flex-start; background:#FFF8EE; border:1px solid #F3D8A6;
+  border-radius:14px; padding:12px 13px; margin-bottom:14px;
+}
+.consent input{width:20px; height:20px; margin-top:1px; accent-color:var(--mint); flex:0 0 auto;}
+.consent p{margin:0; font-size:12px; line-height:1.5; font-weight:600; color:#8A5A1C;}
+.consent.hide{display:none;}
+/* ---------- home ---------- */
+.greet{font-size:16px; font-weight:800; margin:2px 2px 12px; letter-spacing:-.3px;}
+.greet b{color:var(--mint-d);}
+.today-card{text-align:center; padding:16px 14px;}
+.today-card .t-ttl{font-size:13px; font-weight:800; color:var(--mint-d); margin-bottom:12px;}
+.dots{display:flex; gap:14px; justify-content:center; margin-bottom:12px;}
+.dot3{width:54px; height:54px; position:relative;}
+.dot3 .lab{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--ink-soft);}
+.dot3.on .lab{color:var(--mint-d);}
+.today-sub{font-size:12.5px; color:var(--ink-soft); font-weight:600; line-height:1.5;}
+.today-sub b{color:var(--mint-d);}
+.stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:12px;}
+.stat{background:var(--card); border:1px solid var(--line); border-radius:15px; padding:12px 8px; text-align:center; box-shadow:0 5px 14px rgba(16,50,46,.05);}
+.stat .v{font-size:20px; font-weight:800; letter-spacing:-.5px; color:var(--mint-d); font-variant-numeric:tabular-nums;}
+.stat .v small{font-size:12px; font-weight:800;}
+.stat .k{font-size:10.8px; font-weight:700; color:var(--ink-soft); margin-top:3px;}
+.menu-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.menu-grid.five .m-item:first-child{grid-column:span 2;}
+.m-item{
+  display:flex; gap:11px; align-items:center; background:var(--card); border:1px solid var(--line);
+  border-radius:15px; padding:13px 12px; cursor:pointer; transition:.16s; text-align:left; box-shadow:0 4px 12px rgba(16,50,46,.05);
+}
+.m-item:active{transform:translateY(1px);}
+.m-badge{width:34px; height:34px; border-radius:11px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:800; color:#fff; background:linear-gradient(145deg,var(--mint-l),var(--mint));}
+.m-item .mt{min-width:0;}
+.m-item .mt b{font-size:13.5px; font-weight:800; display:block; letter-spacing:-.3px;}
+.m-item .mt span{font-size:11px; color:var(--ink-soft); font-weight:600;}
+.quick{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:12px;}
+.q-item{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 6px; text-align:center; cursor:pointer; box-shadow:0 4px 12px rgba(16,50,46,.05);}
+.q-item .qi{font-size:20px;}
+.q-item .qt{font-size:11px; font-weight:800; margin-top:4px;}
+.q-item .qs{font-size:10px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
+/* ---------- brushing guide (reused) ---------- */
+.g-head{display:flex; align-items:center; gap:8px; margin:0 2px 10px;}
+.g-head .gt{font-size:15px; font-weight:800;}
 .methodnote{
   background:#E4F7F3; border:1px solid var(--line); color:var(--mint-d);
-  font-size:12px; font-weight:700; line-height:1.45;
-  padding:9px 12px; border-radius:13px; margin-bottom:11px;
+  font-size:12px; font-weight:700; line-height:1.45; padding:9px 12px; border-radius:13px; margin-bottom:11px;
 }
-.methodnote b{background:var(--mint); color:#fff; font-weight:800; font-size:11px;
-  padding:2px 8px; border-radius:20px; margin-right:6px; white-space:nowrap;}
-/* ---------- toothpaste amount card ---------- */
+.methodnote b{background:var(--mint); color:#fff; font-weight:800; font-size:11px; padding:2px 8px; border-radius:20px; margin-right:6px; white-space:nowrap;}
 .pastecard{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:11px 13px; margin-bottom:11px;}
 .pastehead{font-size:13px; font-weight:800; color:var(--mint-d); margin-bottom:7px; display:flex; align-items:center; gap:7px;}
 .pastehead .phdot{width:7px; height:7px; border-radius:50%; background:var(--mint); flex:0 0 auto;}
@@ -120,401 +148,339 @@ header{
 .pastetxt{flex:1; min-width:0;}
 .amt{font-size:12.5px; color:var(--ink); font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:7px;}
 .amt b{color:var(--mint-d); font-weight:800;}
-.amt .dot{border-radius:50%; background:#5FD6C6; flex:0 0 auto;}
-.amt .dot.rice{width:5px; height:5px;}
-.amt .dot.pea{width:9px; height:9px;}
+.amt .pdot{border-radius:50%; background:#5FD6C6; flex:0 0 auto;}
+.amt .pdot.rice{width:5px; height:5px;}
+.amt .pdot.pea{width:9px; height:9px;}
 .pastetxt .note{font-size:10.8px; color:var(--ink-soft); line-height:1.5; margin-top:5px; font-weight:500;}
-/* ---------- instruction ---------- */
-.instruct{
-  display:flex; gap:10px; align-items:flex-start;
-  background:#EAF8F5; border:1px solid var(--line); border-radius:14px; padding:12px 13px;
-}
-.instruct .ic{width:26px; height:26px; flex:0 0 auto; border-radius:9px; background:var(--mint);
-  display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:800;}
+.timerwrap{display:flex; align-items:center; gap:14px; padding:12px 14px;}
+.ring{position:relative; width:84px; height:84px; flex:0 0 auto;}
+.ring svg{transform:rotate(-90deg);}
+.ring .rtxt{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1;}
+.ring .rtxt b{font-size:21px; font-weight:800; letter-spacing:-.5px; font-variant-numeric:tabular-nums;}
+.ring .rtxt span{font-size:9.5px; color:var(--ink-soft); font-weight:700; margin-top:3px;}
+.tinfo{flex:1 1 auto; min-width:0;}
+.tinfo .step{font-size:12px; font-weight:700; color:var(--mint-d);}
+.tinfo .stepname{font-size:17px; font-weight:800; letter-spacing:-.4px; margin:2px 0 8px;}
+.bar{height:8px; background:#E6F4F1; border-radius:6px; overflow:hidden;}
+.bar>i{display:block; height:100%; width:0%; border-radius:6px; background:linear-gradient(90deg,var(--mint),var(--mint-l)); transition:width .25s linear;}
+.totlabel{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:5px;}
+.stage{position:relative; padding:4px 6px 2px; display:flex; justify-content:center;}
+.mouthSvg{width:100%; max-width:324px; height:auto; display:block; touch-action:manipulation;}
+.hi{fill:#C3F6EC; opacity:0; pointer-events:none; transition:opacity .35s ease, filter .35s ease;}
+.hi.active{opacity:.2; filter:drop-shadow(0 0 5px rgba(24,185,166,.8)) drop-shadow(0 0 10px rgba(24,185,166,.4));}
+.hit{fill:transparent; pointer-events:all; cursor:pointer;}
+.brushSweep{animation:sweep 2.6s ease-in-out infinite;}
+.foam{animation:foam 1.3s ease-in-out infinite;}
+@keyframes sweep{0%,100%{transform:translateX(-13px);} 50%{transform:translateX(13px);}}
+@keyframes foam{0%,100%{opacity:.25; transform:translateY(0);} 50%{opacity:.85; transform:translateY(-3px);}}
+.chips{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:4px;}
+.chip{border:1.5px solid var(--line); background:var(--card); font-family:inherit; font-size:12.5px; font-weight:700; color:var(--ink-soft);
+  padding:9px 2px; border-radius:12px; cursor:pointer; transition:.2s; touch-action:manipulation;}
+.chip .n{display:block; font-size:9.5px; color:var(--mint); font-weight:800; margin-bottom:1px;}
+.chip.active{background:var(--mint); border-color:var(--mint); color:#fff; box-shadow:0 5px 12px rgba(24,185,166,.33);}
+.chip.active .n{color:#CFF6EF;}
+.instruct{display:flex; gap:10px; align-items:flex-start; background:#EAF8F5; border:1px solid var(--line); border-radius:14px; padding:12px 13px; margin-top:12px;}
+.instruct .ic{width:26px; height:26px; flex:0 0 auto; border-radius:9px; background:var(--mint); display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:800;}
 .instruct p{margin:0; font-size:13.5px; line-height:1.5; font-weight:600; color:var(--ink);}
 .instruct.done{background:#E4F9EE; border-color:#B9ECCF;}
 .instruct.done p{font-size:15px; font-weight:800; color:#17864E;}
-/* ---------- controls ---------- */
-.controls{display:flex; gap:8px; margin-top:12px;}
-.btn{
-  flex:1; border:0; font-family:inherit; font-weight:800; font-size:14.5px;
-  padding:13px 6px; border-radius:14px; cursor:pointer; transition:.18s; touch-action:manipulation;
-}
-.btn.primary{background:var(--mint); color:#fff; box-shadow:0 6px 14px rgba(24,185,166,.34);}
-.btn.primary:active{transform:translateY(1px);}
-.btn.ghost{flex:0 0 auto; background:#EAF4F2; color:var(--ink-soft); padding:13px 16px;}
-.btn.ghost.on{background:var(--mint-d); color:#fff;}
-/* ---------- camera ---------- */
+.g-controls{display:flex; gap:8px; margin-top:12px;}
+.g-controls .btn{padding:12px 6px;}
+.g-controls .btn.ghost.on{background:var(--mint-d); color:#fff;}
 .cam{margin-top:12px; display:none;}
 .cam.show{display:block;}
-.cambox{
-  position:relative; width:100%; aspect-ratio:16/10; border-radius:16px; overflow:hidden;
-  background:#0E2B27; border:1px solid var(--line);
-  display:flex; align-items:center; justify-content:center;
-}
-.cambox video{width:100%; height:100%; object-fit:cover; transform:scaleX(-1.9) scaleY(1.9); display:none;}
+.cambox{position:relative; width:100%; aspect-ratio:16/10; border-radius:16px; overflow:hidden; background:#0E2B27; border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;}
+.cambox video{width:100%; height:100%; object-fit:cover; transform:scaleX(-1); display:none;}
 .cambox.live video{display:block;}
 .cammsg{color:#CDEFEA; font-size:12.5px; text-align:center; padding:0 22px; line-height:1.55; font-weight:600;}
-.camtag{position:absolute; top:9px; left:10px; background:rgba(14,43,39,.72); color:#fff;
-  font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:20px;}
-/* ---------- floss / tongue ---------- */
+.cambox.live .cammsg{display:none;}
+.camtag{position:absolute; top:9px; left:10px; background:rgba(14,43,39,.72); color:#fff; font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:20px;}
+.camscan{position:absolute; inset:0; pointer-events:none; display:none;}
+.cambox.scanning .camscan{display:block;}
+.camscan .frame{position:absolute; left:16%; right:16%; top:18%; bottom:18%; border:2px dashed rgba(95,227,209,.85); border-radius:16px;}
+.camscan .line{position:absolute; left:16%; right:16%; height:2px; background:linear-gradient(90deg,transparent,#5FE3D1,transparent); animation:scan 1.5s linear infinite;}
+@keyframes scan{0%{top:20%;}50%{top:78%;}100%{top:20%;}}
+/* ---------- verify mock panel ---------- */
+.mock-note{background:#FFF3DF; border:1px solid #F3D8A6; color:#9A5B12; font-size:11.5px; font-weight:700; line-height:1.5; padding:9px 12px; border-radius:13px; margin-bottom:11px;}
+.sig{display:flex; align-items:center; gap:11px; padding:11px 0; border-top:1px dashed var(--line);}
+.sig:first-of-type{border-top:0;}
+.sig .sgi{width:30px; height:30px; flex:0 0 auto; border-radius:10px; background:#EAF4F2; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; transition:.2s;}
+.sig.run .sgi{background:#E4F7F3; color:var(--mint-d);}
+.sig.ok .sgi{background:var(--mint); color:#fff;}
+.sig .sgb{flex:1; min-width:0;}
+.sig .sgt{font-size:13px; font-weight:800; display:flex; justify-content:space-between; gap:8px;}
+.sig .sgt .st{font-size:11px; font-weight:800; color:var(--ink-soft);}
+.sig.run .sgt .st{color:var(--mint-d);}
+.sig.ok .sgt .st{color:#17864E;}
+.sig .sgbar{height:6px; background:#E6F4F1; border-radius:5px; overflow:hidden; margin-top:6px;}
+.sig .sgbar>i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--mint),var(--mint-l)); border-radius:5px;}
+.sig .sgsub{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:3px;}
+/* ---------- shop ---------- */
+.pt-top{display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg,var(--mint),var(--mint-d)); color:#fff; border-radius:18px; padding:15px 17px; margin-bottom:13px; box-shadow:0 8px 20px rgba(14,140,126,.3);}
+.pt-top .l .k{font-size:11.5px; font-weight:700; opacity:.9;}
+.pt-top .l .v{font-size:27px; font-weight:800; letter-spacing:-.5px; margin-top:2px;}
+.pt-top .l .v small{font-size:14px;}
+.pt-top .coin{width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; font-size:24px;}
+.shop-grid{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+.prod{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px; box-shadow:0 5px 14px rgba(16,50,46,.05); display:flex; flex-direction:column;}
+.prod .pic{height:76px; border-radius:12px; background:#EAF8F5; display:flex; align-items:center; justify-content:center; font-size:38px; margin-bottom:9px;}
+.prod .pn{font-size:13px; font-weight:800; letter-spacing:-.3px;}
+.prod .pd{font-size:10.5px; color:var(--ink-soft); font-weight:600; margin:2px 0 9px; line-height:1.4; flex:1;}
+.prod .pc{font-size:13.5px; font-weight:800; color:var(--mint-d); margin-bottom:9px;}
+.prod .pc small{font-size:11px;}
+.prod .btn{padding:10px 6px; font-size:13px;}
+/* ---------- calendar ---------- */
+.cal-head{display:flex; align-items:center; justify-content:space-between; margin:0 2px 10px;}
+.cal-head .m{font-size:16px; font-weight:800;}
+.streak-chip{font-size:12px; font-weight:800; color:#B5631A; background:#FFF0E0; border:1px solid #F3D8A6; padding:6px 11px; border-radius:20px;}
+.cal{display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
+.cal .wd{font-size:10.5px; font-weight:800; color:var(--ink-soft); text-align:center; padding:4px 0;}
+.cal .cell{aspect-ratio:1; border-radius:11px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--ink-soft); background:#F1F8F6; border:1px solid transparent; position:relative;}
+.cal .cell.empty{background:transparent;}
+.cal .cell.lv1{background:#CFF0E9; color:var(--mint-d);}
+.cal .cell.lv2{background:#7FE0D1; color:#07463F;}
+.cal .cell.lv3{background:var(--mint); color:#fff;}
+.cal .cell.today{border-color:var(--warn); box-shadow:0 0 0 2px rgba(232,146,59,.25);}
+.cal .cell .cc{font-size:8px; font-weight:800; margin-top:1px;}
+.cal-legend{display:flex; gap:12px; justify-content:center; margin-top:11px; font-size:10.5px; font-weight:700; color:var(--ink-soft);}
+.cal-legend span{display:flex; align-items:center; gap:5px;}
+.cal-legend i{width:12px; height:12px; border-radius:4px; display:inline-block;}
+.score-top{display:flex; align-items:center; gap:14px;}
+.score-ring{width:92px; height:92px; position:relative; flex:0 0 auto;}
+.score-ring .s-v{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.score-ring .s-v b{font-size:26px; font-weight:800; color:var(--mint-d); letter-spacing:-.5px;}
+.score-ring .s-v span{font-size:9px; font-weight:800; color:var(--ink-soft);}
+.score-side{flex:1;}
+.score-side .st{font-size:15px; font-weight:800;}
+.score-side .sd{font-size:11.5px; color:var(--ink-soft); font-weight:600; line-height:1.5; margin-top:3px;}
+.brk{margin-top:12px;}
+.brk .row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+.brk .row .bl{font-size:12px; font-weight:800; width:92px; flex:0 0 auto;}
+.brk .row .bbar{flex:1; height:8px; background:#E6F4F1; border-radius:5px; overflow:hidden;}
+.brk .row .bbar>i{display:block; height:100%; background:linear-gradient(90deg,var(--mint),var(--mint-l)); border-radius:5px;}
+.brk .row .bv{font-size:11.5px; font-weight:800; color:var(--mint-d); width:34px; text-align:right; flex:0 0 auto;}
+/* ---------- replace (brush) ---------- */
+.rep-top{text-align:center; padding:6px 0 2px;}
+.rep-ring{width:150px; height:150px; position:relative; margin:4px auto 8px;}
+.rep-ring .rv{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.rep-ring .rv b{font-size:34px; font-weight:800; letter-spacing:-1px;}
+.rep-ring .rv .d{font-size:12px; font-weight:800; color:var(--ink-soft); margin-top:2px;}
+.rep-ring .rv .rl{font-size:10.5px; font-weight:700; color:var(--ink-soft); margin-top:5px;}
+.rep-info{font-size:12.5px; font-weight:600; color:var(--ink-soft); line-height:1.6;}
+.rep-info b{color:var(--ink);}
+.rep-warn{background:#FDECE7; border:1px solid #F3C3B5; color:#B23A1E; font-size:12.5px; font-weight:800; padding:11px 13px; border-radius:13px; margin:11px 0; line-height:1.5;}
+.rep-ok{background:#E4F9EE; border:1px solid #B9ECCF; color:#17864E; font-size:12.5px; font-weight:800; padding:11px 13px; border-radius:13px; margin:11px 0; line-height:1.5;}
+/* ---------- content lists ---------- */
+.subtabs{display:flex; gap:6px; margin:0 0 12px; background:#E3F4F0; padding:5px; border-radius:16px; border:1px solid var(--line);}
+.subtab{flex:1; border:0; background:transparent; font-family:inherit; font-size:13px; font-weight:800; color:var(--ink-soft); padding:9px 0; border-radius:12px; cursor:pointer; transition:.2s;}
+.subtab.active{background:var(--card); color:var(--mint-d); box-shadow:0 3px 9px rgba(16,50,46,.1);}
+.subpane{display:none;} .subpane.active{display:block;}
 .ill{display:flex; justify-content:center; padding:4px 0 2px;}
 .ill svg{width:100%; max-width:300px; height:auto;}
-.lead{font-size:13.5px; line-height:1.55; font-weight:600; color:var(--ink); margin:2px 2px 0;}
 .steps{list-style:none; margin:12px 0 0; padding:0;}
 .steps li{display:flex; gap:11px; align-items:flex-start; padding:9px 0; border-top:1px dashed var(--line);}
 .steps li:first-child{border-top:0;}
-.steps .num{
-  width:25px; height:25px; flex:0 0 auto; border-radius:50%; background:var(--mint);
-  color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center;
-}
+.steps .num{width:25px; height:25px; flex:0 0 auto; border-radius:50%; background:var(--mint); color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center;}
 .steps p{margin:0; font-size:13.5px; line-height:1.48; font-weight:600;}
 .steps small{color:var(--ink-soft); font-weight:600;}
-.tipbox{margin-top:12px; background:#EAF8F5; border:1px solid var(--line); border-radius:14px;
-  padding:11px 13px; font-size:12.8px; line-height:1.5; font-weight:700; color:var(--mint-d);}
-.sectitle{font-size:15px; font-weight:800; letter-spacing:-.4px; margin:0 2px 8px;}
-@keyframes flossSaw{
-  0%{transform:translate(-2px,-7px);} 25%{transform:translate(2px,0);}
-  50%{transform:translate(-2px,7px);} 75%{transform:translate(2px,0);}
-  100%{transform:translate(-2px,-7px);}
-}
-#flossG{animation:flossSaw 1.5s ease-in-out infinite;}
-@keyframes scrape{
-  0%{transform:translateY(0); opacity:0;}
-  12%{opacity:1;}
-  80%{transform:translateY(70px); opacity:1;}
-  100%{transform:translateY(70px); opacity:0;}
-}
-#scraperG{animation:scrape 1.9s ease-in-out infinite;}
-@keyframes swish{0%,100%{transform:translateX(-13px);} 50%{transform:translateX(13px);}}
-#swishG{animation:swish 1.5s ease-in-out infinite;}
-@keyframes bob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);}}
-.bubbleUp{animation:foam 1.5s ease-in-out infinite;}
-/* ---------- footer ---------- */
-footer{
-  flex:0 0 auto; padding:7px 16px calc(8px + env(safe-area-inset-bottom));
-  font-size:9.3px; line-height:1.45; color:var(--ink-soft); text-align:center;
-  border-top:1px solid var(--line); background:rgba(242,251,249,.9);
-}
+.tipbox{margin-top:12px; background:#EAF8F5; border:1px solid var(--line); border-radius:14px; padding:11px 13px; font-size:12.8px; line-height:1.5; font-weight:700; color:var(--mint-d);}
+.fact{display:flex; gap:11px; align-items:flex-start; padding:11px 0; border-top:1px dashed var(--line);}
+.fact:first-of-type{border-top:0;}
+.fact .fn{width:24px; height:24px; flex:0 0 auto; border-radius:8px; background:var(--mint); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+.fact p{margin:0; font-size:13px; line-height:1.5; font-weight:600;}
+.info-card{display:flex; gap:12px; align-items:flex-start; margin-bottom:10px;}
+.info-card .ii{font-size:26px; flex:0 0 auto;}
+.info-card .it b{font-size:13.5px; font-weight:800; display:block; margin-bottom:3px;}
+.info-card .it p{margin:0; font-size:12.5px; line-height:1.5; font-weight:600; color:var(--ink-soft);}
+/* ---------- doctor ---------- */
+.flow{display:flex; align-items:center; justify-content:space-between; gap:4px; margin:4px 0 2px;}
+.flow .fstep{flex:1; text-align:center;}
+.flow .fstep .fc{width:46px; height:46px; border-radius:14px; background:#EAF8F5; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 5px;}
+.flow .fstep .fl{font-size:10.5px; font-weight:800; color:var(--ink-soft); line-height:1.3;}
+.flow .arr{color:var(--mint); font-weight:800; font-size:16px; flex:0 0 auto; padding-bottom:16px;}
+.consent-box{background:#FFF8EE; border:1px solid #F3D8A6; border-radius:14px; padding:13px; margin:12px 0;}
+.consent-box .cb-t{font-size:13px; font-weight:800; color:#8A5A1C; margin-bottom:7px;}
+.consent-box ul{margin:0; padding-left:17px;}
+.consent-box li{font-size:12px; line-height:1.55; font-weight:600; color:#8A5A1C; margin-bottom:3px;}
+/* ---------- menu list screen ---------- */
+.ml-item{display:flex; gap:12px; align-items:center; padding:14px 2px; border-bottom:1px solid var(--line); cursor:pointer;}
+.ml-item:last-child{border-bottom:0;}
+.ml-item .mli{width:38px; height:38px; border-radius:12px; flex:0 0 auto; background:linear-gradient(145deg,var(--mint-l),var(--mint)); display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; font-weight:800;}
+.ml-item .mlt{flex:1; min-width:0;}
+.ml-item .mlt b{font-size:14px; font-weight:800; display:block;}
+.ml-item .mlt span{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+.ml-item .chev{color:var(--ink-soft); font-size:18px; flex:0 0 auto;}
+.dev-reset{margin-top:16px; text-align:center;}
+.dev-reset button{font-family:inherit; font-size:11.5px; font-weight:700; color:var(--ink-soft); background:transparent; border:1px dashed var(--line); padding:9px 16px; border-radius:20px; cursor:pointer;}
+/* ---------- bottom nav ---------- */
+#bnav{flex:0 0 auto; display:none; border-top:1px solid var(--line); background:rgba(255,255,255,.95); backdrop-filter:blur(6px);
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
+#bnav.show{display:flex;}
+.nav-i{flex:1; border:0; background:transparent; font-family:inherit; display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 0; cursor:pointer; color:var(--ink-soft);}
+.nav-i svg{width:22px; height:22px;}
+.nav-i .nl{font-size:10px; font-weight:800;}
+.nav-i.active{color:var(--mint-d);}
+.nav-i.verify-cta{position:relative;}
+.nav-i.verify-cta .vc{width:46px; height:46px; margin-top:-16px; border-radius:50%; background:linear-gradient(145deg,var(--mint-l),var(--mint)); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 14px rgba(24,185,166,.4); color:#fff;}
+.nav-i.verify-cta .vc svg{width:24px; height:24px;}
+/* ---------- footer note ---------- */
+.foot-note{font-size:9.5px; line-height:1.5; color:var(--ink-soft); text-align:center; font-weight:500; margin:14px 4px 0;}
+/* ---------- overlay / celebration ---------- */
+#overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; z-index:40; background:rgba(16,50,46,.45); padding:24px;}
+#overlay.show{display:flex;}
+.cele{background:#fff; border-radius:22px; padding:26px 22px 20px; text-align:center; max-width:320px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.3); position:relative; overflow:hidden; animation:pop .4s cubic-bezier(.2,1.3,.5,1);}
+@keyframes pop{from{transform:scale(.8); opacity:0;} to{transform:scale(1); opacity:1;}}
+.cele .coin{width:84px; height:84px; margin:0 auto 10px; border-radius:50%; background:radial-gradient(circle at 36% 32%, #FFE79A, var(--gold)); display:flex; align-items:center; justify-content:center; font-size:38px; font-weight:800; color:#8A6100; box-shadow:0 8px 18px rgba(242,183,5,.4); animation:coinspin 1.1s ease;}
+@keyframes coinspin{0%{transform:rotateY(0) scale(.5);}60%{transform:rotateY(540deg) scale(1.08);}100%{transform:rotateY(540deg) scale(1);}}
+.cele .ctitle{font-size:21px; font-weight:800; letter-spacing:-.5px; margin-bottom:5px;}
+.cele .cpts{font-size:30px; font-weight:800; color:var(--gold); letter-spacing:-1px; margin-bottom:6px;}
+.cele .cdesc{font-size:12.5px; color:var(--ink-soft); font-weight:600; line-height:1.55; margin-bottom:16px;}
+.cele .cdesc b{color:var(--mint-d);}
+.cele .btn{margin-bottom:0;}
+.confetti{position:absolute; top:-12px; width:8px; height:14px; border-radius:2px; opacity:.9; animation:fall 1.5s ease-in forwards;}
+@keyframes fall{to{transform:translateY(320px) rotate(360deg); opacity:0;}}
+.generic-modal{background:#fff; border-radius:20px; padding:22px 20px 18px; text-align:center; max-width:320px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.3); animation:pop .3s ease;}
+.generic-modal .gm-i{font-size:40px; margin-bottom:8px;}
+.generic-modal .gm-t{font-size:18px; font-weight:800; margin-bottom:6px;}
+.generic-modal .gm-d{font-size:13px; color:var(--ink-soft); font-weight:600; line-height:1.55; margin-bottom:16px;}
+.generic-modal .gm-d b{color:var(--mint-d);}
+.generic-modal .btnrow .btn{margin:0;}
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <div class="logo" aria-hidden="true">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+  <header id="appHeader">
+    <div class="logo" id="hLogo" aria-hidden="true">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
         <path d="M12 3.4c-2.1-1.6-5.2-1.5-6.8.6-1.5 2-1 4.4-.2 7 .6 1.9.5 3.4 1.2 4.9.5 1.1 1.3 1.9 2.1 1.9 1 0 1.1-1.3 1.3-2.6.2-1.1.5-2 1.4-2s1.2.9 1.4 2c.2 1.3.3 2.6 1.3 2.6.8 0 1.6-.8 2.1-1.9.7-1.5.6-3 1.2-4.9.8-2.6 1.3-5-.2-7-1.6-2.1-4.7-2.2-6.8-.6z" fill="#fff"/>
       </svg>
     </div>
+    <button class="hbtn-back" id="hBack" style="display:none" aria-label="뒤로">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#5B7470" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
     <div class="brand">
-      <h1>치카<b>치카</b></h1>
-      <div class="tag">하루 2번, 선생님과 함께 닦아요</div>
+      <h1 id="hTitle">루덴스 <b>양치 인증</b></h1>
+      <div class="tag" id="hTag">하루 3번, 닦고 인증하고 포인트 받기</div>
     </div>
-    <div class="order-hint">양치 → 치실 → 혀닦기</div>
+    <div class="draft-badge">Draft · 시연용 모의</div>
   </header>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab active" data-mode="brush" role="tab">양치</button>
-    <button class="tab" data-mode="floss" role="tab">치실</button>
-    <button class="tab" data-mode="tongue" role="tab">혀닦기</button>
-    <button class="tab" data-mode="rinse" role="tab">구강청결</button>
+  <main id="screens">
+    <section class="screen" id="s-onboarding"></section>
+    <section class="screen" id="s-home"></section>
+    <section class="screen" id="s-verify"></section>
+    <section class="screen" id="s-shop"></section>
+    <section class="screen" id="s-calendar"></section>
+    <section class="screen" id="s-replace"></section>
+    <section class="screen" id="s-menu"></section>
+    <section class="screen" id="s-guide"></section>
+    <section class="screen" id="s-clean"></section>
+    <section class="screen" id="s-trivia"></section>
+    <section class="screen" id="s-doctor"></section>
+  </main>
+
+  <nav id="bnav">
+    <button class="nav-i" data-nav="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      <span class="nl">홈</span>
+    </button>
+    <button class="nav-i" data-nav="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+      <span class="nl">캘린더</span>
+    </button>
+    <button class="nav-i verify-cta" data-nav="verify">
+      <span class="vc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+      <span class="nl">인증</span>
+    </button>
+    <button class="nav-i" data-nav="shop">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="nl">포인트샵</span>
+    </button>
+    <button class="nav-i" data-nav="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span class="nl">전체메뉴</span>
+    </button>
   </nav>
 
-  <div class="content">
-
-    <!-- ============ MODE 1: 양치 ============ -->
-    <section class="mode active" id="mode-brush">
-      <div class="methodnote"><b>회전법</b>칫솔을 잇몸에 대고 치아 끝 쪽으로 쓸어 돌리며 닦아요.</div>
-
-      <div class="pastecard">
-        <div class="pastehead"><span class="phdot"></span>먼저, 칫솔에 치약 짜기</div>
-        <div class="pasterow">
-          <svg class="pasteicon" viewBox="0 0 120 70" aria-label="칫솔에 치약을 적당량 짜는 그림">
-            <defs>
-              <linearGradient id="pbrushG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2CC3B1"/><stop offset="1" stop-color="#0C7F72"/></linearGradient>
-              <linearGradient id="ppasteG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#8FE0D3"/></linearGradient>
-            </defs>
-            <rect x="46" y="40" width="70" height="11" rx="5.5" fill="url(#pbrushG)"/>
-            <rect x="52" y="42" width="54" height="2.6" rx="1.3" fill="#fff" opacity=".4"/>
-            <rect x="8" y="38.5" width="44" height="13" rx="6.5" fill="url(#pbrushG)"/>
-            <g fill="#E3F2EE">
-              <rect x="12" y="24" width="4" height="16" rx="2"/>
-              <rect x="18" y="22" width="4" height="18" rx="2"/>
-              <rect x="24" y="23" width="4" height="17" rx="2"/>
-              <rect x="30" y="22" width="4" height="18" rx="2"/>
-              <rect x="36" y="23.5" width="4" height="16.5" rx="2"/>
-              <rect x="42" y="25" width="4" height="15" rx="2"/>
-            </g>
-            <path d="M20 24 Q18 15 26 14 Q34 13 38 20 Q40 25 32 25 Q25 26 20 24 Z" fill="url(#ppasteG)" stroke="#BDEFE6" stroke-width="0.6"/>
-            <ellipse cx="26" cy="18" rx="4" ry="1.7" fill="#fff" opacity=".65"/>
-          </svg>
-          <div class="pastetxt">
-            <div class="amt"><span class="dot rice"></span><b>3세 미만</b> 쌀알 한 톨 크기</div>
-            <div class="amt"><span class="dot pea"></span><b>3~6세</b> 완두콩 한 알 크기</div>
-            <div class="note">불소 치약(1,000ppm 안팎)으로 조금만. 다 닦은 뒤엔 뱉고 물로 살짝 헹궈요. 삼키지 않게 보호자와 함께해요.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="padding:0; overflow:hidden;">
-        <div class="timerwrap">
-          <div class="ring">
-            <svg viewBox="0 0 84 84" width="84" height="84">
-              <circle cx="42" cy="42" r="37" fill="none" stroke="#E6F4F1" stroke-width="8"/>
-              <circle id="subRing" cx="42" cy="42" r="37" fill="none" stroke="url(#rg)" stroke-width="8"
-                stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="232.5"/>
-              <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#5FE3D1"/><stop offset="1" stop-color="#0E8C7E"/>
-              </linearGradient></defs>
-            </svg>
-            <div class="rtxt"><b id="bigTime">3:00</b><span>남은 시간</span></div>
-          </div>
-          <div class="tinfo">
-            <div class="step" id="stepNo">1 / 6 단계</div>
-            <div class="stepname" id="stepName">윗니 바깥쪽</div>
-            <div class="bar"><i id="totBar"></i></div>
-            <div class="totlabel" id="totLabel">전체 진행 0%</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="stage">
-          <svg id="mouthSvg" viewBox="0 0 300 300" aria-label="치아 그림">
-            <g id="zoomG">
-            <g id="mouthLayer"></g>
-            <g id="brushPos">
-              <g id="brushSweep">
-                <g class="foam">
-                  <circle cx="-14" cy="-4" r="3.4" fill="#CFF6EF" opacity=".7"/>
-                  <circle cx="13" cy="-9" r="2.6" fill="#EAFBF8" opacity=".7"/>
-                  <circle cx="-6" cy="-15" r="2.2" fill="#CFF6EF" opacity=".6"/>
-                </g>
-                <g id="brushScrub">
-                  <!-- toothbrush: bristle tips at (0,0), extends up -y -->
-                  <defs>
-                    <linearGradient id="handle" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0" stop-color="#2CC3B1"/><stop offset="0.5" stop-color="#17B2A0"/><stop offset="1" stop-color="#0C7F72"/>
-                    </linearGradient>
-                    <linearGradient id="brushHead" x1="0" y1="1" x2="0" y2="0">
-                      <stop offset="0" stop-color="#17B2A0"/><stop offset="1" stop-color="#43D2C2"/>
-                    </linearGradient>
-                    <linearGradient id="tuft" x1="0" y1="1" x2="0" y2="0">
-                      <stop offset="0" stop-color="#DFF1ED"/><stop offset="1" stop-color="#FCFFFE"/>
-                    </linearGradient>
-                    <linearGradient id="paste" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#BDEFE6"/>
-                    </linearGradient>
-                  </defs>
-                  <!-- ergonomic tapered handle -->
-                  <path d="M-8.5 -56 C-13 -72 -13 -94 -9 -112 Q-8 -121 0 -121 Q8 -121 9 -112 C13 -94 13 -72 8.5 -56 Z" fill="url(#handle)"/>
-                  <path d="M-4 -62 C-7 -78 -7 -96 -4.5 -110" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="3" stroke-linecap="round" fill="none"/>
-                  <!-- slim neck -->
-                  <path d="M-7 -38 Q-9 -50 -8 -58 L8 -58 Q9 -50 7 -38 Z" fill="url(#handle)"/>
-                  <!-- brush head (plastic pad) -->
-                  <rect x="-25" y="-38" width="50" height="24" rx="12" fill="url(#brushHead)" stroke="#8FDDD1" stroke-width="1.1"/>
-                  <rect x="-19" y="-35.5" width="38" height="6" rx="3" fill="#FFFFFF" opacity=".5"/>
-                  <!-- bristle field (tufts, tips near y=0) filled by script -->
-                  <g id="bristleField"></g>
-                  <!-- toothpaste blob resting on the bristle tips -->
-                  <path d="M-15 -2 Q-13 -9 -7 -7 Q-4 -12 1 -8 Q5 -12 9 -7 Q15 -9 14 -1 Q7 2 0 1 Q-8 2 -15 -2 Z" fill="url(#paste)" opacity=".95"/>
-                  <ellipse cx="-3" cy="-5.5" rx="5" ry="2.2" fill="#FFFFFF" opacity=".6"/>
-                </g>
-              </g>
-            </g>
-            </g>
-          </svg>
-        </div>
-        <div class="chips" id="chips"></div>
-      </div>
-
-      <div class="instruct" id="instruct">
-        <div class="ic">!</div>
-        <p id="instructText">칫솔모를 잇몸에 대고, 위에서 아래로 쓸어내리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)</p>
-      </div>
-
-      <div class="controls">
-        <button class="btn primary" id="btnPlay">시작</button>
-        <button class="btn ghost" id="btnReset">처음부터</button>
-        <button class="btn ghost" id="btnCam">거울 보기</button>
-      </div>
-
-      <div class="cam" id="cam">
-        <div class="cambox" id="cambox">
-          <span class="camtag">거울 보기</span>
-          <video id="video" playsinline muted autoplay></video>
-          <div class="cammsg" id="camMsg">버튼을 누르면 앞 카메라로 내 입을 비춰 볼 수 있어요.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ MODE 2: 치실 ============ -->
-    <section class="mode" id="mode-floss">
-      <div class="card">
-        <div class="ill">
-          <svg viewBox="0 0 300 200" aria-label="치실 사용 그림">
-            <!-- gum -->
-            <path d="M20 58 Q150 36 280 58 L280 44 Q150 24 20 44 Z" fill="#F4C3C7"/>
-            <rect x="20" y="52" width="260" height="10" fill="#EBA9AE"/>
-            <!-- two teeth -->
-            <path d="M70 60 q0 -14 20 -14 q20 0 20 14 l-4 78 q-2 18 -16 18 q-14 0 -16 -18 Z"
-                  fill="#fff" stroke="#DCEFEB" stroke-width="2"/>
-            <path d="M190 60 q0 -14 20 -14 q20 0 20 14 l-4 78 q-2 18 -16 18 q-14 0 -16 -18 Z"
-                  fill="#fff" stroke="#DCEFEB" stroke-width="2"/>
-            <!-- shading -->
-            <path d="M104 64 q6 40 2 86" fill="none" stroke="#EAF6F3" stroke-width="5" stroke-linecap="round"/>
-            <path d="M224 64 q6 40 2 86" fill="none" stroke="#EAF6F3" stroke-width="5" stroke-linecap="round"/>
-            <!-- fingers hint -->
-            <circle cx="150" cy="30" r="0" />
-            <!-- floss -->
-            <g id="flossG">
-              <line x1="150" y1="6" x2="150" y2="150" stroke="#8FD9CE" stroke-width="2.4" stroke-linecap="round"/>
-              <!-- C-wrap around right side of left tooth -->
-              <path d="M150 150 C120 150 108 128 110 104 C111 86 120 74 136 70"
-                    fill="none" stroke="#17B2A0" stroke-width="3.4" stroke-linecap="round"/>
-              <circle cx="150" cy="150" r="4" fill="#0E8C7E"/>
-            </g>
-            <text x="150" y="190" text-anchor="middle" font-size="12" font-weight="700" fill="#5B7470">치아 옆면을 'C'자로 감아 위아래로</text>
-          </svg>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="sectitle">치실은 왜 쓸까요?</h2>
-        <p class="lead">치실은 칫솔이 닿지 않는 치아 사이의 치태(세균막)를 닦는 도구예요. 음식물만 빼는 게 아니에요.</p>
-        <ol class="steps">
-          <li><span class="num">1</span><p>치실을 40cm 정도 끊어 양손 가운데 손가락에 감아요.</p></li>
-          <li><span class="num">2</span><p>치아 사이에 톱질하듯 부드럽게 넣어요. <small>(잇몸을 세게 찍지 마세요.)</small></p></li>
-          <li><span class="num">3</span><p>한쪽 치아 옆면에 'C'자로 감아 붙이고 위아래로 닦아요.</p></li>
-          <li><span class="num">4</span><p>반대쪽 치아 옆면도 똑같이 'C'자로 닦아요. <small>(한 사이에 양쪽 모두!)</small></p></li>
-          <li><span class="num">5</span><p>깨끗한 부분으로 옮겨가며 모든 치아 사이를 닦아요.</p></li>
-        </ol>
-        <div class="tipbox">매일 한 번, 양쪽 옆면을 빠짐없이. 아프거나 어려우면 치과에서 방법을 확인하세요.</div>
-      </div>
-    </section>
-
-    <!-- ============ MODE 3: 혀닦기 ============ -->
-    <section class="mode" id="mode-tongue">
-      <div class="card">
-        <div class="ill">
-          <svg viewBox="0 0 300 200" aria-label="혀닦기 그림">
-            <!-- mouth opening -->
-            <path d="M40 92 Q150 44 260 92 Q150 150 40 92 Z" fill="#B9433E"/>
-            <!-- tongue -->
-            <path d="M150 58 C112 58 92 82 92 112 C92 142 118 162 150 162 C182 162 208 142 208 112 C208 82 188 58 150 58 Z"
-                  fill="#F28C92"/>
-            <path d="M150 64 C120 64 102 84 102 112 C102 138 124 154 150 154 C176 154 198 138 198 112 C198 84 180 64 150 64 Z"
-                  fill="#F7A6AB"/>
-            <!-- midline + texture -->
-            <path d="M150 72 L150 150" stroke="#E07F85" stroke-width="3" stroke-linecap="round"/>
-            <g stroke="#EC9398" stroke-width="2" stroke-linecap="round" opacity=".7">
-              <path d="M128 86 q-6 26 2 54"/><path d="M172 86 q6 26 -2 54"/>
-            </g>
-            <!-- scraper sweeping back(top) -> front(bottom) -->
-            <g id="scraperG">
-              <rect x="108" y="70" width="84" height="12" rx="6" fill="#17B2A0"/>
-              <rect x="108" y="76" width="84" height="6" rx="3" fill="#0E8C7E"/>
-              <rect x="146" y="56" width="8" height="16" rx="3" fill="#0C7F72"/>
-            </g>
-            <text x="150" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="#5B7470">안쪽에서 바깥(앞)으로 부드럽게</text>
-          </svg>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="sectitle">혀도 닦아요</h2>
-        <p class="lead">혀에도 세균과 설태가 쌓여요. 입냄새 예방을 위해 부드럽게 닦아요.</p>
-        <ol class="steps">
-          <li><span class="num">1</span><p>혀를 쭉 내밀어요.</p></li>
-          <li><span class="num">2</span><p>칫솔이나 혀클리너로 혀 안쪽에서 바깥(앞)으로 부드럽게 쓸어내려요.</p></li>
-          <li><span class="num">3</span><p>2~3번 반복하고 물로 헹궈요. <small>(너무 세게 하지 마세요.)</small></p></li>
-        </ol>
-        <div class="tipbox">혀 안쪽 깊이 넣으면 구역질이 날 수 있어요. 닿는 곳까지만 살살.</div>
-      </div>
-    </section>
-
-    <!-- ============ MODE 4: 구강청결 ============ -->
-    <section class="mode" id="mode-rinse">
-      <div class="card">
-        <div class="ill">
-          <svg viewBox="0 0 300 200" aria-label="가글 사용 그림">
-            <!-- measuring cup -->
-            <g>
-              <path d="M44 66 L54 150 Q55 160 65 160 L77 160 Q87 160 88 150 L98 66 Z"
-                    fill="#EDF9F6" stroke="#BFE4DD" stroke-width="2"/>
-              <clipPath id="cupClip"><path d="M44 66 L54 150 Q55 160 65 160 L77 160 Q87 160 88 150 L98 66 Z"/></clipPath>
-              <g clip-path="url(#cupClip)">
-                <rect x="40" y="100" width="64" height="70" fill="#8FE0D3"/>
-                <rect x="40" y="100" width="64" height="5" fill="#B8EDE4"/>
-                <g class="bubbleUp">
-                  <circle cx="60" cy="126" r="3" fill="#D6F5EF"/>
-                  <circle cx="78" cy="138" r="2.4" fill="#EAFBF8"/>
-                </g>
-              </g>
-              <!-- marks -->
-              <g stroke="#9FD6CD" stroke-width="1.6" stroke-linecap="round">
-                <line x1="88" y1="100" x2="97" y2="100"/>
-                <line x1="90" y1="116" x2="97" y2="116"/>
-              </g>
-              <text x="104" y="104" font-size="11" font-weight="800" fill="#0E8C7E">15</text>
-              <text x="104" y="120" font-size="11" font-weight="800" fill="#0E8C7E">10</text>
-              <text x="71" y="182" text-anchor="middle" font-size="11" font-weight="700" fill="#5B7470">10~15ml</text>
-            </g>
-            <!-- cheek + swishing liquid -->
-            <g transform="translate(208 108)">
-              <ellipse cx="0" cy="0" rx="54" ry="46" fill="#F4C3C7"/>
-              <ellipse cx="0" cy="3" rx="42" ry="34" fill="#B9433E"/>
-              <clipPath id="mouthClip"><ellipse cx="0" cy="3" rx="42" ry="34"/></clipPath>
-              <g clip-path="url(#mouthClip)">
-                <g id="swishG">
-                  <path d="M-62 12 Q0 -4 62 12 L62 42 L-62 42 Z" fill="#7FD9CC" opacity=".92"/>
-                  <circle cx="-20" cy="10" r="4.5" fill="#D6F5EF"/>
-                  <circle cx="16" cy="6" r="3.4" fill="#EAFBF8"/>
-                  <circle cx="2" cy="16" r="3.2" fill="#D6F5EF"/>
-                </g>
-              </g>
-              <text x="0" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="#5B7470">30초~1분 구석구석</text>
-            </g>
-          </svg>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 class="sectitle">헥사메딘 가글, 이렇게</h2>
-        <p class="lead">헥사메딘(클로르헥시딘) 가글은 잇몸질환·발치 후·구내염 등에 쓰는 소독용 가글이에요. 매일 쓰는 일반 관리용이 아니라, 필요할 때 단기간 사용해요.</p>
-        <ol class="steps">
-          <li><span class="num">1</span><p>양치하고 30분쯤 뒤에 사용해요. <small>(치약 성분과 바로 섞이면 효과가 줄어요.)</small></p></li>
-          <li><span class="num">2</span><p>원액 10~15ml를 입에 머금고 30초~1분간 구석구석 헹궈요.</p></li>
-          <li><span class="num">3</span><p>뱉은 뒤 물로 헹구지 않아요. <small>(약 성분이 남아 작용하도록)</small></p></li>
-          <li><span class="num">4</span><p>사용 후 30분간은 음식·음료를 피해요.</p></li>
-        </ol>
-        <div class="tipbox">하루 1~2회, 보통 1~2주 단기 사용. 오래 쓰면 치아가 착색될 수 있어요 — 치과 지시를 따르세요.</div>
-      </div>
-    </section>
-
-  </div>
-
-  <footer>
-    올바른 구강관리 습관을 돕는 앱입니다 · 하루 2번 불소치약 · 질병의 진단·치료 목적이 아닙니다 · 영상은 기기에서만 처리됩니다 (ADA·NHS 가이드 참고)
-  </footer>
+  <div id="overlay"></div>
 </div>
 
 <script>
 (function(){
 "use strict";
 
-/* ---------------- geometry: realistic dental arches ----------------
-   Occlusal (model) view: two gentle arcs. Large radius => big, clear teeth.
-   For each arch, larger radius = gum/buccal side (outer), smaller = biting edge (inner). */
-var UA={cx:150,cy:270,a0:232,a1:308};   // upper arch: center below, teeth across the top
-var LA={cx:150,cy:30, a0:52, a1:128};   // lower arch: center above, teeth across the bottom
-var RO=200, RI=172;                      // outer (gum) / inner (biting) radii
-var B1=RI+(RO-RI)/3, B2=RI+2*(RO-RI)/3;  // third boundaries (buccal / occlusal / lingual)
+/* ========================================================================
+   STATE  (simulated persistence in localStorage)
+   ======================================================================== */
+var LS_KEY='chika_state';
+var TODAY=new Date(2026,10,25);            // fixed demo "today": 2026-11-25
+function pad(n){return n<10?'0'+n:''+n;}
+function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function offsetDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); x.setDate(x.getDate()+n); return x;}
+var TODAY_KEY=dateKey(TODAY);
 
+function seedHistory(){
+  // offset(days ago) -> brushings that day; builds an 8-day live streak + earlier fill
+  var pat=[3,2,3,3,2,3,3,2, 0, 3,2,2,3,3,2,3, 1,0,3,2,3];
+  var h={};
+  for(var i=1;i<=pat.length;i++){ if(pat[i-1]>0) h[dateKey(offsetDays(TODAY,-i))]=pat[i-1]; }
+  return h;
+}
+function freshState(){
+  return {
+    profile:null,                 // {age, sex, type:'adult'|'kid', consent}
+    points:320,
+    todayCount:0,
+    history:seedHistory(),
+    brushRegisterDate:dateKey(offsetDays(TODAY,-79)),  // ~79일 사용 → 교체 임박
+    regularity:74,                // mock 시간대 규칙성 %
+    doctorRequested:false,
+    purchases:[]
+  };
+}
+var state=load();
+function load(){
+  try{ var raw=localStorage.getItem(LS_KEY); if(raw){ var s=JSON.parse(raw); if(s&&typeof s==='object') return s; } }catch(e){}
+  var f=freshState(); try{ localStorage.setItem(LS_KEY,JSON.stringify(f)); }catch(e){} return f;
+}
+function save(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }catch(e){} }
+function resetDemo(){ state=freshState(); save(); }
+
+function computeStreak(){
+  var s=0;
+  for(var i=0;i<400;i++){
+    var c = (i===0)? state.todayCount : (state.history[dateKey(offsetDays(TODAY,-i))]||0);
+    if(c>=1) s++; else { if(i===0) continue; else break; }
+  }
+  return s;
+}
+function last14(){
+  var days=[];
+  for(var i=0;i<14;i++){ var c=(i===0)?state.todayCount:(state.history[dateKey(offsetDays(TODAY,-i))]||0); days.push(c); }
+  return days;
+}
+function habit(){
+  var streak=computeStreak();
+  var d14=last14();
+  var three=0; d14.forEach(function(c){ if(c>=3) three++; });
+  var streakComp=Math.min(streak,14)/14*40;
+  var rate3=three/14*35;
+  var regComp=state.regularity/100*25;
+  var total=Math.round(streakComp+rate3+regComp);
+  return {total:total, streak:streak, streakComp:Math.round(streakComp), rate3:Math.round(rate3),
+          rate3pct:Math.round(three/14*100), regComp:Math.round(regComp), reg:state.regularity, three:three};
+}
+
+/* ========================================================================
+   DENTAL GEOMETRY  (reused from current app; parameterized by id-prefix)
+   ======================================================================== */
+var UA={cx:150,cy:270,a0:232,a1:308};
+var LA={cx:150,cy:30, a0:52, a1:128};
+var RO=200, RI=172;
+var B1=RI+(RO-RI)/3, B2=RI+2*(RO-RI)/3;
 function pt(cx,cy,ang,r){var a=ang*Math.PI/180; return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
 function f(x){return x.toFixed(1);}
-
-// closed annular-sector path between two radii, spanning the arch
 function arcSeg(ar,a0,a1,r){
   var dir=a1>=a0?1:-1, s='';
   for(var a=a0; dir>0?a<a1:a>a1; a+=dir*2){var p=pt(ar.cx,ar.cy,a,r); s+='L'+f(p[0])+' '+f(p[1]);}
@@ -524,8 +490,6 @@ function annSector(ar,rIn,rOut){
   var p0=pt(ar.cx,ar.cy,ar.a0,rOut);
   return 'M'+f(p0[0])+' '+f(p0[1])+arcSeg(ar,ar.a0,ar.a1,rOut)+arcSeg(ar,ar.a1,ar.a0,rIn)+'Z';
 }
-
-// tooth row layout: central->molar on each side, mirrored
 function layoutTeeth(ar){
   var tF=['incisorC','incisorL','canine','premolar','molar'];
   var wF=[1.1,0.92,0.84,1.0,1.32];
@@ -539,19 +503,16 @@ function layoutTeeth(ar){
   }
   return out;
 }
-
-// crown outline (local coords: origin=crown center, +y = outward/buccal, x = mesiodistal)
-function toothShape(type,hw,hh){
+function toothShape(type,hw,hh,P){
   var d, det='';
   if(type==='incisorC'||type==='incisorL'){
-    // plump glossy convex incisor
     d='M'+f(-hw)+' '+f(hh*0.4)
      +'C'+f(-hw)+' '+f(hh*0.96)+' '+f(-hw*0.46)+' '+f(hh)+' 0 '+f(hh)
      +'C'+f(hw*0.46)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.96)+' '+f(hw)+' '+f(hh*0.4)
      +'C'+f(hw)+' '+f(-hh*0.5)+' '+f(hw*0.78)+' '+f(-hh)+' '+f(hw*0.34)+' '+f(-hh)
      +'L'+f(-hw*0.34)+' '+f(-hh)
      +'C'+f(-hw*0.78)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.5)+' '+f(-hw)+' '+f(hh*0.4)+'Z';
-    det='<ellipse cx="'+f(-hw*0.05)+'" cy="'+f(hh*0.18)+'" rx="'+f(hw*0.58)+'" ry="'+f(hh*0.64)+'" fill="url(#sheenV)"/>'
+    det='<ellipse cx="'+f(-hw*0.05)+'" cy="'+f(hh*0.18)+'" rx="'+f(hw*0.58)+'" ry="'+f(hh*0.64)+'" fill="url(#'+P+'sheenV)"/>'
       +'<ellipse cx="'+f(-hw*0.22)+'" cy="'+f(-hh*0.34)+'" rx="'+f(hw*0.28)+'" ry="'+f(hh*0.26)+'" fill="#FFFFFF" opacity="0.8"/>'
       +'<g stroke="#DBE8E3" stroke-width="0.7" stroke-opacity="0.45" stroke-linecap="round" fill="none">'
       +'<path d="M'+f(-hw*0.34)+' '+f(hh*0.74)+'V'+f(hh*0.05)+'"/>'
@@ -564,26 +525,25 @@ function toothShape(type,hw,hh){
      +'L'+f(-hw*0.3)+' '+f(-hh)
      +'C'+f(-hw*0.72)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.45)+' '+f(-hw*0.92)+' '+f(hh*0.22)
      +'Q'+f(-hw*0.62)+' '+f(hh*0.9)+' 0 '+f(hh)+'Z';
-    det='<ellipse cx="'+f(-hw*0.08)+'" cy="'+f(hh*0.1)+'" rx="'+f(hw*0.46)+'" ry="'+f(hh*0.66)+'" fill="url(#sheenV)"/>'
+    det='<ellipse cx="'+f(-hw*0.08)+'" cy="'+f(hh*0.1)+'" rx="'+f(hw*0.46)+'" ry="'+f(hh*0.66)+'" fill="url(#'+P+'sheenV)"/>'
       +'<ellipse cx="'+f(-hw*0.18)+'" cy="'+f(-hh*0.3)+'" rx="'+f(hw*0.24)+'" ry="'+f(hh*0.3)+'" fill="#FFFFFF" opacity="0.8"/>'
       +'<path d="M0 '+f(hh*0.92)+'V'+f(-hh*0.25)+'" stroke="#DBE8E3" stroke-width="0.8" stroke-opacity="0.5" stroke-linecap="round" fill="none"/>';
   } else if(type==='premolar'){
-    // plump rounded blob, two buccal/lingual cusp bumps
     d='M'+f(-hw)+' 0'
      +'C'+f(-hw)+' '+f(hh*0.72)+' '+f(-hw*0.5)+' '+f(hh)+' 0 '+f(hh)
      +'C'+f(hw*0.5)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.72)+' '+f(hw)+' 0'
      +'C'+f(hw)+' '+f(-hh*0.72)+' '+f(hw*0.5)+' '+f(-hh)+' 0 '+f(-hh)
      +'C'+f(-hw*0.5)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.72)+' '+f(-hw)+' 0Z';
     var pcy=hh*0.44, prx=hw*0.66, pry=hh*0.48;
-    det='<ellipse cx="0" cy="0" rx="'+f(hw*0.78)+'" ry="'+f(hh*0.34)+'" fill="url(#fossa)"/>'
+    det='<ellipse cx="0" cy="0" rx="'+f(hw*0.78)+'" ry="'+f(hh*0.34)+'" fill="url(#'+P+'fossa)"/>'
       +'<path d="M'+f(-hw*0.48)+' 0H'+f(hw*0.48)+'" stroke="#A8BFB9" stroke-opacity="0.28" stroke-width="'+f(hh*0.12)+'" stroke-linecap="round" fill="none"/>'
-      +'<g fill="url(#cuspBump)">'
+      +'<g fill="url(#'+P+'cuspBump)">'
       +'<ellipse cx="0" cy="'+f(-pcy)+'" rx="'+f(prx)+'" ry="'+f(pry)+'"/>'
       +'<ellipse cx="0" cy="'+f(pcy)+'" rx="'+f(prx)+'" ry="'+f(pry)+'"/></g>'
       +'<g fill="#FFFFFF" opacity="0.92">'
       +'<ellipse cx="'+f(-prx*0.28)+'" cy="'+f(-pcy-pry*0.3)+'" rx="'+f(prx*0.3)+'" ry="'+f(pry*0.22)+'"/>'
       +'<ellipse cx="'+f(-prx*0.28)+'" cy="'+f(pcy-pry*0.3)+'" rx="'+f(prx*0.3)+'" ry="'+f(pry*0.22)+'"/></g>';
-  } else { // molar: plump rounded square, four glossy cusp bumps + soft + fissure
+  } else {
     d='M'+f(-hw)+' '+f(-hh*0.58)
      +'Q'+f(-hw)+' '+f(-hh)+' '+f(-hw*0.58)+' '+f(-hh)
      +'L'+f(hw*0.58)+' '+f(-hh)
@@ -593,11 +553,11 @@ function toothShape(type,hw,hh){
      +'L'+f(-hw*0.58)+' '+f(hh)
      +'Q'+f(-hw)+' '+f(hh)+' '+f(-hw)+' '+f(hh*0.58)+'Z';
     var mcx=hw*0.46, mcy=hh*0.45, mrx=hw*0.5, mry=hh*0.5;
-    det='<ellipse cx="0" cy="0" rx="'+f(hw*0.8)+'" ry="'+f(hh*0.8)+'" fill="url(#fossa)"/>'
+    det='<ellipse cx="0" cy="0" rx="'+f(hw*0.8)+'" ry="'+f(hh*0.8)+'" fill="url(#'+P+'fossa)"/>'
       +'<g stroke="#A8BFB9" stroke-opacity="0.26" stroke-linecap="round" fill="none">'
       +'<path d="M'+f(-hw*0.58)+' 0H'+f(hw*0.58)+'" stroke-width="'+f(hh*0.1)+'"/>'
       +'<path d="M0 '+f(-hh*0.58)+'V'+f(hh*0.58)+'" stroke-width="'+f(hw*0.1)+'"/></g>'
-      +'<g fill="url(#cuspBump)">'
+      +'<g fill="url(#'+P+'cuspBump)">'
       +'<ellipse cx="'+f(-mcx)+'" cy="'+f(-mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/>'
       +'<ellipse cx="'+f(mcx)+'" cy="'+f(-mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/>'
       +'<ellipse cx="'+f(-mcx)+'" cy="'+f(mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/>'
@@ -610,7 +570,6 @@ function toothShape(type,hw,hh){
   }
   return {d:d, det:det};
 }
-
 function papilla(ar,ang,rBase,rTip){
   var w=2.3;
   var a=pt(ar.cx,ar.cy,ang-w,rBase), b=pt(ar.cx,ar.cy,ang,rTip), c=pt(ar.cx,ar.cy,ang+w,rBase);
@@ -618,40 +577,36 @@ function papilla(ar,ang,rBase,rTip){
   return '<path d="M'+f(a[0])+' '+f(a[1])+'Q'+f(m1[0])+' '+f(m1[1])+' '+f(b[0])+' '+f(b[1])
     +'Q'+f(m2[0])+' '+f(m2[1])+' '+f(c[0])+' '+f(c[1])+'Z" fill="#F4BBC2"/>';
 }
-
-function buildMouth(){
+function buildMouthHTML(P){
   var defs='<defs>'
-    +'<radialGradient id="enamel" cx="0.46" cy="0.34" r="0.74">'
+    +'<radialGradient id="'+P+'enamel" cx="0.46" cy="0.34" r="0.74">'
       +'<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.45" stop-color="#F8FCFB"/>'
       +'<stop offset="0.78" stop-color="#E7F0ED"/><stop offset="1" stop-color="#D3E0DB"/></radialGradient>'
-    +'<radialGradient id="cuspBump" cx="0.38" cy="0.32" r="0.72">'
+    +'<radialGradient id="'+P+'cuspBump" cx="0.38" cy="0.32" r="0.72">'
       +'<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#F5FAF8" stop-opacity="0.92"/>'
       +'<stop offset="1" stop-color="#DCE7E3" stop-opacity="0"/></radialGradient>'
-    +'<radialGradient id="sheenV" cx="0.42" cy="0.28" r="0.72">'
+    +'<radialGradient id="'+P+'sheenV" cx="0.42" cy="0.28" r="0.72">'
       +'<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/><stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.28"/>'
       +'<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>'
-    +'<radialGradient id="fossa" cx="0.5" cy="0.5" r="0.5">'
+    +'<radialGradient id="'+P+'fossa" cx="0.5" cy="0.5" r="0.5">'
       +'<stop offset="0" stop-color="#95ADA7" stop-opacity="0.55"/><stop offset="0.55" stop-color="#9FB6B0" stop-opacity="0.18"/>'
       +'<stop offset="1" stop-color="#9FB6B0" stop-opacity="0"/></radialGradient>'
-    +'<radialGradient id="gumU" cx="150" cy="270" r="220" gradientUnits="userSpaceOnUse">'
+    +'<radialGradient id="'+P+'gumU" cx="150" cy="270" r="220" gradientUnits="userSpaceOnUse">'
       +'<stop offset="0.66" stop-color="#DC8F99"/><stop offset="0.84" stop-color="#E9A6AF"/>'
       +'<stop offset="0.93" stop-color="#F6C2C9"/><stop offset="1" stop-color="#FCD4D9"/></radialGradient>'
-    +'<radialGradient id="gumL" cx="150" cy="30" r="220" gradientUnits="userSpaceOnUse">'
+    +'<radialGradient id="'+P+'gumL" cx="150" cy="30" r="220" gradientUnits="userSpaceOnUse">'
       +'<stop offset="0.66" stop-color="#FCD4D9"/><stop offset="0.84" stop-color="#F3B6BD"/>'
       +'<stop offset="0.93" stop-color="#E59CA5"/><stop offset="1" stop-color="#D4858F"/></radialGradient>'
-    +'<filter id="toothShadow" x="-20%" y="-20%" width="140%" height="150%">'
+    +'<filter id="'+P+'toothShadow" x="-20%" y="-20%" width="140%" height="150%">'
       +'<feDropShadow dx="0" dy="1.4" stdDeviation="1.4" flood-color="#415F59" flood-opacity="0.3"/></filter>'
-    +'<filter id="gumShadow" x="-25%" y="-25%" width="150%" height="160%">'
+    +'<filter id="'+P+'gumShadow" x="-25%" y="-25%" width="150%" height="160%">'
       +'<feDropShadow dx="0" dy="1.6" stdDeviation="2.4" flood-color="#B06A74" flood-opacity="0.4"/></filter>'
     +'</defs>';
-
   var gum='', teeth='', clipU='', clipL='';
   [{ar:UA,key:'U'},{ar:LA,key:'L'}].forEach(function(o){
-    var ar=o.ar, row=layoutTeeth(ar), gid='url(#gum'+o.key+')';
-    // gum roll: thick buccal band + lingual sliver (vertical lit gradient)
+    var ar=o.ar, row=layoutTeeth(ar), gid='url(#'+P+'gum'+o.key+')';
     gum+='<path d="'+annSector(ar,RO-6,RO+15)+'" fill="'+gid+'"/>';
     gum+='<path d="'+annSector(ar,RI-11,RI+3)+'" fill="'+gid+'" opacity="0.92"/>';
-    // glossy top sheen + soft shadow on the far edge of the roll (top-lit, arch-aware)
     if(o.key==='U'){
       gum+='<path d="'+annSector(ar,RO+8,RO+15)+'" fill="#FFE9EC" opacity="0.5"/>';
       gum+='<path d="'+annSector(ar,RO-6,RO-2)+'" fill="#C27B86" opacity="0.38"/>';
@@ -660,45 +615,38 @@ function buildMouth(){
       gum+='<path d="'+annSector(ar,RO+11,RO+15)+'" fill="#C27B86" opacity="0.38"/>';
     }
     for(var p=0;p<row.length-1;p++){ gum+=papilla(ar,row[p].ang+row[p].aw/2,RO+1,RO-10); }
-    // interproximal shadow backing (shows through tooth gaps -> seated depth)
     teeth+='<path d="'+annSector(ar,RI-1,RO+1)+'" fill="#B4C6C1"/>';
     var grp='';
     row.forEach(function(t){
-      var rc=(RI+RO)/2, P=pt(ar.cx,ar.cy,t.ang,rc), deg=t.ang-90;
+      var rc=(RI+RO)/2, Pp=pt(ar.cx,ar.cy,t.ang,rc), deg=t.ang-90;
       var depth={incisorC:0.8,incisorL:0.8,canine:0.88,premolar:0.96,molar:1.02}[t.type];
       var hw=(t.aw*Math.PI/180)*rc*0.5, hh=(RO-RI)/2*depth;
-      var sh=toothShape(t.type,hw,hh);
-      var tf='translate('+f(P[0])+' '+f(P[1])+') rotate('+f(deg)+')';
-      grp+='<g transform="'+tf+'"><path d="'+sh.d+'" fill="url(#enamel)" stroke="#C3D6D0" stroke-width="0.7"/>'+sh.det+'</g>';
-      var clip='<path transform="'+tf+'" d="'+sh.d+'"/>';  // transform on path (clipPath ignores <g>)
+      var sh=toothShape(t.type,hw,hh,P);
+      var tf='translate('+f(Pp[0])+' '+f(Pp[1])+') rotate('+f(deg)+')';
+      grp+='<g transform="'+tf+'"><path d="'+sh.d+'" fill="url(#'+P+'enamel)" stroke="#C3D6D0" stroke-width="0.7"/>'+sh.det+'</g>';
+      var clip='<path transform="'+tf+'" d="'+sh.d+'"/>';
       if(o.key==='U') clipU+=clip; else clipL+=clip;
     });
-    teeth+='<g filter="url(#toothShadow)">'+grp+'</g>';
+    teeth+='<g filter="url(#'+P+'toothShadow)">'+grp+'</g>';
   });
-
-  var clips='<defs><clipPath id="clipU">'+clipU+'</clipPath><clipPath id="clipL">'+clipL+'</clipPath></defs>';
-
-  // visual highlights: thick, overlapping bands (only one active at a time) clipped
-  // to the real teeth so the tint colors the whole buccal / occlusal / lingual area.
+  var clips='<defs><clipPath id="'+P+'clipU">'+clipU+'</clipPath><clipPath id="'+P+'clipL">'+clipL+'</clipPath></defs>';
   var rng=RO-RI, oO=RI+rng*0.42, cC1=RI+rng*0.24, cC2=RI+rng*0.76, iI=RI+rng*0.58;
   var hi=''
-    +'<path class="hi" id="hiUO" d="'+annSector(UA,oO,RO)+'" clip-path="url(#clipU)"/>'
-    +'<path class="hi" id="hiUI" d="'+annSector(UA,RI,iI)+'" clip-path="url(#clipU)"/>'
-    +'<path class="hi" id="hiUC" d="'+annSector(UA,cC1,cC2)+'" clip-path="url(#clipU)"/>'
-    +'<path class="hi" id="hiLO" d="'+annSector(LA,oO,RO)+'" clip-path="url(#clipL)"/>'
-    +'<path class="hi" id="hiLI" d="'+annSector(LA,RI,iI)+'" clip-path="url(#clipL)"/>'
-    +'<path class="hi" id="hiLC" d="'+annSector(LA,cC1,cC2)+'" clip-path="url(#clipL)"/>'
+    +'<path class="hi" id="'+P+'hiUO" d="'+annSector(UA,oO,RO)+'" clip-path="url(#'+P+'clipU)"/>'
+    +'<path class="hi" id="'+P+'hiUI" d="'+annSector(UA,RI,iI)+'" clip-path="url(#'+P+'clipU)"/>'
+    +'<path class="hi" id="'+P+'hiUC" d="'+annSector(UA,cC1,cC2)+'" clip-path="url(#'+P+'clipU)"/>'
+    +'<path class="hi" id="'+P+'hiLO" d="'+annSector(LA,oO,RO)+'" clip-path="url(#'+P+'clipL)"/>'
+    +'<path class="hi" id="'+P+'hiLI" d="'+annSector(LA,RI,iI)+'" clip-path="url(#'+P+'clipL)"/>'
+    +'<path class="hi" id="'+P+'hiLC" d="'+annSector(LA,cC1,cC2)+'" clip-path="url(#'+P+'clipL)"/>'
     +'<path class="hit" data-idx="0" d="'+annSector(UA,B2,RO)+'"/>'
     +'<path class="hit" data-idx="1" d="'+annSector(UA,RI,B1)+'"/>'
     +'<path class="hit" data-idx="2" d="'+annSector(UA,B1,B2)+'"/>'
     +'<path class="hit" data-idx="3" d="'+annSector(LA,B2,RO)+'"/>'
     +'<path class="hit" data-idx="4" d="'+annSector(LA,RI,B1)+'"/>'
     +'<path class="hit" data-idx="5" d="'+annSector(LA,B1,B2)+'"/>';
-
-  document.getElementById('mouthLayer').innerHTML = defs+clips+'<g filter="url(#gumShadow)">'+gum+'</g>'+teeth+hi;
+  return defs+clips+'<g filter="url(#'+P+'gumShadow)">'+gum+'</g>'+teeth+hi;
 }
 
-/* ---------------- region data ---------------- */
 var REGIONS=[
   {name:'윗니 바깥쪽', chip:'윗니 바깥',  arch:'U', tip:'칫솔모를 잇몸에 대고, 위에서 아래로 쓸어내리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:74,r:-28},  hi:'hiUO'},
   {name:'윗니 안쪽',   chip:'윗니 안쪽',  arch:'U', tip:'안쪽도 잇몸에서 아래로 쓸어내려요. 앞니 안쪽은 칫솔을 세로로 세워서.',   brush:{x:150,y:94,r:156},  hi:'hiUI'},
@@ -709,230 +657,766 @@ var REGIONS=[
 ];
 var REGION_SECONDS=30, TOTAL=180;
 
-/* ---------------- state ---------------- */
-var elapsed=0, running=false, completed=false, lastTs=0;
-var cur={x:150,y:74,r:-28}, tgt={x:150,y:74,r:-28};
-var brushPos=document.getElementById('brushPos');
-/* ---- per-region close-up (zoom/pan to the active arch) ---- */
-var zoomG=document.getElementById('zoomG');
-var zoom={s:1,x:0,y:0}, zoomT={s:1,x:0,y:0};
-function regionFocus(i){
-  var rg=REGIONS[i], s=1.62, cx=150, cy=(rg.arch==='U')?96:206;
-  return {s:s, x:150-s*cx, y:150-s*cy};   // map focus center -> viewport center (150,150)
-}
-function applyZoom(){
-  zoomG.setAttribute('transform','translate('+zoom.x.toFixed(2)+' '+zoom.y.toFixed(2)+') scale('+zoom.s.toFixed(4)+')');
-}
-var subRing=document.getElementById('subRing');
-var RING_C=2*Math.PI*37;
-
-/* ---------------- chips ---------------- */
-(function(){
-  var c=document.getElementById('chips'), html='';
-  REGIONS.forEach(function(rg,i){
-    html+='<button class="chip" data-idx="'+i+'"><span class="n">'+(i+1)+'</span>'+rg.chip+'</button>';
-  });
-  c.innerHTML=html;
-  c.addEventListener('click',function(e){
-    var b=e.target.closest('.chip'); if(!b) return; jumpTo(+b.getAttribute('data-idx'));
-  });
-})();
-
-/* ---------------- interactions ---------------- */
-document.getElementById('mouthLayer').addEventListener('click',function(e){
-  var el=e.target.closest('.hit'); if(!el) return; jumpTo(+el.getAttribute('data-idx'));
-});
-
-function jumpTo(i){
-  i=Math.max(0,Math.min(5,i));
-  completed=false;
-  elapsed=i*REGION_SECONDS;        // resets this step's sub-timer
-  document.getElementById('instruct').classList.remove('done');
-  setRegion(i);
-  render();
-}
-
-function curIndex(){
-  if(elapsed>=TOTAL) return 5;
-  return Math.max(0,Math.min(5,Math.floor(elapsed/REGION_SECONDS)));
-}
-
-var activeIdx=-1;
-function setRegion(i){
-  if(i===activeIdx) return;
-  activeIdx=i;
-  var rg=REGIONS[i];
-  // chips
-  var chips=document.querySelectorAll('.chip');
-  chips.forEach(function(c,ci){c.classList.toggle('active',ci===i);});
-  // highlight
-  document.querySelectorAll('.hi').forEach(function(h){h.classList.remove('active');});
-  document.getElementById(rg.hi).classList.add('active');
-  // text
-  document.getElementById('stepNo').textContent=(i+1)+' / 6 단계';
-  document.getElementById('stepName').textContent=rg.name;
-  if(!completed) document.getElementById('instructText').textContent=rg.tip;
-  // brush target (shortest-angle rotation)
-  tgt={x:rg.brush.x,y:rg.brush.y,r:rg.brush.r};
-  while(tgt.r-cur.r>180) tgt.r-=360;
-  while(tgt.r-cur.r<-180) tgt.r+=360;
-  zoomT=regionFocus(i);            // close up on this region's arch
-}
-
-function applyBrush(dx,dy,dr){
-  dx=dx||0; dy=dy||0; dr=dr||0;
-  brushPos.setAttribute('transform','translate('+(cur.x+dx).toFixed(2)+' '+(cur.y+dy).toFixed(2)+') rotate('+(cur.r+dr).toFixed(2)+')');
-}
-
-/* rolling-method stroke phase: gum -> tooth tip (slow), then return (quick), repeating.
-   returns 0 at the gum line, 1 at the tooth tip. */
-var ROLL_FREEZE=null;
-function rollPhase(ts){
-  if(ROLL_FREEZE!==null) return ROLL_FREEZE;
-  var P=1150, t=(ts%P)/P, fwd=0.64, u;
-  if(t<fwd){ u=t/fwd; return 1-(1-u)*(1-u); }                 // ease-out: gum -> tip
-  u=(t-fwd)/(1-fwd);                                          // return: tip -> gum
-  return 1-(u<0.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2);
-}
-window.__setRollFreeze=function(v){ ROLL_FREEZE=v; };
-
-/* ---------------- render ---------------- */
-function fmt(s){s=Math.max(0,Math.ceil(s)); var m=Math.floor(s/60); var ss=s%60; return m+':'+(ss<10?'0':'')+ss;}
-
-function render(){
-  var i=curIndex();
-  setRegion(i);
-  var remain=Math.max(0,TOTAL-elapsed);
-  document.getElementById('bigTime').textContent=completed?'0:00':fmt(remain);
-  // total bar
-  var tp=Math.min(100,elapsed/TOTAL*100);
-  document.getElementById('totBar').style.width=tp.toFixed(1)+'%';
-  document.getElementById('totLabel').textContent='전체 진행 '+Math.round(tp)+'%';
-  // sub ring
-  var sub=completed?REGION_SECONDS:(elapsed-i*REGION_SECONDS);
-  var frac=Math.max(0,Math.min(1,sub/REGION_SECONDS));
-  subRing.setAttribute('stroke-dashoffset',(RING_C*(1-frac)).toFixed(2));
-  // play button label
-  document.getElementById('btnPlay').textContent=completed?'다시 하기':(running?'일시정지':(elapsed>0?'계속하기':'시작'));
-}
-
-function finish(){
-  completed=true; running=false; elapsed=TOTAL;
-  var ins=document.getElementById('instruct');
-  ins.classList.add('done');
-  document.getElementById('instructText').textContent='🎉 다 닦았어요! 잘했어요 👏';
-  render();
-}
-
-/* ---------------- loop ---------------- */
-function tick(ts){
-  if(lastTs===0) lastTs=ts;
-  var dt=(ts-lastTs)/1000; lastTs=ts;
-  if(dt>0.25) dt=0.25;
-  if(running && !completed){
-    elapsed+=dt;
-    if(elapsed>=TOTAL){ finish(); }
-    else render();
+/* ========================================================================
+   BRUSH GUIDE FACTORY  (reusable instance; P = unique id-prefix)
+   ======================================================================== */
+function brushTemplate(P,opts){
+  var paste='';
+  if(opts.toothpaste){
+    var rows = opts.kid
+      ? '<div class="amt"><span class="pdot rice"></span><b>3세 미만</b> 쌀알 한 톨 크기</div>'
+        +'<div class="amt"><span class="pdot pea"></span><b>3~6세</b> 완두콩 한 알 크기</div>'
+        +'<div class="note">불소 치약(1,000ppm 안팎)으로 조금만. 다 닦은 뒤엔 뱉고 물로 살짝 헹궈요. 삼키지 않게 보호자와 함께해요.</div>'
+      : '<div class="amt"><span class="pdot pea"></span><b>성인</b> 완두콩 한 알(약 1cm)</div>'
+        +'<div class="amt"><span class="pdot pea" style="width:11px;height:11px"></span><b>칫솔모 길이</b>의 1/2 이내로</div>'
+        +'<div class="note">불소 치약(1,000~1,500ppm) 적당량. 거품에 의존해 과하게 짜지 않아요. 헹굼은 가볍게 1~2번만.</div>';
+    paste='<div class="pastecard"><div class="pastehead"><span class="phdot"></span>먼저, 칫솔에 치약 짜기</div>'
+      +'<div class="pasterow">'
+      +'<svg class="pasteicon" viewBox="0 0 120 70" aria-label="칫솔에 치약을 적당량 짜는 그림">'
+      +'<defs><linearGradient id="'+P+'pbrushG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2CC3B1"/><stop offset="1" stop-color="#0C7F72"/></linearGradient>'
+      +'<linearGradient id="'+P+'ppasteG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#8FE0D3"/></linearGradient></defs>'
+      +'<rect x="46" y="40" width="70" height="11" rx="5.5" fill="url(#'+P+'pbrushG)"/>'
+      +'<rect x="52" y="42" width="54" height="2.6" rx="1.3" fill="#fff" opacity=".4"/>'
+      +'<rect x="8" y="38.5" width="44" height="13" rx="6.5" fill="url(#'+P+'pbrushG)"/>'
+      +'<g fill="#E3F2EE"><rect x="12" y="24" width="4" height="16" rx="2"/><rect x="18" y="22" width="4" height="18" rx="2"/><rect x="24" y="23" width="4" height="17" rx="2"/><rect x="30" y="22" width="4" height="18" rx="2"/><rect x="36" y="23.5" width="4" height="16.5" rx="2"/><rect x="42" y="25" width="4" height="15" rx="2"/></g>'
+      +'<path d="M20 24 Q18 15 26 14 Q34 13 38 20 Q40 25 32 25 Q25 26 20 24 Z" fill="url(#'+P+'ppasteG)" stroke="#BDEFE6" stroke-width="0.6"/>'
+      +'<ellipse cx="26" cy="18" rx="4" ry="1.7" fill="#fff" opacity=".65"/></svg>'
+      +'<div class="pastetxt">'+rows+'</div></div></div>';
   }
-  // ease brush toward region base pose (the gum-line start)
-  var k=0.16;
-  cur.x+=(tgt.x-cur.x)*k;
-  cur.y+=(tgt.y-cur.y)*k;
-  cur.r+=(tgt.r-cur.r)*k;
-  // ease the close-up toward the active region
-  var zk=0.11;
-  zoom.s+=(zoomT.s-zoom.s)*zk;
-  zoom.x+=(zoomT.x-zoom.x)*zk;
-  zoom.y+=(zoomT.y-zoom.y)*zk;
-  applyZoom();
-  // rolling-method stroke: slide bristles from gum toward the tooth tip + wrist roll.
-  // upper arch rolls down (+y, 잇몸→치아끝), lower arch rolls up (-y).
-  var rg=REGIONS[activeIdx]||REGIONS[0];
-  var dir=(rg.arch==='U')?1:-1;
-  var p=rollPhase(ts);
-  applyBrush(0, dir*p*13, dir*p*15);
-  requestAnimationFrame(tick);
+  return paste
+    +'<div class="card" style="padding:0; overflow:hidden;">'
+      +'<div class="timerwrap"><div class="ring">'
+        +'<svg viewBox="0 0 84 84" width="84" height="84">'
+          +'<circle cx="42" cy="42" r="37" fill="none" stroke="#E6F4F1" stroke-width="8"/>'
+          +'<circle id="'+P+'subRing" cx="42" cy="42" r="37" fill="none" stroke="url(#'+P+'rg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="232.5"/>'
+          +'<defs><linearGradient id="'+P+'rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5FE3D1"/><stop offset="1" stop-color="#0E8C7E"/></linearGradient></defs>'
+        +'</svg><div class="rtxt"><b id="'+P+'bigTime">3:00</b><span>남은 시간</span></div></div>'
+        +'<div class="tinfo"><div class="step" id="'+P+'stepNo">1 / 6 단계</div><div class="stepname" id="'+P+'stepName">윗니 바깥쪽</div>'
+        +'<div class="bar"><i id="'+P+'totBar"></i></div><div class="totlabel" id="'+P+'totLabel">전체 진행 0%</div></div>'
+      +'</div></div>'
+    +'<div class="card"><div class="stage">'
+      +'<svg id="'+P+'mouthSvg" class="mouthSvg" viewBox="0 0 300 300" aria-label="치아 그림"><g id="'+P+'zoomG">'
+        +'<g id="'+P+'mouthLayer"></g>'
+        +'<g id="'+P+'brushPos"><g class="brushSweep"><g class="foam">'
+          +'<circle cx="-14" cy="-4" r="3.4" fill="#CFF6EF" opacity=".7"/><circle cx="13" cy="-9" r="2.6" fill="#EAFBF8" opacity=".7"/><circle cx="-6" cy="-15" r="2.2" fill="#CFF6EF" opacity=".6"/>'
+        +'</g><g>'
+          +'<defs>'
+            +'<linearGradient id="'+P+'handle" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2CC3B1"/><stop offset="0.5" stop-color="#17B2A0"/><stop offset="1" stop-color="#0C7F72"/></linearGradient>'
+            +'<linearGradient id="'+P+'brushHead" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#17B2A0"/><stop offset="1" stop-color="#43D2C2"/></linearGradient>'
+            +'<linearGradient id="'+P+'tuft" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#DFF1ED"/><stop offset="1" stop-color="#FCFFFE"/></linearGradient>'
+            +'<linearGradient id="'+P+'paste" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#BDEFE6"/></linearGradient>'
+          +'</defs>'
+          +'<path d="M-8.5 -56 C-13 -72 -13 -94 -9 -112 Q-8 -121 0 -121 Q8 -121 9 -112 C13 -94 13 -72 8.5 -56 Z" fill="url(#'+P+'handle)"/>'
+          +'<path d="M-4 -62 C-7 -78 -7 -96 -4.5 -110" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="3" stroke-linecap="round" fill="none"/>'
+          +'<path d="M-7 -38 Q-9 -50 -8 -58 L8 -58 Q9 -50 7 -38 Z" fill="url(#'+P+'handle)"/>'
+          +'<rect x="-25" y="-38" width="50" height="24" rx="12" fill="url(#'+P+'brushHead)" stroke="#8FDDD1" stroke-width="1.1"/>'
+          +'<rect x="-19" y="-35.5" width="38" height="6" rx="3" fill="#FFFFFF" opacity=".5"/>'
+          +'<g id="'+P+'bristleField"></g>'
+          +'<path d="M-15 -2 Q-13 -9 -7 -7 Q-4 -12 1 -8 Q5 -12 9 -7 Q15 -9 14 -1 Q7 2 0 1 Q-8 2 -15 -2 Z" fill="url(#'+P+'paste)" opacity=".95"/>'
+          +'<ellipse cx="-3" cy="-5.5" rx="5" ry="2.2" fill="#FFFFFF" opacity=".6"/>'
+        +'</g></g></g>'
+      +'</g></svg></div>'
+      +'<div class="chips" id="'+P+'chips"></div></div>'
+    +'<div class="instruct" id="'+P+'instruct"><div class="ic">!</div><p id="'+P+'instructText">'+REGIONS[0].tip+'</p></div>'
+    +'<div class="g-controls">'
+      +'<button class="btn primary" id="'+P+'btnPlay">시작</button>'
+      +'<button class="btn ghost sm" id="'+P+'btnReset" style="flex:0 0 auto;width:auto">처음부터</button>'
+      +(opts.camera?'<button class="btn ghost sm" id="'+P+'btnCam" style="flex:0 0 auto;width:auto">거울 보기</button>':'')
+    +'</div>'
+    +(opts.camera?('<div class="cam" id="'+P+'cam"><div class="cambox" id="'+P+'cambox"><span class="camtag">거울 보기 · 모의</span>'
+      +'<video id="'+P+'video" playsinline muted autoplay></video><div class="camscan"><div class="frame"></div><div class="line"></div></div>'
+      +'<div class="cammsg" id="'+P+'camMsg">버튼을 누르면 앞 카메라로 내 입을 비춰 볼 수 있어요.</div></div></div>'):'');
 }
 
-/* ---------------- controls ---------------- */
-document.getElementById('btnPlay').addEventListener('click',function(){
-  if(completed){ resetAll(); return; }
-  running=!running;
-  if(running) lastTs=0;
-  render();
-});
-document.getElementById('btnReset').addEventListener('click',resetAll);
-function resetAll(){
-  running=false; completed=false; elapsed=0; lastTs=0;
-  document.getElementById('instruct').classList.remove('done');
-  setRegion(0);
-  render();
-}
+function makeBrushGuide(root,P,opts){
+  opts=opts||{};
+  root.innerHTML=brushTemplate(P,opts);
+  var $=function(id){return document.getElementById(P+id);};
+  $('mouthLayer').innerHTML=buildMouthHTML(P);
+  (function(){
+    var fld=$('bristleField'); if(!fld) return;
+    var s='', i, bx=[-17.5,-12.5,-7.5,-2.5,2.5,7.5,12.5,17.5], fx=[-20,-15,-10,-5,0,5,10,15,20];
+    for(i=0;i<bx.length;i++){ var tp=-2.6-((i*37)%5)*0.4;
+      s+='<rect x="'+(bx[i]-2.7).toFixed(1)+'" y="-16" width="5.4" height="'+(tp+16).toFixed(1)+'" rx="2.7" fill="url(#'+P+'tuft)" opacity="0.72"/>'; }
+    for(i=0;i<fx.length;i++){ var tq=-0.6-((i*53)%6)*0.33;
+      s+='<rect x="'+(fx[i]-2.6).toFixed(1)+'" y="-14.5" width="5.2" height="'+(tq+14.5).toFixed(1)+'" rx="2.6" fill="url(#'+P+'tuft)" opacity="0.9"/>'; }
+    s+='<g stroke="#BFE4DD" stroke-width="0.7" stroke-opacity="0.55" stroke-linecap="round">';
+    for(i=0;i<fx.length;i++){ s+='<line x1="'+fx[i].toFixed(1)+'" y1="-12.5" x2="'+fx[i].toFixed(1)+'" y2="-1.6"/>'; }
+    s+='</g>'; fld.innerHTML=s;
+  })();
 
-/* ---------------- camera (mirror) ---------------- */
-var camStream=null;
-document.getElementById('btnCam').addEventListener('click',function(){
-  var cam=document.getElementById('cam'), btn=this;
-  if(camStream){ stopCam(); cam.classList.remove('show'); btn.classList.remove('on'); btn.textContent='거울 보기'; return; }
-  cam.classList.add('show'); btn.classList.add('on'); btn.textContent='거울 끄기';
-  var msg=document.getElementById('camMsg'), box=document.getElementById('cambox'), video=document.getElementById('video');
-  msg.textContent='카메라를 준비하고 있어요...';
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    msg.textContent='이 기기에서는 카메라를 쓸 수 없어요. 괜찮아요, 거울 앞에서 함께 닦아도 좋아요!';
-    return;
+  var elapsed=0, running=false, completed=false, lastTs=0, rafId=null, activeIdx=-1;
+  var cur={x:150,y:74,r:-28}, tgt={x:150,y:74,r:-28};
+  var zoom={s:1,x:0,y:0}, zoomT={s:1,x:0,y:0};
+  var brushPos=$('brushPos'), zoomG=$('zoomG'), subRing=$('subRing');
+  var RING_C=2*Math.PI*37;
+
+  (function(){
+    var c=$('chips'), html='';
+    REGIONS.forEach(function(rg,i){ html+='<button class="chip" data-idx="'+i+'"><span class="n">'+(i+1)+'</span>'+rg.chip+'</button>'; });
+    c.innerHTML=html;
+    c.addEventListener('click',function(e){ var b=e.target.closest('.chip'); if(!b) return; jumpTo(+b.getAttribute('data-idx')); });
+  })();
+  $('mouthLayer').addEventListener('click',function(e){ var el=e.target.closest('.hit'); if(!el) return; jumpTo(+el.getAttribute('data-idx')); });
+
+  function regionFocus(i){ var rg=REGIONS[i], s=1.62, cy=(rg.arch==='U')?96:206; return {s:s, x:150-s*150, y:150-s*cy}; }
+  function applyZoom(){ zoomG.setAttribute('transform','translate('+zoom.x.toFixed(2)+' '+zoom.y.toFixed(2)+') scale('+zoom.s.toFixed(4)+')'); }
+  function curIndex(){ if(elapsed>=TOTAL) return 5; return Math.max(0,Math.min(5,Math.floor(elapsed/REGION_SECONDS))); }
+  function setRegion(i){
+    if(i===activeIdx) return; activeIdx=i; var rg=REGIONS[i];
+    var chips=root.querySelectorAll('.chip'); chips.forEach(function(c,ci){c.classList.toggle('active',ci===i);});
+    root.querySelectorAll('.hi').forEach(function(h){h.classList.remove('active');});
+    document.getElementById(P+rg.hi).classList.add('active');
+    $('stepNo').textContent=(i+1)+' / 6 단계'; $('stepName').textContent=rg.name;
+    if(!completed) $('instructText').textContent=rg.tip;
+    tgt={x:rg.brush.x,y:rg.brush.y,r:rg.brush.r};
+    while(tgt.r-cur.r>180) tgt.r-=360; while(tgt.r-cur.r<-180) tgt.r+=360;
+    zoomT=regionFocus(i);
   }
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(st){
-    camStream=st; video.srcObject=st; box.classList.add('live');
-    var play=video.play(); if(play&&play.catch) play.catch(function(){});
-  }).catch(function(){
-    box.classList.remove('live');
-    msg.textContent='카메라를 켤 수 없어요. 허용되지 않았거나 사용 중일 수 있어요. 거울 앞에서 함께 닦아도 좋아요!';
+  function applyBrush(dx,dy,dr){ dx=dx||0;dy=dy||0;dr=dr||0;
+    brushPos.setAttribute('transform','translate('+(cur.x+dx).toFixed(2)+' '+(cur.y+dy).toFixed(2)+') rotate('+(cur.r+dr).toFixed(2)+')'); }
+  function rollPhase(ts){ var Pp=1150, t=(ts%Pp)/Pp, fwd=0.64, u; if(t<fwd){ u=t/fwd; return 1-(1-u)*(1-u); } u=(t-fwd)/(1-fwd); return 1-(u<0.5?2*u*u:1-Math.pow(-2*u+2,2)/2); }
+  function fmt(s){s=Math.max(0,Math.ceil(s)); var m=Math.floor(s/60); var ss=s%60; return m+':'+(ss<10?'0':'')+ss;}
+  function jumpTo(i){ i=Math.max(0,Math.min(5,i)); completed=false; elapsed=i*REGION_SECONDS; $('instruct').classList.remove('done'); setRegion(i); render(); }
+  function render(){
+    var i=curIndex(); setRegion(i);
+    var remain=Math.max(0,TOTAL-elapsed);
+    $('bigTime').textContent=completed?'0:00':fmt(remain);
+    var tp=Math.min(100,elapsed/TOTAL*100);
+    $('totBar').style.width=tp.toFixed(1)+'%'; $('totLabel').textContent='전체 진행 '+Math.round(tp)+'%';
+    var sub=completed?REGION_SECONDS:(elapsed-i*REGION_SECONDS);
+    var frac=Math.max(0,Math.min(1,sub/REGION_SECONDS));
+    subRing.setAttribute('stroke-dashoffset',(RING_C*(1-frac)).toFixed(2));
+    $('btnPlay').textContent=completed?'다시 하기':(running?'일시정지':(elapsed>0?'계속하기':'시작'));
+  }
+  function finish(){ completed=true; running=false; elapsed=TOTAL; $('instruct').classList.add('done');
+    $('instructText').textContent='다 닦았어요! 잘했어요'; render(); if(opts.onFinish) opts.onFinish(); }
+  function loop(ts){
+    if(lastTs===0) lastTs=ts; var dt=(ts-lastTs)/1000; lastTs=ts; if(dt>0.25) dt=0.25;
+    if(running && !completed){ elapsed+=dt; if(elapsed>=TOTAL){ finish(); } else render(); }
+    var k=0.16; cur.x+=(tgt.x-cur.x)*k; cur.y+=(tgt.y-cur.y)*k; cur.r+=(tgt.r-cur.r)*k;
+    var zk=0.11; zoom.s+=(zoomT.s-zoom.s)*zk; zoom.x+=(zoomT.x-zoom.x)*zk; zoom.y+=(zoomT.y-zoom.y)*zk; applyZoom();
+    var rg=REGIONS[activeIdx]||REGIONS[0]; var dir=(rg.arch==='U')?1:-1; var ph=rollPhase(ts); applyBrush(0,dir*ph*13,dir*ph*15);
+    rafId=requestAnimationFrame(loop);
+  }
+  $('btnPlay').addEventListener('click',function(){ if(completed){ resetAll(); return; } running=!running; if(running) lastTs=0; render(); });
+  $('btnReset').addEventListener('click',resetAll);
+  function resetAll(){ running=false; completed=false; elapsed=0; lastTs=0; $('instruct').classList.remove('done'); setRegion(0); render(); }
+
+  var camStream=null;
+  function startCam(scan){
+    if(!opts.camera) return;
+    var cam=$('cam'), box=$('cambox'), video=$('video'), msg=$('camMsg');
+    cam.classList.add('show'); if($('btnCam')){ $('btnCam').classList.add('on'); $('btnCam').textContent='거울 끄기'; }
+    if(scan) box.classList.add('scanning');
+    msg.textContent='카메라를 준비하고 있어요...';
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      msg.textContent='이 기기에서는 카메라를 쓸 수 없어요. 괜찮아요, 거울 앞에서 함께 닦아도 좋아요!'; return;
+    }
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(st){
+      camStream=st; video.srcObject=st; box.classList.add('live'); var pl=video.play(); if(pl&&pl.catch) pl.catch(function(){});
+    }).catch(function(){
+      box.classList.remove('live');
+      msg.textContent='카메라를 켤 수 없어요. 허용되지 않았거나 사용 중일 수 있어요. 거울 앞에서 함께 닦아도 좋아요!';
+    });
+  }
+  function stopCam(){
+    if(!opts.camera) return;
+    if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+    var box=$('cambox'); if(box){ box.classList.remove('live'); box.classList.remove('scanning'); }
+    var cam=$('cam'); if(cam) cam.classList.remove('show');
+    if($('btnCam')){ $('btnCam').classList.remove('on'); $('btnCam').textContent='거울 보기'; }
+    if($('camMsg')) $('camMsg').textContent='버튼을 누르면 앞 카메라로 내 입을 비춰 볼 수 있어요.';
+  }
+  if(opts.camera && $('btnCam')){
+    $('btnCam').addEventListener('click',function(){ if(camStream || $('cam').classList.contains('show')){ stopCam(); } else { startCam(false); } });
+  }
+
+  setRegion(0); cur={x:REGIONS[0].brush.x,y:REGIONS[0].brush.y,r:REGIONS[0].brush.r};
+  zoom=regionFocus(0); zoomT=regionFocus(0); applyZoom(); applyBrush(); render();
+
+  return {
+    root:root,
+    start:function(){ if(!rafId){ lastTs=0; rafId=requestAnimationFrame(loop); } },
+    stop:function(){ if(rafId){ cancelAnimationFrame(rafId); rafId=null; } },
+    jumpTo:jumpTo, reset:resetAll, startCam:startCam, stopCam:stopCam,
+    play:function(){ if(!completed){ running=true; lastTs=0; render(); } },
+    pause:function(){ running=false; render(); }
+  };
+}
+
+/* ========================================================================
+   ROUTER + SCREEN RENDERERS
+   ======================================================================== */
+var NAV=['home','calendar','verify','shop','menu'];
+var SCREEN_META={
+  onboarding:{title:'루덴스 <b>양치 인증</b>', tag:'하루 3번, 닦고 인증하고 포인트 받기', nav:false, back:false, parent:null},
+  home:{title:'루덴스 <b>양치 인증</b>', tag:'하루 3번, 닦고 인증하고 포인트 받기', nav:'home', back:false},
+  verify:{title:'양치 <b>인증</b>', tag:'닦으면서 카메라로 인증해요 (모의)', nav:'verify', back:true, parent:'home'},
+  shop:{title:'포인트 <b>샵</b>', tag:'포인트로 구강케어 제품 교환', nav:'shop', back:true, parent:'home'},
+  calendar:{title:'습관 <b>캘린더</b>', tag:'연속 기록과 양치 습관 점수', nav:'calendar', back:true, parent:'home'},
+  replace:{title:'칫솔 <b>교체</b>', tag:'칫솔 사용 기간 체크', nav:false, back:true, parent:'home'},
+  menu:{title:'전체 <b>메뉴</b>', tag:'모든 기능 모아보기', nav:'menu', back:true, parent:'home'},
+  guide:{title:'올바른 <b>양치질</b>', tag:'3분 회전법 가이드', nav:false, back:true, parent:'menu'},
+  clean:{title:'구강청결 <b>방법</b>', tag:'치실 · 혀닦기 · 가글', nav:false, back:true, parent:'menu'},
+  trivia:{title:'치과 <b>상식</b>', tag:'치과 감수 전제 · 초안', nav:false, back:true, parent:'menu'},
+  doctor:{title:'맞춤 <b>구강주치의</b>', tag:'파트너 치과 검진 연계 (모의)', nav:false, back:true, parent:'menu'}
+};
+var current=null, guideInst=null, verifyInst=null, builtClean=false;
+
+function setHeader(screen){
+  var m=SCREEN_META[screen];
+  document.getElementById('hTitle').innerHTML=m.title;
+  document.getElementById('hTag').textContent=m.tag;
+  document.getElementById('hBack').style.display=m.back?'flex':'none';
+  document.getElementById('hLogo').style.display=m.back?'none':'flex';
+  var bnav=document.getElementById('bnav');
+  if(m.nav!==false && screen!=='onboarding'){ bnav.classList.add('show'); } else { bnav.classList.remove('show'); }
+  root_nav_highlight(m.nav);
+}
+function root_nav_highlight(nav){
+  document.querySelectorAll('.nav-i').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-nav')===nav); });
+}
+function go(screen){
+  if(!state.profile && screen!=='onboarding'){ screen='onboarding'; }
+  // leaving current
+  if(guideInst){ guideInst.stop(); guideInst.stopCam(); }
+  if(verifyInst){ verifyInst.stop(); verifyInst.stopCam(); }
+  cancelMock();
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var el=document.getElementById('s-'+screen); el.classList.add('active');
+  document.getElementById('screens').scrollTop=0;
+  setHeader(screen); current=screen;
+  if(screen==='home') renderHome();
+  else if(screen==='verify') enterVerify();
+  else if(screen==='shop') renderShop();
+  else if(screen==='calendar') renderCalendar();
+  else if(screen==='replace') renderReplace();
+  else if(screen==='menu') renderMenu();
+  else if(screen==='guide') enterGuide();
+  else if(screen==='clean') enterClean();
+  else if(screen==='trivia') renderTrivia();
+  else if(screen==='doctor') renderDoctor();
+  else if(screen==='onboarding') renderOnboarding();
+}
+document.getElementById('hBack').addEventListener('click',function(){
+  var m=SCREEN_META[current]; go((m&&m.parent)?m.parent:'home');
+});
+document.getElementById('bnav').addEventListener('click',function(e){
+  var b=e.target.closest('.nav-i'); if(!b) return; go(b.getAttribute('data-nav'));
+});
+
+function ringSVG(size,frac,color,track,w){
+  var r=(size-w)/2, c=2*Math.PI*r, off=c*(1-Math.max(0,Math.min(1,frac)));
+  return '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" style="transform:rotate(-90deg)">'
+    +'<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+track+'" stroke-width="'+w+'"/>'
+    +'<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+w+'" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/></svg>';
+}
+
+/* ---------------- ONBOARDING ---------------- */
+var obTmp={age:'', sex:'', type:'', consent:false};
+function renderOnboarding(){
+  obTmp={age:'', sex:'', type:'', consent:false};
+  var el=document.getElementById('s-onboarding');
+  el.innerHTML=''
+    +'<div class="ob-hero"><div class="ob-emoji">🪥</div>'
+      +'<div class="big">하루 3번, 닦고 인증해요</div>'
+      +'<p>애니메이션을 따라 양치하고 카메라로 인증하면 포인트가 쌓여요.<br>포인트로 구강케어 제품을 바꿀 수 있어요.</p></div>'
+    +'<div class="card" style="margin-top:14px">'
+      +'<div class="field"><label>나이대</label><div class="opts" id="obAge">'
+        +'<button class="opt" data-v="5">유아<span class="sub">3~6세</span></button>'
+        +'<button class="opt" data-v="9">어린이<span class="sub">7~12세</span></button>'
+        +'<button class="opt" data-v="16">청소년<span class="sub">13~18세</span></button>'
+        +'<button class="opt" data-v="30">성인<span class="sub">19세+</span></button></div></div>'
+      +'<div class="field"><label>성별</label><div class="opts" id="obSex">'
+        +'<button class="opt" data-v="남">남아/남성</button>'
+        +'<button class="opt" data-v="여">여아/여성</button>'
+        +'<button class="opt" data-v="무응답">선택 안 함</button></div></div>'
+      +'<div class="field"><label>이용 유형</label><div class="opts" id="obType">'
+        +'<button class="opt" data-v="kid">유아용<span class="sub">쉬운 말 · 보호자</span></button>'
+        +'<button class="opt" data-v="adult">성인용<span class="sub">표준 가이드</span></button></div></div>'
+      +'<div class="consent hide" id="obConsent"><input type="checkbox" id="obConsentChk">'
+        +'<p><b>법정대리인 동의</b> — 유아용은 보호자(법정대리인)의 동의가 필요해요. 보호자가 함께 확인했고, 구강 사진 등 민감정보 수집·이용에 동의합니다. (시연용 예시 문구)</p></div>'
+      +'<button class="btn primary" id="obStart" disabled>시작하기</button>'
+      +'<div class="foot-note">만 14세 미만은 법정대리인 동의가 필요합니다. 수집 항목은 성인/유아 분기와 맞춤에 필요한 최소 항목(나이·성별)입니다. · Draft · 시연용 모의</div>'
+    +'</div>';
+  function pick(group,key,val){ obTmp[key]=val;
+    el.querySelectorAll('#'+group+' .opt').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-v')===val); });
+    // auto link age<=6 to 유아용 suggestion
+    if(group==='obType'){ document.getElementById('obConsent').classList.toggle('hide', val!=='kid'); if(val!=='kid') obTmp.consent=false, document.getElementById('obConsentChk').checked=false; }
+    refreshStart();
+  }
+  el.querySelector('#obAge').addEventListener('click',function(e){ var b=e.target.closest('.opt'); if(!b)return; pick('obAge','age',b.getAttribute('data-v'));
+    if(b.getAttribute('data-v')==='5' && !obTmp.type){ pick('obType','type','kid'); } });
+  el.querySelector('#obSex').addEventListener('click',function(e){ var b=e.target.closest('.opt'); if(!b)return; pick('obSex','sex',b.getAttribute('data-v')); });
+  el.querySelector('#obType').addEventListener('click',function(e){ var b=e.target.closest('.opt'); if(!b)return; pick('obType','type',b.getAttribute('data-v')); });
+  el.querySelector('#obConsentChk').addEventListener('change',function(){ obTmp.consent=this.checked; refreshStart(); });
+  function refreshStart(){
+    var ok=obTmp.age && obTmp.sex && obTmp.type && (obTmp.type!=='kid' || obTmp.consent);
+    document.getElementById('obStart').disabled=!ok;
+  }
+  el.querySelector('#obStart').addEventListener('click',function(){
+    state.profile={age:obTmp.age, sex:obTmp.sex, type:obTmp.type, consent:obTmp.consent}; save(); go('home');
   });
-});
-function stopCam(){
-  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
-  var box=document.getElementById('cambox'); box.classList.remove('live');
-  document.getElementById('camMsg').textContent='버튼을 누르면 앞 카메라로 내 입을 비춰 볼 수 있어요.';
 }
 
-/* ---------------- tabs ---------------- */
-document.querySelector('.tabs').addEventListener('click',function(e){
-  var t=e.target.closest('.tab'); if(!t) return;
-  var mode=t.getAttribute('data-mode');
-  document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('active',x===t);});
-  document.querySelectorAll('.mode').forEach(function(m){m.classList.remove('active');});
-  document.getElementById('mode-'+mode).classList.add('active');
-  if(mode!=='brush'){ running=false; stopCam();
-    document.getElementById('cam').classList.remove('show');
-    document.getElementById('btnCam').classList.remove('on');
-    document.getElementById('btnCam').textContent='거울 보기';
-    render();
-  }
-});
+/* ---------------- HOME ---------------- */
+function renderHome(){
+  var h=habit(); var p=state.profile; var tc=state.todayCount;
+  var typeLabel = p.type==='kid'?'유아용':'성인용';
+  var dots='';
+  for(var i=1;i<=3;i++){ var on=tc>=i;
+    dots+='<div class="dot3 '+(on?'on':'')+'">'+ringSVG(54, on?1:0.001, '#18B9A6', '#E6F4F1', 7)+'<div class="lab">'+(on?'✓':i)+'</div></div>'; }
+  var award = tc>=3?'오늘 적립 완료 (150P)':(tc===2?'3회차 인증 시 +100P':(tc===1?'2회차 인증 시 +50P':'2회차부터 포인트가 쌓여요'));
+  var el=document.getElementById('s-home');
+  el.innerHTML=''
+    +'<div class="greet">반가워요! <span class="pill '+(p.type==='kid'?'kid':'adult')+'">'+typeLabel+'</span></div>'
+    +'<div class="card today-card"><div class="t-ttl">오늘의 양치 인증</div>'
+      +'<div class="dots">'+dots+'</div>'
+      +'<div class="today-sub">오늘 <b>'+tc+'/3</b> 인증 · '+award+'</div>'
+      +'<button class="btn primary" id="hVerify" style="margin-top:14px">'+(tc>=3?'한 번 더 닦기':'지금 양치 인증하기')+'</button></div>'
+    +'<div class="stat-row">'
+      +'<div class="stat"><div class="v">'+state.points+'<small>P</small></div><div class="k">보유 포인트</div></div>'
+      +'<div class="stat"><div class="v">'+h.streak+'<small>일</small></div><div class="k">연속 스트릭</div></div>'
+      +'<div class="stat"><div class="v">'+h.total+'<small>점</small></div><div class="k">양치 습관 점수</div></div>'
+    +'</div>'
+    +'<div class="sectitle">메뉴</div>'
+    +'<div class="menu-grid five">'
+      +menuItem('④','하루 3회 인증','닦고 카메라로 인증','verify')
+      +menuItem('①','치과상식','알아두면 좋은 상식','trivia')
+      +menuItem('②','구강청결방법','치실·혀닦기·가글','clean')
+      +menuItem('③','올바른 양치질','3분 회전법 가이드','guide')
+      +menuItem('⑤','맞춤 구강주치의','치과 검진 연계','doctor')
+    +'</div>'
+    +'<div class="quick">'
+      +quickItem('🛍️','포인트 샵',state.points+'P 보유','shop')
+      +quickItem('📅','습관 캘린더',h.streak+'일 연속','calendar')
+      +quickItem('🪥','칫솔 교체',brushDays()+'일차','replace')
+    +'</div>'
+    +'<div class="foot-note">Draft · 시연용 모의 프로토타입 · 인식/포인트/구매는 모두 모의 처리됩니다. 질병의 진단·치료 목적이 아닙니다.</div>';
+  el.querySelector('#hVerify').addEventListener('click',function(){ go('verify'); });
+  el.addEventListener('click',homeClick);
+}
+function homeClick(e){ var mi=e.target.closest('[data-go]'); if(mi) go(mi.getAttribute('data-go')); }
+function menuItem(no,t,s,go){ return '<button class="m-item" data-go="'+go+'"><span class="m-badge">'+no+'</span><span class="mt"><b>'+t+'</b><span>'+s+'</span></span></button>'; }
+function quickItem(ic,t,s,go){ return '<button class="q-item" data-go="'+go+'"><div class="qi">'+ic+'</div><div class="qt">'+t+'</div><div class="qs">'+s+'</div></button>'; }
 
-/* ---------------- init ---------------- */
-buildMouth();
-(function buildBristles(){
-  var fld=document.getElementById('bristleField'); if(!fld) return;
-  var s='', i, bx=[-17.5,-12.5,-7.5,-2.5,2.5,7.5,12.5,17.5], fx=[-20,-15,-10,-5,0,5,10,15,20];
-  // back row: shorter tufts, sit behind
-  for(i=0;i<bx.length;i++){ var tp=-2.6-((i*37)%5)*0.4;
-    s+='<rect x="'+(bx[i]-2.7).toFixed(1)+'" y="-16" width="5.4" height="'+(tp+16).toFixed(1)+'" rx="2.7" fill="url(#tuft)" opacity="0.72"/>'; }
-  // front row: reach the tips (~y 0)
-  for(i=0;i<fx.length;i++){ var tq=-0.6-((i*53)%6)*0.33;
-    s+='<rect x="'+(fx[i]-2.6).toFixed(1)+'" y="-14.5" width="5.2" height="'+(tq+14.5).toFixed(1)+'" rx="2.6" fill="url(#tuft)" opacity="0.9"/>'; }
-  // fine bristle texture
-  s+='<g stroke="#BFE4DD" stroke-width="0.7" stroke-opacity="0.55" stroke-linecap="round">';
-  for(i=0;i<fx.length;i++){ s+='<line x1="'+fx[i].toFixed(1)+'" y1="-12.5" x2="'+fx[i].toFixed(1)+'" y2="-1.6"/>'; }
-  s+='</g>';
-  fld.innerHTML=s;
-})();
-setRegion(0);
-cur={x:REGIONS[0].brush.x,y:REGIONS[0].brush.y,r:REGIONS[0].brush.r};
-zoom=regionFocus(0); zoomT=regionFocus(0); applyZoom();   // start already closed-up on region 1
-applyBrush();
-render();
-requestAnimationFrame(tick);
+/* ---------------- VERIFY (core) ---------------- */
+function enterVerify(){
+  var el=document.getElementById('s-verify');
+  if(!verifyInst){
+    el.innerHTML=''
+      +'<div class="g-head"><span class="gt">양치 애니메이션</span>'
+        +'<span class="pill '+(state.profile.type==='kid'?'kid':'adult')+'" id="vVariant">'+(state.profile.type==='kid'?'유아용':'성인용')+'</span></div>'
+      +'<div class="methodnote"><b>회전법</b>'+(state.profile.type==='kid'?'칫솔을 잇몸에 대고 치아 끝으로 살살 굴려 닦아요. 보호자와 함께!':'칫솔을 잇몸에 대고 치아 끝 쪽으로 쓸어 돌리며 닦아요.')+'</div>'
+      +'<div id="vGuide"></div>'
+      +'<div class="card" id="vMock">'
+        +'<div class="g-head"><span class="gt">양치 인증</span><span class="pill" style="background:#FFF3DF;color:#9A5B12;border-color:#F3D8A6">시연용 모의 인식</span></div>'
+        +'<div class="mock-note">실제 서비스는 온디바이스로 ①얼굴 추적 ②칫솔 검출 ③구역·타이머를 거칩니다. 이 데모는 인식을 모의로 재현합니다 (영상 업로드 없음).</div>'
+        +sigRow('v1','1','라이브니스 (얼굴 추적)','실제 사람·실시간 확인')
+        +sigRow('v2','2','칫솔 검출','화면 안에 칫솔이 있는지')
+        +sigRow('v3','3','구역 + 타이머','6구역 · 구역당 15~20초 (데모 단축)')
+        +'<button class="btn primary" id="vStart" style="margin-top:14px">인증 시작 · 빠른 데모 (~12초)</button>'
+        +'<div class="btnrow" style="margin-top:8px"><button class="btn ghost sm" id="vFull" style="width:100%">정식 3분 가이드로 인증</button></div>'
+        +'<div class="foot-note">카메라가 꺼져 있거나 거부돼도 데모는 진행됩니다 (graceful fallback). · Draft · 시연용 모의</div>'
+      +'</div>';
+    verifyInst=makeBrushGuide(document.getElementById('vGuide'),'v',{toothpaste:true,camera:true,kid:state.profile.type==='kid'});
+    document.getElementById('vStart').addEventListener('click',startMock);
+    document.getElementById('vFull').addEventListener('click',function(){
+      verifyInst.reset(); verifyInst.startCam(true); verifyInst.play();
+      document.getElementById('vGuide').scrollIntoView({behavior:'smooth',block:'start'});
+      verifyInst.__fullMode=true;
+    });
+  } else {
+    // refresh variant label if profile changed
+    document.getElementById('vVariant').textContent=state.profile.type==='kid'?'유아용':'성인용';
+    resetSignals();
+  }
+  verifyInst.start();
+}
+function sigRow(id,n,t,s){
+  return '<div class="sig" id="sig-'+id+'"><div class="sgi">'+n+'</div><div class="sgb">'
+    +'<div class="sgt"><span>'+t+'</span><span class="st">대기</span></div>'
+    +'<div class="sgbar"><i></i></div><div class="sgsub">'+s+'</div></div></div>';
+}
+var mockTimers=[], mockRaf=null;
+function cancelMock(){ mockTimers.forEach(function(t){clearTimeout(t);}); mockTimers=[]; if(mockRaf){cancelAnimationFrame(mockRaf); mockRaf=null;} }
+function resetSignals(){
+  ['v1','v2','v3'].forEach(function(id){ var s=document.getElementById('sig-'+id); if(!s)return;
+    s.classList.remove('run','ok'); s.querySelector('.st').textContent='대기'; s.querySelector('.sgbar>i').style.width='0%';
+    if(id==='v3') s.querySelector('.sgsub').textContent='6구역 · 구역당 15~20초 (데모 단축)'; });
+}
+function setSig(id,cls,txt){ var s=document.getElementById('sig-'+id); if(!s)return; s.classList.remove('run','ok'); if(cls)s.classList.add(cls); if(txt)s.querySelector('.st').textContent=txt; }
+function animateBar(id,from,to,dur,cb){
+  var s=document.getElementById('sig-'+id); if(!s){cb&&cb();return;} var bar=s.querySelector('.sgbar>i');
+  var t0=null;
+  function step(ts){ if(t0===null)t0=ts; var k=Math.min(1,(ts-t0)/dur); bar.style.width=(from+(to-from)*k).toFixed(1)+'%';
+    if(k<1){ mockRaf=requestAnimationFrame(step); } else { mockRaf=null; cb&&cb(); } }
+  mockRaf=requestAnimationFrame(step);
+}
+function startMock(){
+  cancelMock(); resetSignals();
+  var btn=document.getElementById('vStart'); btn.disabled=true; btn.textContent='인식 중...';
+  verifyInst.__fullMode=false; verifyInst.reset(); verifyInst.startCam(true);
+  // phase 1
+  setSig('v1','run','진행');
+  animateBar('v1',0,100,2600,function(){ setSig('v1','ok','완료 ✓');
+    // phase 2
+    setSig('v2','run','진행');
+    animateBar('v2',0,100,2200,function(){ setSig('v2','ok','완료 ✓');
+      // phase 3: cycle regions
+      setSig('v3','run','진행'); runRegions(0);
+    });
+  });
+}
+function runRegions(i){
+  if(i>5){ setSig('v3','ok','완료 ✓'); finishMock(); return; }
+  verifyInst.jumpTo(i);
+  var s=document.getElementById('sig-v3'); if(s) s.querySelector('.sgsub').textContent='구역 '+(i+1)+'/6 닦는 중...';
+  animateBar('v3', i/6*100, (i+1)/6*100, 1150, function(){ runRegions(i+1); });
+}
+function finishMock(){
+  var btn=document.getElementById('vStart'); btn.disabled=false; btn.textContent='다시 인증하기';
+  verifyInst.stopCam();
+  completeVerification();
+}
+function completeVerification(){
+  var n=state.todayCount+1;
+  var capped = n>3;
+  if(capped) n=state.todayCount; // no further count beyond 3
+  var award = n===2?50 : (n===3?100 : 0);
+  if(!capped){ state.todayCount=n; state.history[TODAY_KEY]=n; }
+  state.points+=award; save();
+  showCelebrate(award,n,capped);
+}
+
+/* ---------------- CELEBRATION ---------------- */
+function showCelebrate(award,n,capped){
+  var ov=document.getElementById('overlay');
+  var conf=''; var colors=['#18B9A6','#5FE3D1','#F2B705','#FF8FA3','#7FB2FF'];
+  for(var i=0;i<16;i++){ conf+='<div class="confetti" style="left:'+(6+i*5.6)+'%;background:'+colors[i%5]+';animation-delay:'+(Math.random()*0.4).toFixed(2)+'s"></div>'; }
+  var title, pts, desc;
+  if(capped){ title='이미 3회 완료!'; pts=''; desc='오늘 하루 3회 양치 인증을 모두 마쳤어요. 내일도 만나요!'; }
+  else if(award>0){ title=n+'회차 인증 완료!'; pts='+'+award+'P'; desc='<b>'+award+'P</b> 적립! 오늘 <b>'+n+'/3</b> 인증했어요.'+(n<3?' 한 번 더 하면 더 쌓여요.':' 오늘 목표 달성!'); }
+  else { title='1회차 인증 완료!'; pts='+0P'; desc='잘했어요! <b>2회차</b>부터 포인트가 쌓여요. (2회 +50P · 3회 +100P)'; }
+  ov.innerHTML='<div class="cele">'+conf
+    +'<div class="coin">🪙</div><div class="ctitle">'+title+'</div>'
+    +(pts?'<div class="cpts">'+pts+'</div>':'')
+    +'<div class="cdesc">'+desc+'</div>'
+    +'<button class="btn primary" id="celeOk">확인</button></div>';
+  ov.classList.add('show');
+  document.getElementById('celeOk').addEventListener('click',function(){ ov.classList.remove('show'); ov.innerHTML=''; });
+}
+function showModal(ic,t,d,okLabel,onOk,cancel){
+  var ov=document.getElementById('overlay');
+  ov.innerHTML='<div class="generic-modal"><div class="gm-i">'+ic+'</div><div class="gm-t">'+t+'</div><div class="gm-d">'+d+'</div>'
+    +'<div class="btnrow">'+(cancel?'<button class="btn ghost" id="mCancel">취소</button>':'')+'<button class="btn primary" id="mOk">'+okLabel+'</button></div></div>';
+  ov.classList.add('show');
+  document.getElementById('mOk').addEventListener('click',function(){ ov.classList.remove('show'); ov.innerHTML=''; onOk&&onOk(); });
+  if(cancel) document.getElementById('mCancel').addEventListener('click',function(){ ov.classList.remove('show'); ov.innerHTML=''; });
+}
+
+/* ---------------- SHOP ---------------- */
+var PRODUCTS=[
+  {id:'brush',ic:'🪥',n:'칫솔',d:'부드러운 모 · 성인/어린이',cost:120},
+  {id:'paste',ic:'🧴',n:'불소 치약',d:'1,000~1,500ppm',cost:150},
+  {id:'floss',ic:'🧵',n:'치실',d:'치아 사이 치태 제거',cost:80},
+  {id:'tongue',ic:'👅',n:'혀클리너',d:'설태·입냄새 관리',cost:90},
+  {id:'gargle',ic:'💧',n:'가글',d:'입안 상쾌하게',cost:110},
+  {id:'interdental',ic:'🦷',n:'치간칫솔',d:'넓은 치아 사이용',cost:100},
+  {id:'kids',ic:'🧒',n:'유아 칫솔 세트',d:'작은 머리 · 손잡이',cost:130},
+  {id:'timer',ic:'⏳',n:'양치 모래시계',d:'2분 타이머',cost:70}
+];
+function renderShop(){
+  var el=document.getElementById('s-shop');
+  var grid=''; PRODUCTS.forEach(function(p){
+    grid+='<div class="prod"><div class="pic">'+p.ic+'</div><div class="pn">'+p.n+'</div><div class="pd">'+p.d+'</div>'
+      +'<div class="pc">'+p.cost+'<small>P</small></div>'
+      +'<button class="btn primary" data-buy="'+p.id+'">포인트로 교환</button></div>';
+  });
+  el.innerHTML=''
+    +'<div class="pt-top"><div class="l"><div class="k">보유 포인트</div><div class="v">'+state.points+'<small>P</small></div></div><div class="coin">🪙</div></div>'
+    +'<div class="mock-note">인증으로 모은 포인트를 구강케어 제품으로 교환해요. 금액(원)·가격은 표시하지 않고 포인트로만 교환합니다. (시연용 모의 · 실제 결제 없음)</div>'
+    +'<div class="shop-grid">'+grid+'</div>'
+    +'<div class="foot-note">포인트 earn(인증) → spend(샵 교환) → 재원(샵 운영)으로 순환하는 구조입니다. · Draft · 시연용 모의</div>';
+  el.querySelector('.shop-grid').addEventListener('click',function(e){
+    var b=e.target.closest('[data-buy]'); if(!b) return;
+    var pid=b.getAttribute('data-buy'); var prod=PRODUCTS.filter(function(x){return x.id===pid;})[0];
+    if(state.points<prod.cost){ showModal('😅','포인트가 부족해요', '<b>'+prod.n+'</b> 교환에는 '+prod.cost+'P가 필요해요.<br>현재 '+state.points+'P 보유 중이에요. 양치 인증으로 포인트를 더 모아보세요!','확인',null,false); return; }
+    showModal('🛍️', prod.n+' 교환', '<b>'+prod.cost+'P</b>를 사용해 <b>'+prod.n+'</b>(으)로 교환할까요?<br><span style="font-size:11px">교환 후 '+(state.points-prod.cost)+'P 남아요. (시연용 모의)</span>','교환하기',function(){
+      state.points-=prod.cost; state.purchases.push({id:pid,at:TODAY_KEY}); save();
+      showModal('✅','교환 완료','<b>'+prod.n+'</b> 교환이 접수됐어요. (모의)<br>남은 포인트 <b>'+state.points+'P</b>','확인',function(){ renderShop(); },false);
+    },true);
+  });
+}
+
+/* ---------------- CALENDAR + SCORE ---------------- */
+function renderCalendar(){
+  var h=habit();
+  var y=TODAY.getFullYear(), mo=TODAY.getMonth();
+  var first=new Date(y,mo,1).getDay(); var dim=new Date(y,mo+1,0).getDate();
+  var wd=['일','월','화','수','목','금','토'], cells='';
+  wd.forEach(function(d){ cells+='<div class="wd">'+d+'</div>'; });
+  for(var b=0;b<first;b++){ cells+='<div class="cell empty"></div>'; }
+  for(var d=1;d<=dim;d++){
+    var key=dateKey(new Date(y,mo,d));
+    var c = key===TODAY_KEY? state.todayCount : (state.history[key]||0);
+    var lv = c>=3?'lv3':(c===2?'lv2':(c>=1?'lv1':''));
+    var isToday = key===TODAY_KEY;
+    cells+='<div class="cell '+lv+(isToday?' today':'')+'">'+d+(c>0?'<span class="cc">'+c+'회</span>':'')+'</div>';
+  }
+  var el=document.getElementById('s-calendar');
+  el.innerHTML=''
+    +'<div class="card"><div class="cal-head"><div class="m">'+(mo+1)+'월 '+y+'</div><div class="streak-chip">🔥 '+h.streak+'일 연속</div></div>'
+      +'<div class="cal">'+cells+'</div>'
+      +'<div class="cal-legend"><span><i style="background:#CFF0E9"></i>1회</span><span><i style="background:#7FE0D1"></i>2회</span><span><i style="background:#18B9A6"></i>3회</span><span><i style="background:#F1F8F6;border:1px solid #E6F4F1"></i>안함</span></div></div>'
+    +'<div class="card"><div class="score-top"><div class="score-ring">'+ringSVG(92,h.total/100,'#18B9A6','#E6F4F1',9)
+      +'<div class="s-v"><b>'+h.total+'</b><span>/ 100</span></div></div>'
+      +'<div class="score-side"><div class="st">양치 습관 점수</div><div class="sd">연속일·하루 3회 달성률·시간대 규칙성으로 계산한 <b>행동(습관) 지표</b>예요. 구강 건강 상태를 나타내는 점수가 아닙니다.</div></div></div>'
+      +'<div class="brk">'
+        +scoreRow('연속 기록',h.streakComp,40,h.streak+'일')
+        +scoreRow('하루 3회 달성',h.rate3,35,h.rate3pct+'%')
+        +scoreRow('시간대 규칙성',h.regComp,25,h.reg+'%')
+      +'</div>'
+      +'<div class="mock-note" style="margin:12px 0 0">※ \'구강 건강 점수\'가 아니라 \'양치 습관 점수\'입니다. 건강 상태의 진단·평가가 아닙니다. (계산식은 시연용 모의)</div></div>'
+    +'<div class="foot-note">Draft · 시연용 모의 · 사전 입력된 기록으로 데모를 구성했습니다.</div>';
+}
+function scoreRow(label,val,max,extra){
+  return '<div class="row"><span class="bl">'+label+'</span><span class="bbar"><i style="width:'+(val/max*100).toFixed(0)+'%"></i></span><span class="bv">'+val+'<small style="font-size:9px;color:#99b">/'+max+'</small></span></div>'
+    +'<div style="font-size:10.5px;color:#7b958f;font-weight:600;margin:-4px 0 9px 102px">'+extra+'</div>';
+}
+
+/* ---------------- BRUSH REPLACE ---------------- */
+function brushDays(){ var reg=new Date(state.brushRegisterDate); var ms=TODAY-reg; return Math.max(0,Math.floor(ms/86400000)); }
+function renderReplace(){
+  var days=brushDays(); var LIMIT=90; var frac=Math.min(1,days/LIMIT); var remain=LIMIT-days;
+  var over=days>=LIMIT, near=days>=LIMIT-15 && !over;
+  var color = over?'#E4573C':(near?'#E8923B':'#18B9A6');
+  var el=document.getElementById('s-replace');
+  var status='';
+  if(over) status='<div class="rep-warn">⚠️ 교체 권장 — 사용한 지 '+days+'일이 지났어요 (권장 90일). 새 칫솔로 바꿔요.</div>';
+  else if(near) status='<div class="rep-warn" style="background:#FFF3E6;border-color:#F3D8A6;color:#B5631A">🔔 교체 임박 — '+remain+'일 뒤면 교체 시기예요. 미리 준비해요.</div>';
+  else status='<div class="rep-ok">👍 아직 괜찮아요 — 교체까지 약 '+remain+'일 남았어요.</div>';
+  el.innerHTML=''
+    +'<div class="card rep-top">'+'<div class="rep-ring">'+ringSVG(150,frac,color,'#E6F4F1',12)
+      +'<div class="rv"><b style="color:'+color+'">'+days+'</b><div class="d">일 사용</div><div class="rl">권장 교체 '+LIMIT+'일</div></div></div>'
+      +status
+      +'<div class="rep-info" style="text-align:left;margin-top:6px">'
+        +'<div>칫솔 등록일 · <b>'+state.brushRegisterDate+'</b></div>'
+        +'<div>사용 기간 · <b>'+days+'일차</b> (권장 교체 '+LIMIT+'일)</div>'
+        +'<div>남은 기간 · <b>'+(over?'0일 (초과)':remain+'일')+'</b></div>'
+      +'</div>'
+      +'<div class="btnrow" style="margin-top:14px">'
+        +'<button class="btn warn sm" id="repShop" style="flex:1">포인트 샵에서 재구매</button>'
+        +'<button class="btn ghost sm" id="repReset" style="flex:1">새 칫솔로 교체</button>'
+      +'</div></div>'
+    +'<div class="card"><div class="sectitle">칫솔 교체, 왜 중요할까요?</div>'
+      +'<ol class="steps"><li><span class="num">1</span><p>칫솔모가 벌어지면 세정력이 크게 떨어져요.</p></li>'
+      +'<li><span class="num">2</span><p>보통 <b>3개월(약 90일)</b>마다 교체해요. 모가 벌어지면 그 전에도.</p></li>'
+      +'<li><span class="num">3</span><p>아픈 뒤(감기·장염 등)엔 세균 번식 우려로 교체를 권장해요.</p></li></ol>'
+      +'<div class="tipbox">사진으로 모 벌어짐을 \'정상/교체권장\'으로 거칠게 봐주는 기능은 2단계에서 고도화 예정이에요.</div></div>'
+    +'<div class="foot-note">Draft · 시연용 모의 · 사용 기간 타이머는 등록일 기준으로 계산합니다.</div>';
+  document.getElementById('repShop').addEventListener('click',function(){ go('shop'); });
+  document.getElementById('repReset').addEventListener('click',function(){
+    showModal('🪥','새 칫솔로 교체','오늘 날짜로 칫솔을 새로 등록할까요?<br><span style="font-size:11px">사용 기간이 0일부터 다시 시작돼요.</span>','교체하기',function(){
+      state.brushRegisterDate=TODAY_KEY; save(); renderReplace();
+    },true);
+  });
+}
+
+/* ---------------- GUIDE (올바른 양치질) ---------------- */
+function enterGuide(){
+  var el=document.getElementById('s-guide');
+  if(!guideInst){
+    el.innerHTML='<div class="g-head"><span class="gt">3분 올바른 양치질</span>'
+      +'<span class="pill '+(state.profile.type==='kid'?'kid':'adult')+'">'+(state.profile.type==='kid'?'유아용':'성인용')+'</span></div>'
+      +'<div class="methodnote"><b>회전법</b>칫솔을 잇몸에 대고 치아 끝 쪽으로 쓸어 돌리며 닦아요.</div>'
+      +'<div id="gGuide"></div>'
+      +'<div class="foot-note">각 구역 약 30초 · 전체 3분. 치아 숫자 칩이나 그림을 눌러 구역을 바꿀 수 있어요. · Draft · 시연용 모의</div>';
+    guideInst=makeBrushGuide(document.getElementById('gGuide'),'g',{toothpaste:true,camera:true,kid:state.profile.type==='kid'});
+  }
+  guideInst.start();
+}
+
+/* ---------------- CLEAN (구강청결방법) ---------------- */
+function enterClean(){
+  var el=document.getElementById('s-clean');
+  if(builtClean) return;
+  builtClean=true;
+  el.innerHTML=''
+    +'<div class="subtabs"><button class="subtab active" data-pane="floss">치실</button><button class="subtab" data-pane="tongue">혀닦기</button><button class="subtab" data-pane="rinse">구강청결(가글)</button></div>'
+    +'<div class="subpane active" id="pane-floss">'
+      +'<div class="card"><div class="ill"><svg viewBox="0 0 300 200" aria-label="치실 사용 그림">'
+        +'<path d="M20 58 Q150 36 280 58 L280 44 Q150 24 20 44 Z" fill="#F4C3C7"/><rect x="20" y="52" width="260" height="10" fill="#EBA9AE"/>'
+        +'<path d="M70 60 q0 -14 20 -14 q20 0 20 14 l-4 78 q-2 18 -16 18 q-14 0 -16 -18 Z" fill="#fff" stroke="#DCEFEB" stroke-width="2"/>'
+        +'<path d="M190 60 q0 -14 20 -14 q20 0 20 14 l-4 78 q-2 18 -16 18 q-14 0 -16 -18 Z" fill="#fff" stroke="#DCEFEB" stroke-width="2"/>'
+        +'<path d="M104 64 q6 40 2 86" fill="none" stroke="#EAF6F3" stroke-width="5" stroke-linecap="round"/>'
+        +'<path d="M224 64 q6 40 2 86" fill="none" stroke="#EAF6F3" stroke-width="5" stroke-linecap="round"/>'
+        +'<g id="flossG"><line x1="150" y1="6" x2="150" y2="150" stroke="#8FD9CE" stroke-width="2.4" stroke-linecap="round"/>'
+        +'<path d="M150 150 C120 150 108 128 110 104 C111 86 120 74 136 70" fill="none" stroke="#17B2A0" stroke-width="3.4" stroke-linecap="round"/>'
+        +'<circle cx="150" cy="150" r="4" fill="#0E8C7E"/></g>'
+        +'<text x="150" y="190" text-anchor="middle" font-size="12" font-weight="700" fill="#5B7470">치아 옆면을 \'C\'자로 감아 위아래로</text></svg></div></div>'
+      +'<div class="card"><h2 class="sectitle">치실은 왜 쓸까요?</h2>'
+        +'<p class="lead">치실은 칫솔이 닿지 않는 치아 사이의 치태(세균막)를 닦는 도구예요. 칫솔은 치아 면 약 60%만 닿아요.</p>'
+        +'<ol class="steps"><li><span class="num">1</span><p>치실을 40cm 정도 끊어 양손 가운데 손가락에 감아요.</p></li>'
+        +'<li><span class="num">2</span><p>치아 사이에 톱질하듯 부드럽게 넣어요. <small>(잇몸을 세게 찍지 마세요.)</small></p></li>'
+        +'<li><span class="num">3</span><p>한쪽 치아 옆면에 \'C\'자로 감아 붙이고 위아래로 닦아요.</p></li>'
+        +'<li><span class="num">4</span><p>반대쪽 치아 옆면도 똑같이 \'C\'자로 닦아요. <small>(한 사이에 양쪽 모두!)</small></p></li>'
+        +'<li><span class="num">5</span><p>깨끗한 부분으로 옮겨가며 모든 치아 사이를 닦아요.</p></li></ol>'
+        +'<div class="tipbox">매일 한 번, 양쪽 옆면을 빠짐없이. 아프거나 어려우면 치과에서 방법을 확인하세요.</div></div>'
+    +'</div>'
+    +'<div class="subpane" id="pane-tongue">'
+      +'<div class="card"><div class="ill"><svg viewBox="0 0 300 200" aria-label="혀닦기 그림">'
+        +'<path d="M40 92 Q150 44 260 92 Q150 150 40 92 Z" fill="#B9433E"/>'
+        +'<path d="M150 58 C112 58 92 82 92 112 C92 142 118 162 150 162 C182 162 208 142 208 112 C208 82 188 58 150 58 Z" fill="#F28C92"/>'
+        +'<path d="M150 64 C120 64 102 84 102 112 C102 138 124 154 150 154 C176 154 198 138 198 112 C198 84 180 64 150 64 Z" fill="#F7A6AB"/>'
+        +'<path d="M150 72 L150 150" stroke="#E07F85" stroke-width="3" stroke-linecap="round"/>'
+        +'<g stroke="#EC9398" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M128 86 q-6 26 2 54"/><path d="M172 86 q6 26 -2 54"/></g>'
+        +'<g id="scraperG"><rect x="108" y="70" width="84" height="12" rx="6" fill="#17B2A0"/><rect x="108" y="76" width="84" height="6" rx="3" fill="#0E8C7E"/><rect x="146" y="56" width="8" height="16" rx="3" fill="#0C7F72"/></g>'
+        +'<text x="150" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="#5B7470">안쪽에서 바깥(앞)으로 부드럽게</text></svg></div></div>'
+      +'<div class="card"><h2 class="sectitle">혀도 닦아요</h2>'
+        +'<p class="lead">혀에도 세균과 설태가 쌓여요. 입냄새 상당수가 혀 백태에서 와요. 부드럽게 닦아요.</p>'
+        +'<ol class="steps"><li><span class="num">1</span><p>혀를 쭉 내밀어요.</p></li>'
+        +'<li><span class="num">2</span><p>칫솔이나 혀클리너로 혀 안쪽에서 바깥(앞)으로 부드럽게 쓸어내려요.</p></li>'
+        +'<li><span class="num">3</span><p>2~3번 반복하고 물로 헹궈요. <small>(너무 세게 하지 마세요.)</small></p></li></ol>'
+        +'<div class="tipbox">혀 안쪽 깊이 넣으면 구역질이 날 수 있어요. 닿는 곳까지만 살살.</div></div>'
+    +'</div>'
+    +'<div class="subpane" id="pane-rinse">'
+      +'<div class="card"><div class="ill"><svg viewBox="0 0 300 200" aria-label="가글 사용 그림">'
+        +'<g><path d="M44 66 L54 150 Q55 160 65 160 L77 160 Q87 160 88 150 L98 66 Z" fill="#EDF9F6" stroke="#BFE4DD" stroke-width="2"/>'
+        +'<clipPath id="cupClip"><path d="M44 66 L54 150 Q55 160 65 160 L77 160 Q87 160 88 150 L98 66 Z"/></clipPath>'
+        +'<g clip-path="url(#cupClip)"><rect x="40" y="100" width="64" height="70" fill="#8FE0D3"/><rect x="40" y="100" width="64" height="5" fill="#B8EDE4"/>'
+        +'<g class="bubbleUp"><circle cx="60" cy="126" r="3" fill="#D6F5EF"/><circle cx="78" cy="138" r="2.4" fill="#EAFBF8"/></g></g>'
+        +'<g stroke="#9FD6CD" stroke-width="1.6" stroke-linecap="round"><line x1="88" y1="100" x2="97" y2="100"/><line x1="90" y1="116" x2="97" y2="116"/></g>'
+        +'<text x="104" y="104" font-size="11" font-weight="800" fill="#0E8C7E">15</text><text x="104" y="120" font-size="11" font-weight="800" fill="#0E8C7E">10</text>'
+        +'<text x="71" y="182" text-anchor="middle" font-size="11" font-weight="700" fill="#5B7470">10~15ml</text></g>'
+        +'<g transform="translate(208 108)"><ellipse cx="0" cy="0" rx="54" ry="46" fill="#F4C3C7"/><ellipse cx="0" cy="3" rx="42" ry="34" fill="#B9433E"/>'
+        +'<clipPath id="mouthClip"><ellipse cx="0" cy="3" rx="42" ry="34"/></clipPath>'
+        +'<g clip-path="url(#mouthClip)"><g id="swishG"><path d="M-62 12 Q0 -4 62 12 L62 42 L-62 42 Z" fill="#7FD9CC" opacity=".92"/>'
+        +'<circle cx="-20" cy="10" r="4.5" fill="#D6F5EF"/><circle cx="16" cy="6" r="3.4" fill="#EAFBF8"/><circle cx="2" cy="16" r="3.2" fill="#D6F5EF"/></g></g>'
+        +'<text x="0" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="#5B7470">30초~1분 구석구석</text></g></svg></div></div>'
+      +'<div class="card"><h2 class="sectitle">헥사메딘 가글, 이렇게</h2>'
+        +'<p class="lead">헥사메딘(클로르헥시딘) 가글은 잇몸질환·발치 후·구내염 등에 쓰는 소독용 가글이에요. 매일 쓰는 일반 관리용이 아니라, 필요할 때 단기간 사용해요.</p>'
+        +'<ol class="steps"><li><span class="num">1</span><p>양치하고 30분쯤 뒤에 사용해요. <small>(치약 성분과 바로 섞이면 효과가 줄어요.)</small></p></li>'
+        +'<li><span class="num">2</span><p>원액 10~15ml를 입에 머금고 30초~1분간 구석구석 헹궈요.</p></li>'
+        +'<li><span class="num">3</span><p>뱉은 뒤 물로 헹구지 않아요. <small>(약 성분이 남아 작용하도록)</small></p></li>'
+        +'<li><span class="num">4</span><p>사용 후 30분간은 음식·음료를 피해요.</p></li></ol>'
+        +'<div class="tipbox">하루 1~2회, 보통 1~2주 단기 사용. 오래 쓰면 치아가 착색될 수 있어요 — 치과 지시를 따르세요.</div></div>'
+    +'</div>'
+    +'<div class="foot-note">Draft · 시연용 모의 · 하루 2번 불소치약, 치실·혀닦기는 보조로 매일. (ADA·NHS 가이드 참고)</div>';
+  el.querySelector('.subtabs').addEventListener('click',function(e){
+    var t=e.target.closest('.subtab'); if(!t) return; var pane=t.getAttribute('data-pane');
+    el.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('active',x===t);});
+    el.querySelectorAll('.subpane').forEach(function(p){p.classList.toggle('active',p.id==='pane-'+pane);});
+  });
+  // floss/tongue/rinse animations via injected style (scoped once)
+  if(!document.getElementById('cleanAnim')){
+    var st=document.createElement('style'); st.id='cleanAnim';
+    st.textContent='@keyframes flossSaw{0%{transform:translate(-2px,-7px);}25%{transform:translate(2px,0);}50%{transform:translate(-2px,7px);}75%{transform:translate(2px,0);}100%{transform:translate(-2px,-7px);}}'
+      +'#flossG{animation:flossSaw 1.5s ease-in-out infinite;}'
+      +'@keyframes scrape{0%{transform:translateY(0);opacity:0;}12%{opacity:1;}80%{transform:translateY(70px);opacity:1;}100%{transform:translateY(70px);opacity:0;}}'
+      +'#scraperG{animation:scrape 1.9s ease-in-out infinite;}'
+      +'@keyframes swish{0%,100%{transform:translateX(-13px);}50%{transform:translateX(13px);}}#swishG{animation:swish 1.5s ease-in-out infinite;}'
+      +'.bubbleUp{animation:foam 1.5s ease-in-out infinite;}';
+    document.head.appendChild(st);
+  }
+}
+
+/* ---------------- TRIVIA (치과상식 + 8항목) ---------------- */
+function renderTrivia(){
+  var facts=[
+    '하루 2번·한 번에 2분(특히 자기 전).',
+    '칫솔질은 \'굴리듯\' 작게(치아·잇몸 경계 45도), 좌우 세게 문지르기 금지.',
+    '치실·치간칫솔 필수(칫솔은 치아 면 약 60%만 닿음).',
+    '혀도 닦기(입냄새 상당수가 혀 백태).',
+    '칫솔 3개월마다 교체(모 벌어지면 그 전에).',
+    '불소 치약, 헹굼은 가볍게(완두콩 크기, 뱉기만).',
+    '정기 검진·스케일링(6개월~1년).',
+    '신맛·탄산 직후 바로 양치 금지(20~30분 뒤).'
+  ];
+  var flist=''; facts.forEach(function(t,i){ flist+='<div class="fact"><span class="fn">'+(i+1)+'</span><p>'+t+'</p></div>'; });
+  var el=document.getElementById('s-trivia');
+  el.innerHTML=''
+    +'<div class="card">'
+      +'<div class="info-card"><div class="ii">🦷</div><div class="it"><b>충치는 왜 생길까?</b><p>입안 세균이 당분을 먹고 산을 만들어 치아 표면을 녹여요. 그래서 자기 전 양치가 특히 중요해요.</p></div></div>'
+      +'<div class="info-card"><div class="ii">🍬</div><div class="it"><b>간식은 \'자주\'가 문제</b><p>양보다 \'얼마나 자주\' 먹느냐가 더 중요해요. 조금씩 자주 먹으면 입안이 계속 산성이 돼요.</p></div></div>'
+      +'<div class="info-card"><div class="ii">💧</div><div class="it"><b>불소의 역할</b><p>불소는 치아를 단단하게 하고 초기 충치를 되돌리는 걸 도와요. 치약 성분을 확인해요.</p></div></div>'
+      +'<div class="info-card" style="margin-bottom:0"><div class="ii">🧒</div><div class="it"><b>유아는 보호자와 함께</b><p>스스로 꼼꼼히 닦기 어려워요. 보호자가 마무리로 한 번 더 닦아주고, 가글은 삼키지 않게 지도해요.</p></div></div>'
+    +'</div>'
+    +'<div class="card"><div class="sectitle">구강청결 상식 8가지</div>'
+      +'<p class="lead" style="margin-bottom:6px">치과 감수 전제의 초안 샘플이에요.</p>'+flist
+      +'<div class="tipbox">증상이 있거나 아플 때는 상식에 의존하지 말고 치과 진료를 받으세요.</div></div>'
+    +'<div class="foot-note">Draft · 시연용 모의 · 치과 감수 전제 초안. 질병의 진단·치료 목적이 아닙니다.</div>';
+}
+
+/* ---------------- DOCTOR (맞춤 구강주치의) ---------------- */
+function renderDoctor(){
+  var el=document.getElementById('s-doctor');
+  var requested=state.doctorRequested;
+  el.innerHTML=''
+    +'<div class="card"><div class="sectitle">맞춤 구강주치의</div>'
+      +'<p class="lead">양치 인증 때 찍은 구강 사진을 <b>본인(또는 보호자) 동의 하에</b> 파트너 치과로 전달해 검진으로 연결하는 서비스예요.</p>'
+      +'<div class="flow" style="margin-top:14px">'
+        +'<div class="fstep"><div class="fc">📸</div><div class="fl">인증 시 구강 사진</div></div>'
+        +'<div class="arr">→</div>'
+        +'<div class="fstep"><div class="fc">✅</div><div class="fl">본인 동의</div></div>'
+        +'<div class="arr">→</div>'
+        +'<div class="fstep"><div class="fc">🏥</div><div class="fl">파트너 치과 전달</div></div>'
+        +'<div class="arr">→</div>'
+        +'<div class="fstep"><div class="fc">🔎</div><div class="fl">검진 연계</div></div>'
+      +'</div></div>'
+    +'<div class="card"><div class="consent-box"><div class="cb-t">전달되는 정보 (동의 시)</div>'
+      +'<ul><li>양치 인증 중 촬영한 구강 사진</li><li>가입 시 기본정보(나이·성별) 일부</li><li>건강 민감정보이므로 <b>별도 동의</b>와 보안 처리, 아동은 <b>법정대리인</b> 동의가 필요해요.</li></ul></div>'
+      +(requested
+        ? '<div class="rep-ok">✅ 신청이 접수됐어요. 파트너 치과 안내를 기다려 주세요. (모의)</div><button class="btn ghost" id="docCancel">신청 취소 (모의)</button>'
+        : '<button class="btn primary" id="docApply">동의하고 신청하기</button>')
+      +'<div class="foot-note">동의는 언제든 철회할 수 있어요. 사진은 동의 범위 안에서만 쓰여요. · Draft · 시연용 모의</div></div>'
+    +'<div class="foot-note">실제 전송은 없으며, 동의 흐름을 보여주는 데모입니다.</div>';
+  if(!requested){
+    el.querySelector('#docApply').addEventListener('click',function(){
+      showModal('🏥','구강주치의 신청','구강 사진을 파트너 치과로 전달하는 데 동의할까요?<br><span style="font-size:11px">민감정보 제공에 대한 동의예요. (시연용 모의 · 실제 전송 없음)</span>','동의하고 신청',function(){
+        state.doctorRequested=true; save(); renderDoctor();
+      },true);
+    });
+  } else {
+    el.querySelector('#docCancel').addEventListener('click',function(){ state.doctorRequested=false; save(); renderDoctor(); });
+  }
+}
+
+/* ---------------- MENU (전체메뉴) ---------------- */
+function renderMenu(){
+  var items=[
+    ['④','하루 3회 인증','닦고 카메라로 인증 (핵심)','verify'],
+    ['①','치과상식','알아두면 좋은 구강 상식','trivia'],
+    ['②','구강청결방법','치실·혀닦기·가글','clean'],
+    ['③','올바른 양치질','3분 회전법 가이드','guide'],
+    ['⑤','맞춤 구강주치의','치과 검진 연계','doctor'],
+    ['🪥','칫솔 교체','사용 기간 체크·재구매','replace'],
+    ['🛍️','포인트 샵','포인트로 제품 교환','shop'],
+    ['📅','습관 캘린더','연속 기록·습관 점수','calendar']
+  ];
+  var list=''; items.forEach(function(it){
+    list+='<div class="ml-item" data-go="'+it[3]+'"><span class="mli">'+it[0]+'</span><span class="mlt"><b>'+it[1]+'</b><span>'+it[2]+'</span></span><span class="chev">›</span></div>';
+  });
+  var el=document.getElementById('s-menu');
+  el.innerHTML='<div class="card" style="padding:4px 14px">'+list+'</div>'
+    +'<div class="dev-reset"><button id="devReset">데모 초기화 (가입부터 다시)</button></div>'
+    +'<div class="foot-note">Draft · 시연용 모의 프로토타입 · 데이터는 이 기기 localStorage에만 저장됩니다.</div>';
+  el.querySelector('.card').addEventListener('click',function(e){ var mi=e.target.closest('[data-go]'); if(mi) go(mi.getAttribute('data-go')); });
+  el.querySelector('#devReset').addEventListener('click',function(){
+    showModal('🔄','데모 초기화','모든 진행 상태를 지우고 가입 화면부터 다시 시작할까요?<br><span style="font-size:11px">사전 입력된 데모 기록으로 리셋돼요.</span>','초기화',function(){
+      resetDemo(); builtClean=false; guideInst=null; verifyInst=null;
+      document.getElementById('s-guide').innerHTML=''; document.getElementById('s-verify').innerHTML=''; document.getElementById('s-clean').innerHTML='';
+      go('onboarding');
+    },true);
+  });
+}
+
+/* ========================================================================
+   BOOT
+   ======================================================================== */
+go(state.profile?'home':'onboarding');
+window.__chika={go:go, state:function(){return state;}, reset:resetDemo};
 })();
 </script>
 </body>
