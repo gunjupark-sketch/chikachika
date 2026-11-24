@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>치카치카 — 구강 촬영</title>
+<style>
+  :root{
+    --mint:#18B9A6; --mint-d:#0E8C7E; --mint-l:#5FE3D1;
+    --ink:#10322E; --ink-soft:#5B7470; --paper:#F2FBF9; --card:#FFFFFF;
+    --line:#D8EEEA; --warn:#E7F7F3; --danger:#E4573C; --shadow:0 10px 30px rgba(16,50,46,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
+    background:var(--paper);color:var(--ink);overflow:hidden;
+    display:flex;align-items:center;justify-content:center;}
+  .app{width:100%;max-width:440px;height:100dvh;max-height:900px;position:relative;
+    background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
+
+  /* ---- header ---- */
+  .topbar{display:flex;align-items:center;gap:9px;padding:16px 18px 10px}
+  .logo{display:flex;align-items:center;gap:9px}
+  .tooth{width:30px;height:30px;flex:none}
+  .brand{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--mint-d)}
+  .brand b{color:var(--mint)}
+  .tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--mint-d);background:#E2F7F3;
+    border:1px solid var(--line);padding:4px 9px;border-radius:999px}
+
+  /* ---- privacy banner ---- */
+  .privacy{margin:4px 14px 10px;background:var(--warn);border:1px solid var(--line);
+    border-radius:14px;padding:11px 13px;display:flex;gap:9px;align-items:flex-start}
+  .privacy svg{flex:none;margin-top:1px}
+  .privacy p{font-size:12px;line-height:1.5;color:var(--ink-soft)}
+  .privacy b{color:var(--mint-d);font-weight:700}
+
+  /* ---- camera stage ---- */
+  .stage{flex:1;margin:0 14px;border-radius:22px;overflow:hidden;position:relative;
+    background:#09201C;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+  video{width:100%;height:100%;object-fit:cover;background:#09201C}
+  video.mirror{transform:scaleX(-1)}
+  .stage .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:14px;text-align:center;padding:26px;color:#BFE9E2}
+  .placeholder .big{font-size:16px;font-weight:700;color:#EAFBF8}
+  .placeholder .sm{font-size:12.5px;line-height:1.5;color:#9FD4CC}
+  .recdot{position:absolute;top:14px;left:14px;display:none;align-items:center;gap:7px;
+    background:rgba(9,32,28,.55);backdrop-filter:blur(6px);padding:6px 11px;border-radius:999px;
+    font-size:12.5px;font-weight:700;color:#fff}
+  .recdot i{width:9px;height:9px;border-radius:50%;background:#ff4d4d;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .flip{position:absolute;top:12px;right:12px;width:40px;height:40px;border:0;border-radius:50%;
+    background:rgba(9,32,28,.5);backdrop-filter:blur(6px);color:#fff;display:flex;align-items:center;
+    justify-content:center;cursor:pointer}
+
+  /* ---- controls ---- */
+  .controls{padding:16px 18px calc(16px + env(safe-area-inset-bottom));display:flex;
+    align-items:center;justify-content:center;gap:26px}
+  .recbtn{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:var(--danger);
+    box-shadow:0 8px 22px rgba(228,87,60,.4);cursor:pointer;position:relative;flex:none;transition:.15s}
+  .recbtn:active{transform:scale(.94)}
+  .recbtn::after{content:"";position:absolute;inset:0;margin:auto;width:28px;height:28px;border-radius:50%;
+    background:#fff;transition:.2s}
+  .recbtn.recording{background:#fff;border-color:var(--danger)}
+  .recbtn.recording::after{width:26px;height:26px;border-radius:7px;background:var(--danger)}
+  .hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:12px;color:var(--ink-soft)}
+  .sidebtn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+    color:var(--mint-d);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-weight:700}
+  .sidebtn:disabled{opacity:.35}
+
+  /* ---- modal ---- */
+  .scrim{position:absolute;inset:0;background:rgba(10,34,30,.55);backdrop-filter:blur(3px);
+    display:none;align-items:flex-end;z-index:20}
+  .scrim.show{display:flex;animation:fade .2s}
+  @keyframes fade{from{opacity:0}}
+  .sheet{background:var(--card);width:100%;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));
+    box-shadow:0 -10px 40px rgba(0,0,0,.2);animation:up .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes up{from{transform:translateY(100%)}}
+  .sheet h2{font-size:18px;font-weight:800;margin-bottom:6px}
+  .sheet .dur{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+  .preview{width:100%;border-radius:14px;background:#09201C;margin-bottom:14px;max-height:200px;object-fit:contain}
+  .notice2{background:var(--warn);border:1px solid var(--line);border-radius:12px;padding:10px 12px;
+    font-size:12px;line-height:1.5;color:var(--ink-soft);margin-bottom:16px}
+  .notice2 b{color:var(--mint-d)}
+  .row{display:flex;gap:10px}
+  .btn{flex:1;border:0;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer}
+  .btn.save{background:var(--mint);color:#fff;box-shadow:0 8px 20px rgba(24,185,166,.35)}
+  .btn.save:active{transform:translateY(1px)}
+  .btn.del{background:#F3F6F5;color:var(--danger)}
+  .done{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:10px 0}
+  .done .circ{width:62px;height:62px;border-radius:50%;background:#E2F7F3;display:flex;align-items:center;justify-content:center}
+  .done p{font-size:13.5px;color:var(--ink-soft);line-height:1.55}
+  .done b{color:var(--ink)}
+
+  .foot{padding:2px 20px 12px;text-align:center;font-size:10.5px;line-height:1.5;color:#9DB4B0}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">
+      <svg class="tooth" viewBox="0 0 48 48" fill="none"><path d="M24 7c-5-4-11-3-14 0-3.2 3.2-3 8-1.6 14 1 4.3 1.3 8 2.2 12.5.6 3 1.3 6 3.4 6 2.3 0 2.6-3.2 3.3-6.4.5-2.2 1-3.6 2.7-3.6s2.2 1.4 2.7 3.6c.7 3.2 1 6.4 3.3 6.4 2.1 0 2.8-3 3.4-6C36.8 29 37.1 25.3 38 21c1.4-6 1.6-10.8-1.6-14-3-3-9-4-12.4 0Z" fill="#18B9A6" stroke="#0E8C7E" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span class="brand">치카<b>치카</b></span>
+    </div>
+    <span class="tag">구강 촬영</span>
+  </div>
+
+  <div class="privacy">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" fill="#CDEDE7" stroke="#0E8C7E" stroke-width="1.4" stroke-linejoin="round"/><path d="m8.7 12 2.2 2.2 4.4-4.6" stroke="#0E8C7E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <p><b>촬영 영상은 서버에 전송·저장되지 않습니다.</b> 저장을 선택하시면 <b>본인 기기</b>에만 저장되고, 외부로 공유되지 않습니다.</p>
+  </div>
+
+  <div class="stage">
+    <video id="cam" playsinline muted autoplay class="mirror"></video>
+    <div class="placeholder" id="ph">
+      <svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 0 1 2-2h2l1.2-1.6A2 2 0 0 1 11 3.6h2a2 2 0 0 1 1.8 1l1.2 1.4h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="#5FE3D1" stroke-width="1.5"/><circle cx="12" cy="12.5" r="3.6" stroke="#5FE3D1" stroke-width="1.5"/></svg>
+      <div class="big">구강 촬영을 시작하세요</div>
+      <div class="sm">아래 버튼을 누르면 카메라 권한을 요청합니다.<br>영상은 이 기기에서만 처리됩니다.</div>
+    </div>
+    <div class="recdot" id="recdot"><i></i><span id="timer">0:00</span></div>
+    <button class="flip" id="flip" title="카메라 전환" aria-label="카메라 전환">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h3l1.5-2h7L17 7h3v12H4V7Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.5 13a2.5 2.5 0 0 1 4.3-1.7M14.5 13a2.5 2.5 0 0 1-4.3 1.7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="m13.8 10.5.1 1.4-1.4-.2M10.2 15.5l-.1-1.4 1.4.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="controls">
+    <button class="sidebtn" id="startbtn" title="카메라 켜기">켜기</button>
+    <button class="recbtn" id="rec" aria-label="녹화"></button>
+    <div style="width:52px"></div>
+  </div>
+  <div class="foot">구강 건강 습관 형성을 돕기 위한 앱입니다 · 질병의 진단·치료 목적이 아닙니다 · 영상은 전적으로 본인 기기에서만 처리됩니다</div>
+
+  <!-- save/delete sheet -->
+  <div class="scrim" id="scrim">
+    <div class="sheet" id="sheet">
+      <div id="ask">
+        <h2>촬영을 저장하시겠어요?</h2>
+        <div class="dur" id="askdur">촬영 길이 0:00</div>
+        <video class="preview" id="preview" playsinline controls></video>
+        <div class="notice2"><b>저장 = 본인 기기에만 저장됩니다.</b> 이 영상은 서버로 전송되거나 외부에 공유되지 않습니다. 삭제를 누르면 기기에도 남지 않습니다.</div>
+        <div class="row">
+          <button class="btn del" id="del">삭제</button>
+          <button class="btn save" id="save">기기에 저장</button>
+        </div>
+      </div>
+      <div id="doneView" style="display:none">
+        <div class="done">
+          <div class="circ"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-11" stroke="#0E8C7E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h2>기기에 저장했어요</h2>
+          <p id="donemsg"><b>본인 기기</b>에만 저장되었습니다.<br>서버 전송·외부 공유는 없습니다.</p>
+          <button class="btn save" id="closeDone" style="margin-top:6px;width:100%">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var cam=document.getElementById('cam'), ph=document.getElementById('ph'),
+      rec=document.getElementById('rec'), startbtn=document.getElementById('startbtn'),
+      flip=document.getElementById('flip'), recdot=document.getElementById('recdot'),
+      timerEl=document.getElementById('timer'), scrim=document.getElementById('scrim'),
+      preview=document.getElementById('preview'), save=document.getElementById('save'),
+      del=document.getElementById('del'), askdur=document.getElementById('askdur'),
+      askView=document.getElementById('ask'), doneView=document.getElementById('doneView'),
+      closeDone=document.getElementById('closeDone'), donemsg=document.getElementById('donemsg');
+
+  var stream=null, mr=null, chunks=[], facing='user', recording=false,
+      t0=0, tick=null, lastBlob=null, lastUrl=null, lastDur=0;
+
+  // Resolve the artifact "downloads" capability if present; otherwise we fall back
+  // to a standard blob download (works when the app is hosted as a normal PWA).
+  var dlCap=null;
+  (async function(){ try{ if(window.claude&&window.claude.use){ dlCap=await claude.use('downloads'); } }catch(e){ dlCap=null; } })();
+
+  function fmt(s){var m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r;}
+
+  function pickMime(){
+    var c=['video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+    for(var i=0;i<c.length;i++){ if(window.MediaRecorder&&MediaRecorder.isTypeSupported(c[i])) return c[i]; }
+    return '';
+  }
+
+  async function startCamera(){
+    try{
+      if(stream){ stream.getTracks().forEach(function(t){t.stop();}); }
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:facing, width:{ideal:1280}, height:{ideal:720}}, audio:true});
+      cam.srcObject=stream;
+      cam.classList.toggle('mirror', facing==='user');
+      ph.style.display='none';
+      startbtn.textContent='켜짐';
+    }catch(e){
+      ph.style.display='flex';
+      ph.querySelector('.big').textContent='카메라를 열 수 없습니다';
+      ph.querySelector('.sm').innerHTML='브라우저에서 카메라 권한을 허용해 주세요.<br>(미리보기 환경에서는 차단될 수 있습니다 — 실제 앱 설치 시 정상 작동합니다.)';
+    }
+  }
+
+  startbtn.addEventListener('click', startCamera);
+
+  flip.addEventListener('click', function(){
+    if(recording) return;
+    facing = (facing==='user') ? 'environment' : 'user';
+    if(stream) startCamera();
+  });
+
+  rec.addEventListener('click', async function(){
+    if(!stream){ await startCamera(); if(!stream) return; }
+    if(!recording){ startRec(); } else { stopRec(); }
+  });
+
+  function startRec(){
+    chunks=[];
+    var mime=pickMime();
+    try{ mr = mime ? new MediaRecorder(stream,{mimeType:mime}) : new MediaRecorder(stream); }
+    catch(e){ alert('이 브라우저는 녹화를 지원하지 않습니다.'); return; }
+    mr.ondataavailable=function(ev){ if(ev.data&&ev.data.size>0) chunks.push(ev.data); };
+    mr.onstop=function(){
+      lastBlob=new Blob(chunks,{type:(mr.mimeType||'video/webm')});
+      if(lastUrl) URL.revokeObjectURL(lastUrl);
+      lastUrl=URL.createObjectURL(lastBlob);
+      openSheet();
+    };
+    mr.start();
+    recording=true; rec.classList.add('recording');
+    recdot.style.display='flex'; t0=Date.now();
+    timerEl.textContent='0:00';
+    tick=setInterval(function(){ lastDur=Math.floor((Date.now()-t0)/1000); timerEl.textContent=fmt(lastDur); },250);
+  }
+
+  function stopRec(){
+    if(mr&&mr.state!=='inactive') mr.stop();
+    recording=false; rec.classList.remove('recording');
+    recdot.style.display='none'; clearInterval(tick);
+    lastDur=Math.floor((Date.now()-t0)/1000);
+  }
+
+  function openSheet(){
+    askView.style.display='block'; doneView.style.display='none';
+    askdur.textContent='촬영 길이 '+fmt(lastDur);
+    preview.src=lastUrl; preview.classList.toggle('mirror', false);
+    scrim.classList.add('show');
+  }
+  function closeSheet(){ scrim.classList.remove('show'); try{preview.pause();}catch(e){} }
+
+  save.addEventListener('click', async function(){
+    if(!lastBlob) return;
+    var ext = (lastBlob.type.indexOf('mp4')>=0)?'mp4':'webm';
+    var d=new Date(), p=function(n){return (n<10?'0':'')+n;};
+    var name='chikachika_'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+'.'+ext;
+    var ok=false;
+    if(dlCap&&dlCap.save){
+      try{ await dlCap.save({filename:name, data:lastBlob}); ok=true; }
+      catch(e){ ok=false; }   // viewer declined or unavailable → try fallback
+    }
+    if(!ok){
+      try{ var a=document.createElement('a'); a.href=lastUrl; a.download=name;
+           document.body.appendChild(a); a.click(); a.remove(); ok=true; }catch(e){ ok=false; }
+    }
+    if(!ok){ return; }   // nothing saved; keep the sheet open
+    donemsg.innerHTML='<b>'+name+'</b><br>본인 기기에 저장되었습니다. 서버 전송·외부 공유는 없습니다.';
+    askView.style.display='none'; doneView.style.display='block';
+  });
+
+  del.addEventListener('click', function(){
+    if(lastUrl) URL.revokeObjectURL(lastUrl);
+    lastBlob=null; lastUrl=null; chunks=[];
+    closeSheet();
+  });
+  closeDone.addEventListener('click', closeSheet);
+
+  // never any network call — fully on-device. (no fetch/XHR/websocket used)
+})();
+</script>
+</body>
+</html>
