@@ -87,18 +87,10 @@ header{
 #mouthSvg{width:100%; max-width:300px; height:auto; display:block; touch-action:manipulation;}
 .hi{fill:var(--mint-l); opacity:0; pointer-events:all; cursor:pointer; transition:opacity .35s;}
 .hi.active{opacity:.52; filter:drop-shadow(0 0 5px rgba(14,140,126,.75));}
-/* brush animation groups */
+/* brush animation groups  (left-right sweep is CSS; the gum->tip roll is JS-driven) */
 #brushSweep{animation:sweep 2.6s ease-in-out infinite;}
-#brushScrub{animation:scrub .12s linear infinite;}
 .foam{animation:foam 1.3s ease-in-out infinite;}
 @keyframes sweep{0%,100%{transform:translateX(-13px);} 50%{transform:translateX(13px);}}
-@keyframes scrub{
-  0%{transform:translate(0,0);}
-  25%{transform:translate(2.4px,.6px);}
-  50%{transform:translate(.4px,2.1px);}
-  75%{transform:translate(-2.4px,.6px);}
-  100%{transform:translate(0,0);}
-}
 @keyframes foam{0%,100%{opacity:.25; transform:translateY(0);} 50%{opacity:.85; transform:translateY(-3px);}}
 /* ---------- chips ---------- */
 .chips{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:4px;}
@@ -110,6 +102,14 @@ header{
 .chip .n{display:block; font-size:9.5px; color:var(--mint); font-weight:800; margin-bottom:1px;}
 .chip.active{background:var(--mint); border-color:var(--mint); color:#fff; box-shadow:0 5px 12px rgba(24,185,166,.33);}
 .chip.active .n{color:#CFF6EF;}
+/* ---------- method intro ---------- */
+.methodnote{
+  background:#E4F7F3; border:1px solid var(--line); color:var(--mint-d);
+  font-size:12px; font-weight:700; line-height:1.45;
+  padding:9px 12px; border-radius:13px; margin-bottom:11px;
+}
+.methodnote b{background:var(--mint); color:#fff; font-weight:800; font-size:11px;
+  padding:2px 8px; border-radius:20px; margin-right:6px; white-space:nowrap;}
 /* ---------- instruction ---------- */
 .instruct{
   display:flex; gap:10px; align-items:flex-start;
@@ -210,6 +210,7 @@ footer{
 
     <!-- ============ MODE 1: 양치 ============ -->
     <section class="mode active" id="mode-brush">
+      <div class="methodnote"><b>회전법</b>칫솔을 잇몸에 대고 치아 끝 쪽으로 쓸어 돌리며 닦아요.</div>
       <div class="card" style="padding:0; overflow:hidden;">
         <div class="timerwrap">
           <div class="ring">
@@ -274,7 +275,7 @@ footer{
 
       <div class="instruct" id="instruct">
         <div class="ic">!</div>
-        <p id="instructText">칫솔을 잇몸 경계에 45도로 대고, 작게 진동하듯 흔들며 쓸어내리세요.</p>
+        <p id="instructText">칫솔모를 잇몸에 대고, 위에서 아래로 쓸어내리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)</p>
       </div>
 
       <div class="controls">
@@ -493,12 +494,12 @@ function buildMouth(){
 
 /* ---------------- region data ---------------- */
 var REGIONS=[
-  {name:'윗니 바깥쪽', chip:'윗니 바깥',  tip:'칫솔을 잇몸 경계에 45도로 대고, 작게 진동하듯 흔들며 쓸어내리세요.', brush:{x:150,y:59,r:-28},  hi:'hiUO'},
-  {name:'윗니 안쪽',   chip:'윗니 안쪽',  tip:'안쪽 면도 45도로. 앞니 안쪽은 칫솔을 세로로 세워서 쓸어내리세요.',   brush:{x:150,y:88,r:156},  hi:'hiUI'},
-  {name:'윗니 씹는 면',chip:'윗니 씹는면',tip:'씹는 면은 앞뒤로 가볍게 문질러 주세요.',                               brush:{x:150,y:72,r:-6},   hi:'hiUC'},
-  {name:'아랫니 바깥쪽',chip:'아랫니 바깥',tip:'아랫니 바깥쪽을 잇몸에서 위로 쓸어 올리듯 닦으세요.',                  brush:{x:150,y:238,r:208}, hi:'hiLO'},
-  {name:'아랫니 안쪽', chip:'아랫니 안쪽',tip:'아랫니 안쪽, 앞니 안쪽은 칫솔을 세워서.',                            brush:{x:150,y:212,r:28},  hi:'hiLI'},
-  {name:'아랫니 씹는 면',chip:'아랫니 씹는면',tip:'씹는 면을 앞뒤로 문질러 마무리하세요.',                           brush:{x:150,y:228,r:186}, hi:'hiLC'}
+  {name:'윗니 바깥쪽', chip:'윗니 바깥',  arch:'U', tip:'칫솔모를 잇몸에 대고, 위에서 아래로 쓸어내리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:59,r:-28},  hi:'hiUO'},
+  {name:'윗니 안쪽',   chip:'윗니 안쪽',  arch:'U', tip:'안쪽도 잇몸에서 아래로 쓸어내려요. 앞니 안쪽은 칫솔을 세로로 세워서.',   brush:{x:150,y:88,r:156},  hi:'hiUI'},
+  {name:'윗니 씹는 면',chip:'윗니 씹는면',arch:'U', tip:'씹는 면은 앞뒤로 가볍게 문질러요.',                               brush:{x:150,y:72,r:-6},   hi:'hiUC'},
+  {name:'아랫니 바깥쪽',chip:'아랫니 바깥',arch:'L', tip:'칫솔모를 잇몸에 대고, 아래에서 위로 쓸어올리듯 손목을 돌려요. (잇몸 → 치아 끝, 5~6번)', brush:{x:150,y:238,r:208}, hi:'hiLO'},
+  {name:'아랫니 안쪽', chip:'아랫니 안쪽',arch:'L', tip:'안쪽도 잇몸에서 위로 쓸어올려요. 앞니 안쪽은 칫솔을 세워서.',          brush:{x:150,y:212,r:28},  hi:'hiLI'},
+  {name:'아랫니 씹는 면',chip:'아랫니 씹는면',arch:'L', tip:'씹는 면을 앞뒤로 문질러 마무리해요.',                           brush:{x:150,y:228,r:186}, hi:'hiLC'}
 ];
 var REGION_SECONDS=30, TOTAL=180;
 
@@ -561,9 +562,22 @@ function setRegion(i){
   while(tgt.r-cur.r<-180) tgt.r+=360;
 }
 
-function applyBrush(){
-  brushPos.setAttribute('transform','translate('+cur.x.toFixed(2)+' '+cur.y.toFixed(2)+') rotate('+cur.r.toFixed(2)+')');
+function applyBrush(dx,dy,dr){
+  dx=dx||0; dy=dy||0; dr=dr||0;
+  brushPos.setAttribute('transform','translate('+(cur.x+dx).toFixed(2)+' '+(cur.y+dy).toFixed(2)+') rotate('+(cur.r+dr).toFixed(2)+')');
 }
+
+/* rolling-method stroke phase: gum -> tooth tip (slow), then return (quick), repeating.
+   returns 0 at the gum line, 1 at the tooth tip. */
+var ROLL_FREEZE=null;
+function rollPhase(ts){
+  if(ROLL_FREEZE!==null) return ROLL_FREEZE;
+  var P=1150, t=(ts%P)/P, fwd=0.64, u;
+  if(t<fwd){ u=t/fwd; return 1-(1-u)*(1-u); }                 // ease-out: gum -> tip
+  u=(t-fwd)/(1-fwd);                                          // return: tip -> gum
+  return 1-(u<0.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2);
+}
+window.__setRollFreeze=function(v){ ROLL_FREEZE=v; };
 
 /* ---------------- render ---------------- */
 function fmt(s){s=Math.max(0,Math.ceil(s)); var m=Math.floor(s/60); var ss=s%60; return m+':'+(ss<10?'0':'')+ss;}
@@ -603,12 +617,17 @@ function tick(ts){
     if(elapsed>=TOTAL){ finish(); }
     else render();
   }
-  // ease brush toward target
+  // ease brush toward region base pose (the gum-line start)
   var k=0.16;
   cur.x+=(tgt.x-cur.x)*k;
   cur.y+=(tgt.y-cur.y)*k;
   cur.r+=(tgt.r-cur.r)*k;
-  applyBrush();
+  // rolling-method stroke: slide bristles from gum toward the tooth tip + wrist roll.
+  // upper arch rolls down (+y, 잇몸→치아끝), lower arch rolls up (-y).
+  var rg=REGIONS[activeIdx]||REGIONS[0];
+  var dir=(rg.arch==='U')?1:-1;
+  var p=rollPhase(ts);
+  applyBrush(0, dir*p*13, dir*p*15);
   requestAnimationFrame(tick);
 }
 
