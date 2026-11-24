@@ -9,67 +9,103 @@
     --mint:#18B9A6; --mint-d:#0E8C7E; --mint-l:#5FE3D1;
     --ink:#10322E; --ink-soft:#5B7470; --paper:#F2FBF9; --card:#FFFFFF;
     --line:#D8EEEA; --warn:#E7F7F3; --danger:#E4573C; --shadow:0 10px 30px rgba(16,50,46,.12);
+    --gum:#F6B8C4; --gum-d:#E890A2;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
     background:var(--paper);color:var(--ink);overflow:hidden;
     display:flex;align-items:center;justify-content:center;}
-  .app{width:100%;max-width:440px;height:100dvh;max-height:900px;position:relative;
+  .app{width:100%;max-width:440px;height:100dvh;max-height:920px;position:relative;
     background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
 
   /* ---- header ---- */
-  .topbar{display:flex;align-items:center;gap:9px;padding:16px 18px 10px}
-  .logo{display:flex;align-items:center;gap:9px}
-  .tooth{width:30px;height:30px;flex:none}
-  .brand{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--mint-d)}
+  .topbar{display:flex;align-items:center;gap:9px;padding:12px 16px 6px}
+  .logo{display:flex;align-items:center;gap:8px}
+  .tooth{width:26px;height:26px;flex:none}
+  .brand{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--mint-d)}
   .brand b{color:var(--mint)}
-  .tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--mint-d);background:#E2F7F3;
-    border:1px solid var(--line);padding:4px 9px;border-radius:999px}
+  .tag{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--mint-d);background:#E2F7F3;
+    border:1px solid var(--line);padding:3px 9px;border-radius:999px}
 
-  /* ---- privacy banner ---- */
-  .privacy{margin:4px 14px 10px;background:var(--warn);border:1px solid var(--line);
-    border-radius:14px;padding:11px 13px;display:flex;gap:9px;align-items:flex-start}
-  .privacy svg{flex:none;margin-top:1px}
-  .privacy p{font-size:12px;line-height:1.5;color:var(--ink-soft)}
+  /* ---- privacy (slim) ---- */
+  .privacy{margin:2px 14px 8px;background:var(--warn);border:1px solid var(--line);
+    border-radius:11px;padding:7px 11px;display:flex;gap:7px;align-items:center}
+  .privacy svg{flex:none}
+  .privacy p{font-size:11px;line-height:1.35;color:var(--ink-soft)}
   .privacy b{color:var(--mint-d);font-weight:700}
 
-  /* ---- camera stage ---- */
-  .stage{flex:1;margin:0 14px;border-radius:22px;overflow:hidden;position:relative;
+  /* ---- guide panel (TOP) ---- */
+  .guide{flex:1 1 0;min-height:168px;margin:0 14px 8px;border-radius:20px;overflow:hidden;
+    position:relative;background:linear-gradient(160deg,#EAFBF8,#D4F4EE);
+    border:1px solid var(--line);display:flex;flex-direction:column}
+  .guide-head{display:flex;align-items:center;gap:8px;padding:10px 14px 4px}
+  .g-ttl{font-size:13px;font-weight:800;color:var(--mint-d)}
+  .g-step{margin-left:auto;font-size:12.5px;font-weight:800;color:#fff;background:var(--mint);
+    padding:4px 11px;border-radius:999px;box-shadow:0 4px 12px rgba(24,185,166,.3);
+    transition:background .3s;white-space:nowrap}
+  .g-stage{flex:1;position:relative;min-height:0}
+  .g-stage svg.mouth{width:100%;height:100%;display:block}
+  .brush{position:absolute;left:50%;top:40%;width:58px;height:58px;margin-left:-29px;margin-top:-29px;
+    transition:left .8s cubic-bezier(.4,.1,.3,1), top .8s cubic-bezier(.4,.1,.3,1);pointer-events:none;z-index:3}
+  .brush::before{content:"";position:absolute;inset:6px;border-radius:50%;
+    background:radial-gradient(circle,rgba(24,185,166,.35),transparent 70%);animation:pulse 1s ease-in-out infinite alternate}
+  @keyframes pulse{from{transform:scale(.8);opacity:.5}to{transform:scale(1.15);opacity:.9}}
+  .brushInner{width:100%;height:100%;transform-origin:50% 86%;
+    animation:scrub .5s ease-in-out infinite alternate}
+  @keyframes scrub{from{transform:rotate(-11deg) translateX(-3px)}to{transform:rotate(11deg) translateX(3px)}}
+  .guide-steps{display:flex;gap:5px;padding:4px 12px 11px;justify-content:center}
+  .gchip{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ink-soft);
+    transition:.25s}
+  .gchip.active{background:var(--mint);border-color:var(--mint);color:#fff;transform:scale(1.14);
+    box-shadow:0 4px 12px rgba(24,185,166,.4)}
+  .gchip.done{background:#CDEDE7;border-color:#CDEDE7;color:var(--mint-d)}
+
+  /* ---- camera stage (BOTTOM, zoomed to teeth) ---- */
+  .stage{flex:1.15 1 0;min-height:190px;margin:0 14px;border-radius:22px;overflow:hidden;position:relative;
     background:#09201C;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
-  video{width:100%;height:100%;object-fit:cover;background:#09201C}
-  video.mirror{transform:scaleX(-1)}
+  video{width:100%;height:100%;object-fit:cover;background:#09201C;transition:transform .2s}
   .stage .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:14px;text-align:center;padding:26px;color:#BFE9E2}
-  .placeholder .big{font-size:16px;font-weight:700;color:#EAFBF8}
-  .placeholder .sm{font-size:12.5px;line-height:1.5;color:#9FD4CC}
-  .recdot{position:absolute;top:14px;left:14px;display:none;align-items:center;gap:7px;
+    align-items:center;justify-content:center;gap:12px;text-align:center;padding:22px;color:#BFE9E2}
+  .placeholder .big{font-size:15px;font-weight:700;color:#EAFBF8}
+  .placeholder .sm{font-size:12px;line-height:1.5;color:#9FD4CC}
+  /* teeth framing guide */
+  .frame{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+  .frame .oval{width:72%;height:42%;border:2px dashed rgba(255,255,255,.7);border-radius:50%/42%;
+    box-shadow:0 0 0 2000px rgba(9,32,28,.18)}
+  .frame .lbl{position:absolute;bottom:12%;font-size:11.5px;font-weight:700;color:#EAFBF8;
+    background:rgba(9,32,28,.5);backdrop-filter:blur(4px);padding:4px 10px;border-radius:999px}
+  .recdot{position:absolute;top:12px;left:12px;display:none;align-items:center;gap:7px;
     background:rgba(9,32,28,.55);backdrop-filter:blur(6px);padding:6px 11px;border-radius:999px;
-    font-size:12.5px;font-weight:700;color:#fff}
+    font-size:12.5px;font-weight:700;color:#fff;z-index:4}
   .recdot i{width:9px;height:9px;border-radius:50%;background:#ff4d4d;animation:blink 1s steps(2) infinite}
   @keyframes blink{50%{opacity:.25}}
-  .flip{position:absolute;top:12px;right:12px;width:40px;height:40px;border:0;border-radius:50%;
+  .flip{position:absolute;top:10px;right:10px;width:38px;height:38px;border:0;border-radius:50%;
     background:rgba(9,32,28,.5);backdrop-filter:blur(6px);color:#fff;display:flex;align-items:center;
-    justify-content:center;cursor:pointer}
+    justify-content:center;cursor:pointer;z-index:4}
+  .zoomctl{position:absolute;left:10px;bottom:10px;display:flex;align-items:center;gap:0;z-index:4;
+    background:rgba(9,32,28,.5);backdrop-filter:blur(6px);border-radius:999px;overflow:hidden}
+  .zoomctl button{width:38px;height:34px;border:0;background:transparent;color:#fff;font-size:19px;
+    font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .zoomctl span{min-width:40px;text-align:center;font-size:12.5px;font-weight:800;color:#fff}
 
   /* ---- controls ---- */
-  .controls{padding:16px 18px calc(16px + env(safe-area-inset-bottom));display:flex;
+  .controls{padding:12px 18px calc(12px + env(safe-area-inset-bottom));display:flex;
     align-items:center;justify-content:center;gap:26px}
-  .recbtn{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:var(--danger);
+  .recbtn{width:72px;height:72px;border-radius:50%;border:5px solid #fff;background:var(--danger);
     box-shadow:0 8px 22px rgba(228,87,60,.4);cursor:pointer;position:relative;flex:none;transition:.15s}
   .recbtn:active{transform:scale(.94)}
-  .recbtn::after{content:"";position:absolute;inset:0;margin:auto;width:28px;height:28px;border-radius:50%;
+  .recbtn::after{content:"";position:absolute;inset:0;margin:auto;width:26px;height:26px;border-radius:50%;
     background:#fff;transition:.2s}
   .recbtn.recording{background:#fff;border-color:var(--danger)}
-  .recbtn.recording::after{width:26px;height:26px;border-radius:7px;background:var(--danger)}
-  .hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:12px;color:var(--ink-soft)}
-  .sidebtn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--card);
-    color:var(--mint-d);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-weight:700}
-  .sidebtn:disabled{opacity:.35}
+  .recbtn.recording::after{width:24px;height:24px;border-radius:7px;background:var(--danger)}
+  .sidebtn{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+    color:var(--mint-d);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-weight:700;font-size:13px}
 
   /* ---- modal ---- */
   .scrim{position:absolute;inset:0;background:rgba(10,34,30,.55);backdrop-filter:blur(3px);
-    display:none;align-items:flex-end;z-index:20}
+    display:none;align-items:flex-end;z-index:30}
   .scrim.show{display:flex;animation:fade .2s}
   @keyframes fade{from{opacity:0}}
   .sheet{background:var(--card);width:100%;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));
@@ -91,7 +127,7 @@
   .done p{font-size:13.5px;color:var(--ink-soft);line-height:1.55}
   .done b{color:var(--ink)}
 
-  .foot{padding:2px 20px 12px;text-align:center;font-size:10.5px;line-height:1.5;color:#9DB4B0}
+  .foot{padding:2px 18px 10px;text-align:center;font-size:10px;line-height:1.45;color:#9DB4B0}
 </style>
 </head>
 <body>
@@ -105,27 +141,94 @@
   </div>
 
   <div class="privacy">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" fill="#CDEDE7" stroke="#0E8C7E" stroke-width="1.4" stroke-linejoin="round"/><path d="m8.7 12 2.2 2.2 4.4-4.6" stroke="#0E8C7E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <p><b>촬영 영상은 서버에 전송·저장되지 않습니다.</b> 저장을 선택하시면 <b>본인 기기</b>에만 저장되고, 외부로 공유되지 않습니다.</p>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" fill="#CDEDE7" stroke="#0E8C7E" stroke-width="1.4" stroke-linejoin="round"/><path d="m8.7 12 2.2 2.2 4.4-4.6" stroke="#0E8C7E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <p><b>촬영 영상은 서버 전송·저장 없이</b> 본인 기기에서만 처리됩니다.</p>
   </div>
 
+  <!-- ========== TOP: 양치 순서 가이드 ========== -->
+  <div class="guide">
+    <div class="guide-head">
+      <span class="g-ttl">양치 순서 따라하기</span>
+      <span class="g-step" id="gstep">① 윗니 바깥쪽</span>
+    </div>
+    <div class="g-stage">
+      <svg class="mouth" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="lip" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FBD0D8"/><stop offset="1" stop-color="#F3A9B8"/>
+          </linearGradient>
+        </defs>
+        <!-- mouth opening -->
+        <ellipse cx="150" cy="92" rx="118" ry="72" fill="url(#lip)"/>
+        <ellipse cx="150" cy="94" rx="100" ry="58" fill="#7D2740"/>
+        <!-- upper gum + teeth -->
+        <path d="M54 58 Q150 24 246 58 L246 78 Q150 54 54 78 Z" fill="#F6B8C4"/>
+        <g fill="#fff" stroke="#E6EEF0" stroke-width="1">
+          <rect x="60" y="56" width="20" height="26" rx="7"/>
+          <rect x="84" y="52" width="22" height="30" rx="7"/>
+          <rect x="110" y="49" width="24" height="33" rx="8"/>
+          <rect x="138" y="48" width="24" height="34" rx="8"/>
+          <rect x="166" y="49" width="24" height="33" rx="8"/>
+          <rect x="194" y="52" width="22" height="30" rx="7"/>
+          <rect x="220" y="56" width="20" height="26" rx="7"/>
+        </g>
+        <!-- lower gum + teeth -->
+        <path d="M58 130 Q150 160 242 130 L242 112 Q150 140 58 112 Z" fill="#F0A6B6"/>
+        <g fill="#fff" stroke="#E6EEF0" stroke-width="1">
+          <rect x="64" y="108" width="19" height="24" rx="7"/>
+          <rect x="87" y="110" width="21" height="28" rx="7"/>
+          <rect x="112" y="112" width="23" height="30" rx="8"/>
+          <rect x="139" y="113" width="23" height="31" rx="8"/>
+          <rect x="166" y="112" width="23" height="30" rx="8"/>
+          <rect x="193" y="110" width="21" height="28" rx="7"/>
+          <rect x="217" y="108" width="19" height="24" rx="7"/>
+        </g>
+        <!-- tongue -->
+        <ellipse cx="150" cy="120" rx="52" ry="22" fill="#E8657E"/>
+        <path d="M150 100 Q156 118 150 140" stroke="#D44E67" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="brush" id="brush">
+        <svg class="brushInner" viewBox="0 0 64 64" fill="none">
+          <rect x="27" y="4" width="10" height="34" rx="5" fill="#18B9A6"/>
+          <rect x="24" y="36" width="16" height="12" rx="4" fill="#0E8C7E"/>
+          <g stroke="#CFF3EC" stroke-width="2.6" stroke-linecap="round">
+            <line x1="27" y1="48" x2="27" y2="58"/><line x1="32" y1="48" x2="32" y2="59"/>
+            <line x1="37" y1="48" x2="37" y2="58"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="guide-steps" id="gsteps">
+      <div class="gchip active">1</div><div class="gchip">2</div><div class="gchip">3</div>
+      <div class="gchip">4</div><div class="gchip">5</div>
+    </div>
+  </div>
+
+  <!-- ========== BOTTOM: 카메라 (치아 확대) ========== -->
   <div class="stage">
-    <video id="cam" playsinline muted autoplay class="mirror"></video>
+    <video id="cam" playsinline muted autoplay></video>
+    <div class="frame" id="frame" style="display:none">
+      <div class="oval"></div>
+      <div class="lbl">치아를 원 안에 맞춰 주세요</div>
+    </div>
     <div class="placeholder" id="ph">
-      <svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 0 1 2-2h2l1.2-1.6A2 2 0 0 1 11 3.6h2a2 2 0 0 1 1.8 1l1.2 1.4h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="#5FE3D1" stroke-width="1.5"/><circle cx="12" cy="12.5" r="3.6" stroke="#5FE3D1" stroke-width="1.5"/></svg>
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 0 1 2-2h2l1.2-1.6A2 2 0 0 1 11 3.6h2a2 2 0 0 1 1.8 1l1.2 1.4h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="#5FE3D1" stroke-width="1.5"/><circle cx="12" cy="12.5" r="3.6" stroke="#5FE3D1" stroke-width="1.5"/></svg>
       <div class="big">구강 촬영을 시작하세요</div>
-      <div class="sm">아래 버튼을 누르면 카메라 권한을 요청합니다.<br>영상은 이 기기에서만 처리됩니다.</div>
+      <div class="sm">아래 <b>켜기</b>를 누르면 카메라 권한을 요청합니다.<br>치아가 크게 보이도록 자동 확대됩니다.</div>
     </div>
     <div class="recdot" id="recdot"><i></i><span id="timer">0:00</span></div>
     <button class="flip" id="flip" title="카메라 전환" aria-label="카메라 전환">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h3l1.5-2h7L17 7h3v12H4V7Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.5 13a2.5 2.5 0 0 1 4.3-1.7M14.5 13a2.5 2.5 0 0 1-4.3 1.7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="m13.8 10.5.1 1.4-1.4-.2M10.2 15.5l-.1-1.4 1.4.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M4 7h3l1.5-2h7L17 7h3v12H4V7Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.5 13a2.5 2.5 0 0 1 4.3-1.7M14.5 13a2.5 2.5 0 0 1-4.3 1.7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="m13.8 10.5.1 1.4-1.4-.2M10.2 15.5l-.1-1.4 1.4.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
+    <div class="zoomctl" id="zoomctl" style="display:none">
+      <button id="zout" aria-label="축소">−</button><span id="zlabel">2.0×</span><button id="zin" aria-label="확대">+</button>
+    </div>
   </div>
 
   <div class="controls">
     <button class="sidebtn" id="startbtn" title="카메라 켜기">켜기</button>
     <button class="recbtn" id="rec" aria-label="녹화"></button>
-    <div style="width:52px"></div>
+    <div style="width:50px"></div>
   </div>
   <div class="foot">구강 건강 습관 형성을 돕기 위한 앱입니다 · 질병의 진단·치료 목적이 아닙니다 · 영상은 전적으로 본인 기기에서만 처리됩니다</div>
 
@@ -164,17 +267,26 @@
       preview=document.getElementById('preview'), save=document.getElementById('save'),
       del=document.getElementById('del'), askdur=document.getElementById('askdur'),
       askView=document.getElementById('ask'), doneView=document.getElementById('doneView'),
-      closeDone=document.getElementById('closeDone'), donemsg=document.getElementById('donemsg');
+      closeDone=document.getElementById('closeDone'), donemsg=document.getElementById('donemsg'),
+      frame=document.getElementById('frame'), zoomctl=document.getElementById('zoomctl'),
+      zin=document.getElementById('zin'), zout=document.getElementById('zout'), zlabel=document.getElementById('zlabel');
 
   var stream=null, mr=null, chunks=[], facing='user', recording=false,
-      t0=0, tick=null, lastBlob=null, lastUrl=null, lastDur=0;
+      t0=0, tick=null, lastBlob=null, lastUrl=null, lastDur=0, zoom=2.0;
 
-  // Resolve the artifact "downloads" capability if present; otherwise we fall back
-  // to a standard blob download (works when the app is hosted as a normal PWA).
   var dlCap=null;
   (async function(){ try{ if(window.claude&&window.claude.use){ dlCap=await claude.use('downloads'); } }catch(e){ dlCap=null; } })();
 
   function fmt(s){var m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r;}
+
+  /* ---- camera zoom: crop to teeth (live view) ---- */
+  function applyCamTransform(){
+    var sx = (facing==='user') ? -zoom : zoom;   // negative X = mirror for front cam
+    cam.style.transform = 'scaleX('+sx+') scaleY('+zoom+')';
+    zlabel.textContent = zoom.toFixed(1)+'×';
+  }
+  zin.addEventListener('click', function(){ zoom=Math.min(3.5, Math.round((zoom+0.3)*10)/10); applyCamTransform(); });
+  zout.addEventListener('click', function(){ zoom=Math.max(1.0, Math.round((zoom-0.3)*10)/10); applyCamTransform(); });
 
   function pickMime(){
     var c=['video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
@@ -188,13 +300,13 @@
       stream=await navigator.mediaDevices.getUserMedia({
         video:{facingMode:facing, width:{ideal:1280}, height:{ideal:720}}, audio:true});
       cam.srcObject=stream;
-      cam.classList.toggle('mirror', facing==='user');
-      ph.style.display='none';
+      applyCamTransform();
+      ph.style.display='none'; frame.style.display='flex'; zoomctl.style.display='flex';
       startbtn.textContent='켜짐';
     }catch(e){
-      ph.style.display='flex';
+      ph.style.display='flex'; frame.style.display='none'; zoomctl.style.display='none';
       ph.querySelector('.big').textContent='카메라를 열 수 없습니다';
-      ph.querySelector('.sm').innerHTML='브라우저에서 카메라 권한을 허용해 주세요.<br>(미리보기 환경에서는 차단될 수 있습니다 — 실제 앱 설치 시 정상 작동합니다.)';
+      ph.querySelector('.sm').innerHTML='브라우저에서 카메라 권한을 허용해 주세요.<br>(미리보기 환경에서는 차단될 수 있습니다 — 실제 기기에서는 정상 작동합니다.)';
     }
   }
 
@@ -203,7 +315,7 @@
   flip.addEventListener('click', function(){
     if(recording) return;
     facing = (facing==='user') ? 'environment' : 'user';
-    if(stream) startCamera();
+    if(stream) startCamera(); else applyCamTransform();
   });
 
   rec.addEventListener('click', async function(){
@@ -240,7 +352,7 @@
   function openSheet(){
     askView.style.display='block'; doneView.style.display='none';
     askdur.textContent='촬영 길이 '+fmt(lastDur);
-    preview.src=lastUrl; preview.classList.toggle('mirror', false);
+    preview.src=lastUrl;
     scrim.classList.add('show');
   }
   function closeSheet(){ scrim.classList.remove('show'); try{preview.pause();}catch(e){} }
@@ -253,13 +365,13 @@
     var ok=false;
     if(dlCap&&dlCap.save){
       try{ await dlCap.save({filename:name, data:lastBlob}); ok=true; }
-      catch(e){ ok=false; }   // viewer declined or unavailable → try fallback
+      catch(e){ ok=false; }
     }
     if(!ok){
       try{ var a=document.createElement('a'); a.href=lastUrl; a.download=name;
            document.body.appendChild(a); a.click(); a.remove(); ok=true; }catch(e){ ok=false; }
     }
-    if(!ok){ return; }   // nothing saved; keep the sheet open
+    if(!ok){ return; }
     donemsg.innerHTML='<b>'+name+'</b><br>본인 기기에 저장되었습니다. 서버 전송·외부 공유는 없습니다.';
     askView.style.display='none'; doneView.style.display='block';
   });
@@ -270,6 +382,30 @@
     closeSheet();
   });
   closeDone.addEventListener('click', closeSheet);
+
+  /* ---- 양치 순서 가이드 애니메이션 (자체 구동, 항상 재생) ---- */
+  var brush=document.getElementById('brush'), gstep=document.getElementById('gstep'),
+      chips=document.querySelectorAll('#gsteps .gchip');
+  var STEPS=[
+    {label:'① 윗니 바깥쪽', x:50, y:33},
+    {label:'② 아랫니 바깥쪽', x:50, y:66},
+    {label:'③ 씹는 면', x:36, y:50},
+    {label:'④ 안쪽 면', x:64, y:50},
+    {label:'⑤ 혀 닦기', x:50, y:72}
+  ];
+  var si=0;
+  function showStep(i){
+    var s=STEPS[i];
+    gstep.textContent=s.label;
+    brush.style.left=s.x+'%'; brush.style.top=s.y+'%';
+    for(var k=0;k<chips.length;k++){
+      chips[k].classList.remove('active','done');
+      if(k<i) chips[k].classList.add('done');
+      else if(k===i) chips[k].classList.add('active');
+    }
+  }
+  showStep(0);
+  setInterval(function(){ si=(si+1)%STEPS.length; showStep(si); }, 2600);
 
   // never any network call — fully on-device. (no fetch/XHR/websocket used)
 })();
