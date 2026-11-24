@@ -85,8 +85,8 @@ header{
 /* ---------- mouth svg ---------- */
 .stage{position:relative; padding:4px 6px 2px; display:flex; justify-content:center;}
 #mouthSvg{width:100%; max-width:324px; height:auto; display:block; touch-action:manipulation;}
-.hi{fill:#1BC6B2; opacity:0; pointer-events:none; transition:opacity .35s;}
-.hi.active{opacity:.5; filter:drop-shadow(0 0 6px rgba(14,140,126,.85));}
+.hi{fill:#C3F6EC; opacity:0; pointer-events:none; transition:opacity .35s ease, filter .35s ease;}
+.hi.active{opacity:.2; filter:drop-shadow(0 0 5px rgba(24,185,166,.8)) drop-shadow(0 0 10px rgba(24,185,166,.4));}
 .hit{fill:transparent; pointer-events:all; cursor:pointer;}
 /* brush animation groups  (left-right sweep is CSS; the gum->tip roll is JS-driven) */
 #brushSweep{animation:sweep 2.6s ease-in-out infinite;}
@@ -237,6 +237,7 @@ footer{
       <div class="card">
         <div class="stage">
           <svg id="mouthSvg" viewBox="0 0 300 300" aria-label="치아 그림">
+            <g id="zoomG">
             <g id="mouthLayer"></g>
             <g id="brushPos">
               <g id="brushSweep">
@@ -247,27 +248,36 @@ footer{
                 </g>
                 <g id="brushScrub">
                   <!-- toothbrush: bristle tips at (0,0), extends up -y -->
-                  <rect x="-11" y="-108" width="22" height="70" rx="11" fill="url(#handle)"/>
-                  <rect x="-4.5" y="-104" width="4.5" height="60" rx="2.3" fill="#fff" opacity=".35"/>
-                  <circle cx="0" cy="-60" r="2" fill="#0A6E63" opacity=".55"/>
-                  <circle cx="0" cy="-70" r="2" fill="#0A6E63" opacity=".55"/>
-                  <circle cx="0" cy="-80" r="2" fill="#0A6E63" opacity=".55"/>
-                  <rect x="-9" y="-46" width="18" height="12" rx="5" fill="var(--mint-d)"/>
-                  <rect x="-26" y="-33" width="52" height="22" rx="10" fill="#fff" stroke="var(--mint)" stroke-width="2.4"/>
-                  <rect x="-23" y="-15" width="46" height="14" rx="4" fill="#EAF8F5"/>
-                  <g stroke="#9FDDD2" stroke-width="2.3" stroke-linecap="round">
-                    <line x1="-18" y1="-1" x2="-18" y2="-14"/><line x1="-13" y1="-1" x2="-13" y2="-14"/>
-                    <line x1="-8" y1="-1" x2="-8" y2="-14"/><line x1="-3" y1="-1" x2="-3" y2="-14"/>
-                    <line x1="3" y1="-1" x2="3" y2="-14"/><line x1="8" y1="-1" x2="8" y2="-14"/>
-                    <line x1="13" y1="-1" x2="13" y2="-14"/><line x1="18" y1="-1" x2="18" y2="-14"/>
-                  </g>
                   <defs>
                     <linearGradient id="handle" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0" stop-color="#17B2A0"/><stop offset="1" stop-color="#0C7F72"/>
+                      <stop offset="0" stop-color="#2CC3B1"/><stop offset="0.5" stop-color="#17B2A0"/><stop offset="1" stop-color="#0C7F72"/>
+                    </linearGradient>
+                    <linearGradient id="brushHead" x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0" stop-color="#17B2A0"/><stop offset="1" stop-color="#43D2C2"/>
+                    </linearGradient>
+                    <linearGradient id="tuft" x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0" stop-color="#DFF1ED"/><stop offset="1" stop-color="#FCFFFE"/>
+                    </linearGradient>
+                    <linearGradient id="paste" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#BDEFE6"/>
                     </linearGradient>
                   </defs>
+                  <!-- ergonomic tapered handle -->
+                  <path d="M-8.5 -56 C-13 -72 -13 -94 -9 -112 Q-8 -121 0 -121 Q8 -121 9 -112 C13 -94 13 -72 8.5 -56 Z" fill="url(#handle)"/>
+                  <path d="M-4 -62 C-7 -78 -7 -96 -4.5 -110" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  <!-- slim neck -->
+                  <path d="M-7 -38 Q-9 -50 -8 -58 L8 -58 Q9 -50 7 -38 Z" fill="url(#handle)"/>
+                  <!-- brush head (plastic pad) -->
+                  <rect x="-25" y="-38" width="50" height="24" rx="12" fill="url(#brushHead)" stroke="#8FDDD1" stroke-width="1.1"/>
+                  <rect x="-19" y="-35.5" width="38" height="6" rx="3" fill="#FFFFFF" opacity=".5"/>
+                  <!-- bristle field (tufts, tips near y=0) filled by script -->
+                  <g id="bristleField"></g>
+                  <!-- toothpaste blob resting on the bristle tips -->
+                  <path d="M-15 -2 Q-13 -9 -7 -7 Q-4 -12 1 -8 Q5 -12 9 -7 Q15 -9 14 -1 Q7 2 0 1 Q-8 2 -15 -2 Z" fill="url(#paste)" opacity=".95"/>
+                  <ellipse cx="-3" cy="-5.5" rx="5" ry="2.2" fill="#FFFFFF" opacity=".6"/>
                 </g>
               </g>
+            </g>
             </g>
           </svg>
         </div>
@@ -489,82 +499,133 @@ function layoutTeeth(ar){
 // crown outline (local coords: origin=crown center, +y = outward/buccal, x = mesiodistal)
 function toothShape(type,hw,hh){
   var d, det='';
-  var sheen='<ellipse cx="0" cy="'+f(hh*0.42)+'" rx="'+f(hw*0.6)+'" ry="'+f(hh*0.46)+'" fill="url(#cuspG)"/>';
   if(type==='incisorC'||type==='incisorL'){
-    d='M'+f(-hw)+' '+f(hh*0.45)+'C'+f(-hw)+' '+f(hh*0.95)+' '+f(-hw*0.5)+' '+f(hh)+' 0 '+f(hh)
-     +'C'+f(hw*0.5)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.95)+' '+f(hw)+' '+f(hh*0.45)
-     +'L'+f(hw*0.72)+' '+f(-hh*0.8)+'Q'+f(hw*0.7)+' '+f(-hh)+' '+f(hw*0.46)+' '+f(-hh)
-     +'L'+f(-hw*0.46)+' '+f(-hh)+'Q'+f(-hw*0.7)+' '+f(-hh)+' '+f(-hw*0.72)+' '+f(-hh*0.8)+'Z';
-    det=sheen+'<g stroke="#D6E6E1" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.7">'
-      +'<path d="M'+f(-hw*0.34)+' '+f(hh*0.72)+'L'+f(-hw*0.34)+' '+f(hh*0.1)+'"/>'
-      +'<path d="M0 '+f(hh*0.78)+'L0 '+f(hh*0.12)+'"/>'
-      +'<path d="M'+f(hw*0.34)+' '+f(hh*0.72)+'L'+f(hw*0.34)+' '+f(hh*0.1)+'"/></g>';
+    // plump glossy convex incisor
+    d='M'+f(-hw)+' '+f(hh*0.4)
+     +'C'+f(-hw)+' '+f(hh*0.96)+' '+f(-hw*0.46)+' '+f(hh)+' 0 '+f(hh)
+     +'C'+f(hw*0.46)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.96)+' '+f(hw)+' '+f(hh*0.4)
+     +'C'+f(hw)+' '+f(-hh*0.5)+' '+f(hw*0.78)+' '+f(-hh)+' '+f(hw*0.34)+' '+f(-hh)
+     +'L'+f(-hw*0.34)+' '+f(-hh)
+     +'C'+f(-hw*0.78)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.5)+' '+f(-hw)+' '+f(hh*0.4)+'Z';
+    det='<ellipse cx="'+f(-hw*0.05)+'" cy="'+f(hh*0.18)+'" rx="'+f(hw*0.58)+'" ry="'+f(hh*0.64)+'" fill="url(#sheenV)"/>'
+      +'<ellipse cx="'+f(-hw*0.22)+'" cy="'+f(-hh*0.34)+'" rx="'+f(hw*0.28)+'" ry="'+f(hh*0.26)+'" fill="#FFFFFF" opacity="0.8"/>'
+      +'<g stroke="#DBE8E3" stroke-width="0.7" stroke-opacity="0.45" stroke-linecap="round" fill="none">'
+      +'<path d="M'+f(-hw*0.34)+' '+f(hh*0.74)+'V'+f(hh*0.05)+'"/>'
+      +'<path d="M0 '+f(hh*0.8)+'V'+f(hh*0.08)+'"/>'
+      +'<path d="M'+f(hw*0.34)+' '+f(hh*0.74)+'V'+f(hh*0.05)+'"/></g>';
   } else if(type==='canine'){
-    d='M0 '+f(hh*1.0)+'Q'+f(hw*0.5)+' '+f(hh*0.86)+' '+f(hw*0.9)+' '+f(hh*0.28)
-     +'L'+f(hw*0.72)+' '+f(-hh*0.8)+'Q'+f(hw*0.7)+' '+f(-hh)+' '+f(hw*0.46)+' '+f(-hh)
-     +'L'+f(-hw*0.46)+' '+f(-hh)+'Q'+f(-hw*0.7)+' '+f(-hh)+' '+f(-hw*0.72)+' '+f(-hh*0.8)
-     +'L'+f(-hw*0.9)+' '+f(hh*0.28)+'Q'+f(-hw*0.5)+' '+f(hh*0.86)+' 0 '+f(hh*1.0)+'Z';
-    det='<ellipse cx="0" cy="'+f(hh*0.35)+'" rx="'+f(hw*0.5)+'" ry="'+f(hh*0.5)+'" fill="url(#cuspG)"/>'
-      +'<path d="M0 '+f(hh*0.96)+'L0 '+f(-hh*0.2)+'" stroke="#D6E6E1" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.75"/>';
+    d='M0 '+f(hh)
+     +'Q'+f(hw*0.62)+' '+f(hh*0.9)+' '+f(hw*0.92)+' '+f(hh*0.22)
+     +'C'+f(hw)+' '+f(-hh*0.45)+' '+f(hw*0.72)+' '+f(-hh)+' '+f(hw*0.3)+' '+f(-hh)
+     +'L'+f(-hw*0.3)+' '+f(-hh)
+     +'C'+f(-hw*0.72)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.45)+' '+f(-hw*0.92)+' '+f(hh*0.22)
+     +'Q'+f(-hw*0.62)+' '+f(hh*0.9)+' 0 '+f(hh)+'Z';
+    det='<ellipse cx="'+f(-hw*0.08)+'" cy="'+f(hh*0.1)+'" rx="'+f(hw*0.46)+'" ry="'+f(hh*0.66)+'" fill="url(#sheenV)"/>'
+      +'<ellipse cx="'+f(-hw*0.18)+'" cy="'+f(-hh*0.3)+'" rx="'+f(hw*0.24)+'" ry="'+f(hh*0.3)+'" fill="#FFFFFF" opacity="0.8"/>'
+      +'<path d="M0 '+f(hh*0.92)+'V'+f(-hh*0.25)+'" stroke="#DBE8E3" stroke-width="0.8" stroke-opacity="0.5" stroke-linecap="round" fill="none"/>';
   } else if(type==='premolar'){
-    d='M'+f(-hw)+' 0C'+f(-hw)+' '+f(hh*0.78)+' '+f(-hw*0.5)+' '+f(hh)+' 0 '+f(hh)
-     +'C'+f(hw*0.5)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.78)+' '+f(hw)+' 0'
-     +'C'+f(hw)+' '+f(-hh*0.78)+' '+f(hw*0.5)+' '+f(-hh)+' 0 '+f(-hh)
-     +'C'+f(-hw*0.5)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.78)+' '+f(-hw)+' 0Z';
-    det='<ellipse cx="0" cy="'+f(hh*0.42)+'" rx="'+f(hw*0.5)+'" ry="'+f(hh*0.33)+'" fill="url(#cuspG)"/>'
-      +'<ellipse cx="0" cy="'+f(-hh*0.42)+'" rx="'+f(hw*0.5)+'" ry="'+f(hh*0.33)+'" fill="url(#cuspG)"/>'
-      +'<path d="M'+f(-hw*0.55)+' 0L'+f(hw*0.55)+' 0" stroke="#C6D8D3" stroke-width="1" stroke-linecap="round" opacity="0.75"/>';
-  } else { // molar
-    d='M'+f(-hw)+' '+f(-hh*0.5)+'Q'+f(-hw)+' '+f(-hh)+' '+f(-hw*0.5)+' '+f(-hh)
-     +'L'+f(hw*0.5)+' '+f(-hh)+'Q'+f(hw)+' '+f(-hh)+' '+f(hw)+' '+f(-hh*0.5)
-     +'L'+f(hw)+' '+f(hh*0.5)+'Q'+f(hw)+' '+f(hh)+' '+f(hw*0.5)+' '+f(hh)
-     +'L'+f(-hw*0.5)+' '+f(hh)+'Q'+f(-hw)+' '+f(hh)+' '+f(-hw)+' '+f(hh*0.5)+'Z';
-    var cx=hw*0.44, cy=hh*0.44, rx=hw*0.42, ry=hh*0.42;
-    det='<g fill="url(#cuspG)">'
-      +'<ellipse cx="'+f(-cx)+'" cy="'+f(-cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/>'
-      +'<ellipse cx="'+f(cx)+'" cy="'+f(-cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/>'
-      +'<ellipse cx="'+f(-cx)+'" cy="'+f(cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/>'
-      +'<ellipse cx="'+f(cx)+'" cy="'+f(cy)+'" rx="'+f(rx)+'" ry="'+f(ry)+'"/></g>'
-      +'<g stroke="#C6D8D3" stroke-width="1" stroke-linecap="round" opacity="0.75">'
-      +'<path d="M'+f(-hw*0.62)+' 0L'+f(hw*0.62)+' 0"/><path d="M0 '+f(-hh*0.62)+'L0 '+f(hh*0.62)+'"/></g>';
+    // plump rounded blob, two buccal/lingual cusp bumps
+    d='M'+f(-hw)+' 0'
+     +'C'+f(-hw)+' '+f(hh*0.72)+' '+f(-hw*0.5)+' '+f(hh)+' 0 '+f(hh)
+     +'C'+f(hw*0.5)+' '+f(hh)+' '+f(hw)+' '+f(hh*0.72)+' '+f(hw)+' 0'
+     +'C'+f(hw)+' '+f(-hh*0.72)+' '+f(hw*0.5)+' '+f(-hh)+' 0 '+f(-hh)
+     +'C'+f(-hw*0.5)+' '+f(-hh)+' '+f(-hw)+' '+f(-hh*0.72)+' '+f(-hw)+' 0Z';
+    var pcy=hh*0.44, prx=hw*0.66, pry=hh*0.48;
+    det='<ellipse cx="0" cy="0" rx="'+f(hw*0.78)+'" ry="'+f(hh*0.34)+'" fill="url(#fossa)"/>'
+      +'<path d="M'+f(-hw*0.48)+' 0H'+f(hw*0.48)+'" stroke="#A8BFB9" stroke-opacity="0.28" stroke-width="'+f(hh*0.12)+'" stroke-linecap="round" fill="none"/>'
+      +'<g fill="url(#cuspBump)">'
+      +'<ellipse cx="0" cy="'+f(-pcy)+'" rx="'+f(prx)+'" ry="'+f(pry)+'"/>'
+      +'<ellipse cx="0" cy="'+f(pcy)+'" rx="'+f(prx)+'" ry="'+f(pry)+'"/></g>'
+      +'<g fill="#FFFFFF" opacity="0.92">'
+      +'<ellipse cx="'+f(-prx*0.28)+'" cy="'+f(-pcy-pry*0.3)+'" rx="'+f(prx*0.3)+'" ry="'+f(pry*0.22)+'"/>'
+      +'<ellipse cx="'+f(-prx*0.28)+'" cy="'+f(pcy-pry*0.3)+'" rx="'+f(prx*0.3)+'" ry="'+f(pry*0.22)+'"/></g>';
+  } else { // molar: plump rounded square, four glossy cusp bumps + soft + fissure
+    d='M'+f(-hw)+' '+f(-hh*0.58)
+     +'Q'+f(-hw)+' '+f(-hh)+' '+f(-hw*0.58)+' '+f(-hh)
+     +'L'+f(hw*0.58)+' '+f(-hh)
+     +'Q'+f(hw)+' '+f(-hh)+' '+f(hw)+' '+f(-hh*0.58)
+     +'L'+f(hw)+' '+f(hh*0.58)
+     +'Q'+f(hw)+' '+f(hh)+' '+f(hw*0.58)+' '+f(hh)
+     +'L'+f(-hw*0.58)+' '+f(hh)
+     +'Q'+f(-hw)+' '+f(hh)+' '+f(-hw)+' '+f(hh*0.58)+'Z';
+    var mcx=hw*0.46, mcy=hh*0.45, mrx=hw*0.5, mry=hh*0.5;
+    det='<ellipse cx="0" cy="0" rx="'+f(hw*0.8)+'" ry="'+f(hh*0.8)+'" fill="url(#fossa)"/>'
+      +'<g stroke="#A8BFB9" stroke-opacity="0.26" stroke-linecap="round" fill="none">'
+      +'<path d="M'+f(-hw*0.58)+' 0H'+f(hw*0.58)+'" stroke-width="'+f(hh*0.1)+'"/>'
+      +'<path d="M0 '+f(-hh*0.58)+'V'+f(hh*0.58)+'" stroke-width="'+f(hw*0.1)+'"/></g>'
+      +'<g fill="url(#cuspBump)">'
+      +'<ellipse cx="'+f(-mcx)+'" cy="'+f(-mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/>'
+      +'<ellipse cx="'+f(mcx)+'" cy="'+f(-mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/>'
+      +'<ellipse cx="'+f(-mcx)+'" cy="'+f(mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/>'
+      +'<ellipse cx="'+f(mcx)+'" cy="'+f(mcy)+'" rx="'+f(mrx)+'" ry="'+f(mry)+'"/></g>'
+      +'<g fill="#FFFFFF" opacity="0.95">'
+      +'<ellipse cx="'+f(-mcx-mrx*0.24)+'" cy="'+f(-mcy-mry*0.3)+'" rx="'+f(mrx*0.32)+'" ry="'+f(mry*0.24)+'"/>'
+      +'<ellipse cx="'+f(mcx-mrx*0.24)+'" cy="'+f(-mcy-mry*0.3)+'" rx="'+f(mrx*0.32)+'" ry="'+f(mry*0.24)+'"/>'
+      +'<ellipse cx="'+f(-mcx-mrx*0.24)+'" cy="'+f(mcy-mry*0.3)+'" rx="'+f(mrx*0.32)+'" ry="'+f(mry*0.24)+'"/>'
+      +'<ellipse cx="'+f(mcx-mrx*0.24)+'" cy="'+f(mcy-mry*0.3)+'" rx="'+f(mrx*0.32)+'" ry="'+f(mry*0.24)+'"/></g>';
   }
   return {d:d, det:det};
 }
 
 function papilla(ar,ang,rBase,rTip){
-  var w=2.0, a=pt(ar.cx,ar.cy,ang-w,rBase), b=pt(ar.cx,ar.cy,ang,rTip), c=pt(ar.cx,ar.cy,ang+w,rBase);
-  return '<path d="M'+f(a[0])+' '+f(a[1])+'L'+f(b[0])+' '+f(b[1])+'L'+f(c[0])+' '+f(c[1])+'Z" fill="url(#gumG)"/>';
+  var w=2.3;
+  var a=pt(ar.cx,ar.cy,ang-w,rBase), b=pt(ar.cx,ar.cy,ang,rTip), c=pt(ar.cx,ar.cy,ang+w,rBase);
+  var m1=pt(ar.cx,ar.cy,ang-w*0.45,(rBase+rTip)/2), m2=pt(ar.cx,ar.cy,ang+w*0.45,(rBase+rTip)/2);
+  return '<path d="M'+f(a[0])+' '+f(a[1])+'Q'+f(m1[0])+' '+f(m1[1])+' '+f(b[0])+' '+f(b[1])
+    +'Q'+f(m2[0])+' '+f(m2[1])+' '+f(c[0])+' '+f(c[1])+'Z" fill="#F4BBC2"/>';
 }
 
 function buildMouth(){
   var defs='<defs>'
-    +'<linearGradient id="enamel" x1="0" y1="1" x2="0" y2="0">'
-      +'<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#F1F7F4"/><stop offset="1" stop-color="#D6E5E0"/></linearGradient>'
-    +'<linearGradient id="gumG" x1="0" y1="0" x2="0" y2="1">'
-      +'<stop offset="0" stop-color="#F7C3C8"/><stop offset="1" stop-color="#E298A0"/></linearGradient>'
-    +'<radialGradient id="cuspG" cx="0.5" cy="0.42" r="0.6">'
-      +'<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.65"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>'
-    +'<filter id="toothShadow" x="-15%" y="-15%" width="130%" height="140%">'
-      +'<feDropShadow dx="0" dy="1.3" stdDeviation="1.5" flood-color="#4C6B65" flood-opacity="0.26"/></filter>'
+    +'<radialGradient id="enamel" cx="0.46" cy="0.34" r="0.74">'
+      +'<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.45" stop-color="#F8FCFB"/>'
+      +'<stop offset="0.78" stop-color="#E7F0ED"/><stop offset="1" stop-color="#D3E0DB"/></radialGradient>'
+    +'<radialGradient id="cuspBump" cx="0.38" cy="0.32" r="0.72">'
+      +'<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#F5FAF8" stop-opacity="0.92"/>'
+      +'<stop offset="1" stop-color="#DCE7E3" stop-opacity="0"/></radialGradient>'
+    +'<radialGradient id="sheenV" cx="0.42" cy="0.28" r="0.72">'
+      +'<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/><stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.28"/>'
+      +'<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>'
+    +'<radialGradient id="fossa" cx="0.5" cy="0.5" r="0.5">'
+      +'<stop offset="0" stop-color="#95ADA7" stop-opacity="0.55"/><stop offset="0.55" stop-color="#9FB6B0" stop-opacity="0.18"/>'
+      +'<stop offset="1" stop-color="#9FB6B0" stop-opacity="0"/></radialGradient>'
+    +'<radialGradient id="gumU" cx="150" cy="270" r="220" gradientUnits="userSpaceOnUse">'
+      +'<stop offset="0.66" stop-color="#DC8F99"/><stop offset="0.84" stop-color="#E9A6AF"/>'
+      +'<stop offset="0.93" stop-color="#F6C2C9"/><stop offset="1" stop-color="#FCD4D9"/></radialGradient>'
+    +'<radialGradient id="gumL" cx="150" cy="30" r="220" gradientUnits="userSpaceOnUse">'
+      +'<stop offset="0.66" stop-color="#FCD4D9"/><stop offset="0.84" stop-color="#F3B6BD"/>'
+      +'<stop offset="0.93" stop-color="#E59CA5"/><stop offset="1" stop-color="#D4858F"/></radialGradient>'
+    +'<filter id="toothShadow" x="-20%" y="-20%" width="140%" height="150%">'
+      +'<feDropShadow dx="0" dy="1.4" stdDeviation="1.4" flood-color="#415F59" flood-opacity="0.3"/></filter>'
+    +'<filter id="gumShadow" x="-25%" y="-25%" width="150%" height="160%">'
+      +'<feDropShadow dx="0" dy="1.6" stdDeviation="2.4" flood-color="#B06A74" flood-opacity="0.4"/></filter>'
     +'</defs>';
 
   var gum='', teeth='', clipU='', clipL='';
   [{ar:UA,key:'U'},{ar:LA,key:'L'}].forEach(function(o){
-    var ar=o.ar, row=layoutTeeth(ar);
-    // gum: buccal band + lingual sliver + inter-tooth papillae (scallop)
-    gum+='<path d="'+annSector(ar,RO-6,RO+15)+'" fill="url(#gumG)"/>';
-    gum+='<path d="'+annSector(ar,RI-11,RI+3)+'" fill="url(#gumG)" opacity="0.9"/>';
+    var ar=o.ar, row=layoutTeeth(ar), gid='url(#gum'+o.key+')';
+    // gum roll: thick buccal band + lingual sliver (vertical lit gradient)
+    gum+='<path d="'+annSector(ar,RO-6,RO+15)+'" fill="'+gid+'"/>';
+    gum+='<path d="'+annSector(ar,RI-11,RI+3)+'" fill="'+gid+'" opacity="0.92"/>';
+    // glossy top sheen + soft shadow on the far edge of the roll (top-lit, arch-aware)
+    if(o.key==='U'){
+      gum+='<path d="'+annSector(ar,RO+8,RO+15)+'" fill="#FFE9EC" opacity="0.5"/>';
+      gum+='<path d="'+annSector(ar,RO-6,RO-2)+'" fill="#C27B86" opacity="0.38"/>';
+    } else {
+      gum+='<path d="'+annSector(ar,RO-6,RO+1)+'" fill="#FFE9EC" opacity="0.5"/>';
+      gum+='<path d="'+annSector(ar,RO+11,RO+15)+'" fill="#C27B86" opacity="0.38"/>';
+    }
     for(var p=0;p<row.length-1;p++){ gum+=papilla(ar,row[p].ang+row[p].aw/2,RO+1,RO-10); }
-    // interproximal shadow backing (shows through tooth gaps)
-    teeth+='<path d="'+annSector(ar,RI-1,RO+1)+'" fill="#BCCDC8"/>';
+    // interproximal shadow backing (shows through tooth gaps -> seated depth)
+    teeth+='<path d="'+annSector(ar,RI-1,RO+1)+'" fill="#B4C6C1"/>';
     var grp='';
     row.forEach(function(t){
       var rc=(RI+RO)/2, P=pt(ar.cx,ar.cy,t.ang,rc), deg=t.ang-90;
-      var depth={incisorC:0.78,incisorL:0.78,canine:0.86,premolar:0.94,molar:1.0}[t.type];
-      var hw=(t.aw*Math.PI/180)*rc*0.49, hh=(RO-RI)/2*depth;
+      var depth={incisorC:0.8,incisorL:0.8,canine:0.88,premolar:0.96,molar:1.02}[t.type];
+      var hw=(t.aw*Math.PI/180)*rc*0.5, hh=(RO-RI)/2*depth;
       var sh=toothShape(t.type,hw,hh);
       var tf='translate('+f(P[0])+' '+f(P[1])+') rotate('+f(deg)+')';
-      grp+='<g transform="'+tf+'"><path d="'+sh.d+'" fill="url(#enamel)" stroke="#C6D9D3" stroke-width="0.8"/>'+sh.det+'</g>';
+      grp+='<g transform="'+tf+'"><path d="'+sh.d+'" fill="url(#enamel)" stroke="#C3D6D0" stroke-width="0.7"/>'+sh.det+'</g>';
       var clip='<path transform="'+tf+'" d="'+sh.d+'"/>';  // transform on path (clipPath ignores <g>)
       if(o.key==='U') clipU+=clip; else clipL+=clip;
     });
@@ -590,7 +651,7 @@ function buildMouth(){
     +'<path class="hit" data-idx="4" d="'+annSector(LA,RI,B1)+'"/>'
     +'<path class="hit" data-idx="5" d="'+annSector(LA,B1,B2)+'"/>';
 
-  document.getElementById('mouthLayer').innerHTML = defs+clips+gum+teeth+hi;
+  document.getElementById('mouthLayer').innerHTML = defs+clips+'<g filter="url(#gumShadow)">'+gum+'</g>'+teeth+hi;
 }
 
 /* ---------------- region data ---------------- */
@@ -608,6 +669,16 @@ var REGION_SECONDS=30, TOTAL=180;
 var elapsed=0, running=false, completed=false, lastTs=0;
 var cur={x:150,y:74,r:-28}, tgt={x:150,y:74,r:-28};
 var brushPos=document.getElementById('brushPos');
+/* ---- per-region close-up (zoom/pan to the active arch) ---- */
+var zoomG=document.getElementById('zoomG');
+var zoom={s:1,x:0,y:0}, zoomT={s:1,x:0,y:0};
+function regionFocus(i){
+  var rg=REGIONS[i], s=1.62, cx=150, cy=(rg.arch==='U')?96:206;
+  return {s:s, x:150-s*cx, y:150-s*cy};   // map focus center -> viewport center (150,150)
+}
+function applyZoom(){
+  zoomG.setAttribute('transform','translate('+zoom.x.toFixed(2)+' '+zoom.y.toFixed(2)+') scale('+zoom.s.toFixed(4)+')');
+}
 var subRing=document.getElementById('subRing');
 var RING_C=2*Math.PI*37;
 
@@ -661,6 +732,7 @@ function setRegion(i){
   tgt={x:rg.brush.x,y:rg.brush.y,r:rg.brush.r};
   while(tgt.r-cur.r>180) tgt.r-=360;
   while(tgt.r-cur.r<-180) tgt.r+=360;
+  zoomT=regionFocus(i);            // close up on this region's arch
 }
 
 function applyBrush(dx,dy,dr){
@@ -723,6 +795,12 @@ function tick(ts){
   cur.x+=(tgt.x-cur.x)*k;
   cur.y+=(tgt.y-cur.y)*k;
   cur.r+=(tgt.r-cur.r)*k;
+  // ease the close-up toward the active region
+  var zk=0.11;
+  zoom.s+=(zoomT.s-zoom.s)*zk;
+  zoom.x+=(zoomT.x-zoom.x)*zk;
+  zoom.y+=(zoomT.y-zoom.y)*zk;
+  applyZoom();
   // rolling-method stroke: slide bristles from gum toward the tooth tip + wrist roll.
   // upper arch rolls down (+y, 잇몸→치아끝), lower arch rolls up (-y).
   var rg=REGIONS[activeIdx]||REGIONS[0];
@@ -790,8 +868,24 @@ document.querySelector('.tabs').addEventListener('click',function(e){
 
 /* ---------------- init ---------------- */
 buildMouth();
+(function buildBristles(){
+  var fld=document.getElementById('bristleField'); if(!fld) return;
+  var s='', i, bx=[-17.5,-12.5,-7.5,-2.5,2.5,7.5,12.5,17.5], fx=[-20,-15,-10,-5,0,5,10,15,20];
+  // back row: shorter tufts, sit behind
+  for(i=0;i<bx.length;i++){ var tp=-2.6-((i*37)%5)*0.4;
+    s+='<rect x="'+(bx[i]-2.7).toFixed(1)+'" y="-16" width="5.4" height="'+(tp+16).toFixed(1)+'" rx="2.7" fill="url(#tuft)" opacity="0.72"/>'; }
+  // front row: reach the tips (~y 0)
+  for(i=0;i<fx.length;i++){ var tq=-0.6-((i*53)%6)*0.33;
+    s+='<rect x="'+(fx[i]-2.6).toFixed(1)+'" y="-14.5" width="5.2" height="'+(tq+14.5).toFixed(1)+'" rx="2.6" fill="url(#tuft)" opacity="0.9"/>'; }
+  // fine bristle texture
+  s+='<g stroke="#BFE4DD" stroke-width="0.7" stroke-opacity="0.55" stroke-linecap="round">';
+  for(i=0;i<fx.length;i++){ s+='<line x1="'+fx[i].toFixed(1)+'" y1="-12.5" x2="'+fx[i].toFixed(1)+'" y2="-1.6"/>'; }
+  s+='</g>';
+  fld.innerHTML=s;
+})();
 setRegion(0);
 cur={x:REGIONS[0].brush.x,y:REGIONS[0].brush.y,r:REGIONS[0].brush.r};
+zoom=regionFocus(0); zoomT=regionFocus(0); applyZoom();   // start already closed-up on region 1
 applyBrush();
 render();
 requestAnimationFrame(tick);
