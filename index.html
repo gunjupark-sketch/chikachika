@@ -271,6 +271,60 @@ body{
 .rep-info b{color:var(--ink);}
 .rep-warn{background:#FDECE7; border:1px solid #F3C3B5; color:#B23A1E; font-size:12.5px; font-weight:800; padding:11px 13px; border-radius:13px; margin:11px 0; line-height:1.5;}
 .rep-ok{background:#E4F9EE; border:1px solid #B9ECCF; color:#17864E; font-size:12.5px; font-weight:800; padding:11px 13px; border-radius:13px; margin:11px 0; line-height:1.5;}
+/* ---------- brush wear comparison ---------- */
+.brush-compare{display:flex; gap:10px; margin-top:2px;}
+.bc-item{flex:1; text-align:center; border:1.5px solid var(--line); border-radius:15px; padding:12px 8px 11px; background:#F7FCFB;}
+.bc-item.bad{border-color:#F3C3B5; background:#FDF3F0;}
+.bc-item svg{width:100%; max-width:118px; height:auto; display:block; margin:0 auto 6px;}
+.bc-item .bct{font-size:12.5px; font-weight:800;}
+.bc-item.good .bct{color:var(--mint-d);}
+.bc-item.bad .bct{color:#C33B1C;}
+.bc-item .bcs{font-size:10.5px; font-weight:600; color:var(--ink-soft); margin-top:2px; line-height:1.4;}
+.bc-caption{margin-top:11px; background:#FDECE7; border:1px solid #F3C3B5; color:#B23A1E; font-size:12.5px; font-weight:800; line-height:1.5; padding:10px 12px; border-radius:13px; text-align:center;}
+.bc-caption b{color:#8F2B13;}
+/* ---------- checkout / order ---------- */
+.ck-prod{display:flex; gap:12px; align-items:center; padding:2px;}
+.ck-prod .ck-pic{width:58px; height:58px; border-radius:14px; background:#EAF8F5; display:flex; align-items:center; justify-content:center; font-size:30px; flex:0 0 auto;}
+.ck-prod .ck-pn{font-size:15px; font-weight:800;}
+.ck-prod .ck-pc{font-size:13px; font-weight:800; color:var(--mint-d); margin-top:2px;}
+.ck-prod .ck-pd{font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
+.form-field{margin-bottom:11px;}
+.form-field label{display:block; font-size:12px; font-weight:800; margin:0 2px 6px; color:var(--ink);}
+.form-field input{width:100%; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--ink); border:1.5px solid var(--line); border-radius:12px; padding:11px 12px; background:#F7FCFB; outline:none;}
+.form-field input:focus{border-color:var(--mint);}
+.ship-confirm{display:flex; gap:10px; align-items:flex-start; background:#EAF8F5; border:1px solid var(--line); border-radius:13px; padding:11px 12px; margin:4px 0 11px;}
+.ship-confirm .sc-ic{font-size:17px; flex:0 0 auto;}
+.ship-confirm p{margin:0; font-size:12px; font-weight:700; line-height:1.5; color:var(--mint-d);}
+.ship-confirm b{color:var(--ink);}
+.order-badge{display:inline-flex; align-items:center; gap:6px; background:#E4F7F3; border:1px solid var(--line); color:var(--mint-d); font-size:11.5px; font-weight:800; padding:6px 11px; border-radius:20px;}
+.order-steps{margin:6px 0 2px; padding:0; list-style:none;}
+.order-steps li{display:flex; gap:11px; align-items:flex-start; position:relative; padding:0 0 16px 0;}
+.order-steps li:last-child{padding-bottom:0;}
+.order-steps li .os-dot{width:26px; height:26px; flex:0 0 auto; border-radius:50%; background:var(--mint); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; z-index:1;}
+.order-steps li.pending .os-dot{background:#E6F4F1; color:var(--ink-soft);}
+.order-steps li:not(:last-child)::before{content:''; position:absolute; left:12.5px; top:26px; bottom:0; width:2px; background:var(--line);}
+.order-steps .os-t{font-size:13.5px; font-weight:800;}
+.order-steps li.pending .os-t{color:var(--ink-soft);}
+.order-steps .os-s{font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:2px; line-height:1.45;}
+.photo-opt{display:flex; gap:10px; align-items:flex-start; background:#F7FCFB; border:1.5px dashed var(--line); border-radius:13px; padding:11px 12px; margin:2px 0 12px; cursor:pointer;}
+.photo-opt input{width:20px; height:20px; margin-top:1px; accent-color:var(--mint); flex:0 0 auto;}
+.photo-opt .po-t{font-size:12.5px; font-weight:800; display:block;}
+.photo-opt .po-s{font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:2px; line-height:1.45; display:block;}
+/* ---------- bristle finder ---------- */
+.q-row{padding:12px 0; border-top:1px dashed var(--line);}
+.q-row:first-child{border-top:0;}
+.q-row .qq{font-size:13px; font-weight:700; margin-bottom:8px; line-height:1.4;}
+.yn{display:flex; gap:8px;}
+.yn button{flex:1; border:1.5px solid var(--line); background:var(--card); font-family:inherit; font-size:13px; font-weight:800; color:var(--ink-soft); padding:9px 0; border-radius:11px; cursor:pointer; transition:.15s;}
+.yn button.yes.on{background:var(--warn); border-color:var(--warn); color:#fff;}
+.yn button.no.on{background:var(--mint); border-color:var(--mint); color:#fff;}
+.bristle-types{display:flex; flex-direction:column; gap:9px; margin-top:4px;}
+.bt-card{display:flex; gap:11px; align-items:flex-start; border:1.5px solid var(--line); border-radius:14px; padding:12px; background:#F7FCFB;}
+.bt-card.rec{border-color:var(--mint); background:#EAF8F5; box-shadow:0 5px 14px rgba(24,185,166,.14);}
+.bt-card .bti{width:44px; height:44px; flex:0 0 auto;}
+.bt-card .btt b{font-size:13.5px; font-weight:800;}
+.bt-card .btt .rec-badge{font-size:10px; font-weight:800; color:#fff; background:var(--mint); padding:2px 8px; border-radius:20px; margin-left:6px; white-space:nowrap;}
+.bt-card .btt p{margin:4px 0 0; font-size:11.5px; line-height:1.5; font-weight:600; color:var(--ink-soft);}
 /* ---------- content lists ---------- */
 .subtabs{display:flex; gap:6px; margin:0 0 12px; background:#E3F4F0; padding:5px; border-radius:16px; border:1px solid var(--line);}
 .subtab{flex:1; border:0; background:transparent; font-family:inherit; font-size:13px; font-weight:800; color:var(--ink-soft); padding:9px 0; border-radius:12px; cursor:pointer; transition:.2s;}
@@ -371,6 +425,7 @@ body{
     <section class="screen" id="s-home"></section>
     <section class="screen" id="s-verify"></section>
     <section class="screen" id="s-shop"></section>
+    <section class="screen" id="s-checkout"></section>
     <section class="screen" id="s-calendar"></section>
     <section class="screen" id="s-replace"></section>
     <section class="screen" id="s-menu"></section>
@@ -378,6 +433,7 @@ body{
     <section class="screen" id="s-clean"></section>
     <section class="screen" id="s-trivia"></section>
     <section class="screen" id="s-doctor"></section>
+    <section class="screen" id="s-bristle"></section>
   </main>
 
   <nav id="bnav">
@@ -436,12 +492,21 @@ function freshState(){
     brushRegisterDate:dateKey(offsetDays(TODAY,-79)),  // ~79일 사용 → 교체 임박
     regularity:74,                // mock 시간대 규칙성 %
     doctorRequested:false,
-    purchases:[]
+    doctorPhoto:false,
+    purchases:[],
+    shipping:{name:'홍길동', phone:'010-1234-5678', addr:'서울특별시 중구 세종대로 110', addr2:'1004호'},
+    orders:[]
   };
+}
+function migrate(s){
+  if(!s.orders) s.orders=[];
+  if(!s.shipping) s.shipping={name:'홍길동', phone:'010-1234-5678', addr:'서울특별시 중구 세종대로 110', addr2:'1004호'};
+  if(typeof s.doctorPhoto!=='boolean') s.doctorPhoto=false;
+  return s;
 }
 var state=load();
 function load(){
-  try{ var raw=localStorage.getItem(LS_KEY); if(raw){ var s=JSON.parse(raw); if(s&&typeof s==='object') return s; } }catch(e){}
+  try{ var raw=localStorage.getItem(LS_KEY); if(raw){ var s=JSON.parse(raw); if(s&&typeof s==='object') return migrate(s); } }catch(e){}
   var f=freshState(); try{ localStorage.setItem(LS_KEY,JSON.stringify(f)); }catch(e){} return f;
 }
 function save(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }catch(e){} }
@@ -854,15 +919,17 @@ var SCREEN_META={
   home:{title:'루덴스 <b>양치 인증</b>', tag:'하루 3번, 닦고 인증하고 포인트 받기', nav:'home', back:false},
   verify:{title:'양치 <b>인증</b>', tag:'닦으면서 카메라로 인증해요 (모의)', nav:'verify', back:true, parent:'home'},
   shop:{title:'포인트 <b>샵</b>', tag:'포인트로 구강케어 제품 교환', nav:'shop', back:true, parent:'home'},
+  checkout:{title:'주문 <b>· 배송</b>', tag:'배송지 확인 · 루덴스 몰 발주 (모의)', nav:'shop', back:true, parent:'shop'},
   calendar:{title:'습관 <b>캘린더</b>', tag:'연속 기록과 양치 습관 점수', nav:'calendar', back:true, parent:'home'},
   replace:{title:'칫솔 <b>교체</b>', tag:'칫솔 사용 기간 체크', nav:false, back:true, parent:'home'},
   menu:{title:'전체 <b>메뉴</b>', tag:'모든 기능 모아보기', nav:'menu', back:true, parent:'home'},
   guide:{title:'올바른 <b>양치질</b>', tag:'3분 회전법 가이드', nav:false, back:true, parent:'menu'},
   clean:{title:'구강청결 <b>방법</b>', tag:'치실 · 혀닦기 · 가글', nav:false, back:true, parent:'menu'},
   trivia:{title:'치과 <b>상식</b>', tag:'치과 감수 전제 · 초안', nav:false, back:true, parent:'menu'},
-  doctor:{title:'맞춤 <b>구강주치의</b>', tag:'파트너 치과 검진 연계 (모의)', nav:false, back:true, parent:'menu'}
+  doctor:{title:'맞춤 <b>구강주치의</b>', tag:'파트너 치과 검진 연계 (모의)', nav:false, back:true, parent:'menu'},
+  bristle:{title:'내게 맞는 <b>칫솔모</b>', tag:'간단 체크 · 참고용 추천 (모의)', nav:false, back:true, parent:'replace'}
 };
-var current=null, guideInst=null, verifyInst=null, builtClean=false;
+var current=null, guideInst=null, verifyInst=null, builtClean=false, checkoutPid=null;
 
 function setHeader(screen){
   var m=SCREEN_META[screen];
@@ -890,6 +957,7 @@ function go(screen){
   if(screen==='home') renderHome();
   else if(screen==='verify') enterVerify();
   else if(screen==='shop') renderShop();
+  else if(screen==='checkout') renderCheckout();
   else if(screen==='calendar') renderCalendar();
   else if(screen==='replace') renderReplace();
   else if(screen==='menu') renderMenu();
@@ -897,6 +965,7 @@ function go(screen){
   else if(screen==='clean') enterClean();
   else if(screen==='trivia') renderTrivia();
   else if(screen==='doctor') renderDoctor();
+  else if(screen==='bristle') renderBristle();
   else if(screen==='onboarding') renderOnboarding();
 }
 document.getElementById('hBack').addEventListener('click',function(){
@@ -1143,11 +1212,67 @@ function renderShop(){
     var b=e.target.closest('[data-buy]'); if(!b) return;
     var pid=b.getAttribute('data-buy'); var prod=PRODUCTS.filter(function(x){return x.id===pid;})[0];
     if(state.points<prod.cost){ showModal('😅','포인트가 부족해요', '<b>'+prod.n+'</b> 교환에는 '+prod.cost+'P가 필요해요.<br>현재 '+state.points+'P 보유 중이에요. 양치 인증으로 포인트를 더 모아보세요!','확인',null,false); return; }
-    showModal('🛍️', prod.n+' 교환', '<b>'+prod.cost+'P</b>를 사용해 <b>'+prod.n+'</b>(으)로 교환할까요?<br><span style="font-size:11px">교환 후 '+(state.points-prod.cost)+'P 남아요. (시연용 모의)</span>','교환하기',function(){
-      state.points-=prod.cost; state.purchases.push({id:pid,at:TODAY_KEY}); save();
-      showModal('✅','교환 완료','<b>'+prod.n+'</b> 교환이 접수됐어요. (모의)<br>남은 포인트 <b>'+state.points+'P</b>','확인',function(){ renderShop(); },false);
+    checkoutPid=pid; go('checkout');
+  });
+}
+
+/* ---------------- CHECKOUT (배송지 확인 → 루덴스 몰 발주 모의) ---------------- */
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function orderNo(){ return 'RD-20261125-'+(1001+(state.orders?state.orders.length:0)); }
+function renderCheckout(){
+  if(!state.orders) state.orders=[];
+  var el=document.getElementById('s-checkout');
+  var prod=PRODUCTS.filter(function(x){return x.id===checkoutPid;})[0];
+  if(!prod){ go('shop'); return; }
+  var sh=state.shipping||{name:'',phone:'',addr:'',addr2:''};
+  el.innerHTML=''
+    +'<div class="card"><div class="ck-prod"><div class="ck-pic">'+prod.ic+'</div>'
+      +'<div><div class="ck-pn">'+prod.n+'</div><div class="ck-pc">'+prod.cost+'P</div><div class="ck-pd">'+prod.d+'</div></div></div></div>'
+    +'<div class="card"><div class="sectitle">받는 사람 · 배송지</div>'
+      +'<div class="mock-note" style="margin-bottom:12px">저장된 배송지·연락처를 확인하거나 수정하세요. (시연용 예시값 · 실제 발송 없음)</div>'
+      +'<div class="form-field"><label>받는 사람</label><input id="ckName" type="text" value="'+esc(sh.name)+'" placeholder="이름"></div>'
+      +'<div class="form-field"><label>연락처</label><input id="ckPhone" type="tel" value="'+esc(sh.phone)+'" placeholder="010-0000-0000"></div>'
+      +'<div class="form-field"><label>배송 주소</label><input id="ckAddr" type="text" value="'+esc(sh.addr)+'" placeholder="도로명 주소"></div>'
+      +'<div class="form-field"><label>상세 주소</label><input id="ckAddr2" type="text" value="'+esc(sh.addr2)+'" placeholder="동·호수 등"></div>'
+      +'<div class="ship-confirm"><span class="sc-ic">📦</span><p>위 <b>배송지·연락처로 발송</b>됩니다. 포인트로 교환하면 주문이 <b>루덴스 몰로 전달</b>돼 발주돼요.</p></div>'
+      +'<div class="order-badge" style="margin-bottom:12px">🔒 포인트 결제 · 실제 금액(원) 청구 없음</div>'
+      +'<button class="btn primary" id="ckSubmit">이 배송지로 '+prod.cost+'P 교환 · 발주</button>'
+      +'<div class="foot-note">Draft · 시연용 모의 · 배송지는 이 기기에만 저장됩니다.</div></div>';
+  el.querySelector('#ckSubmit').addEventListener('click',function(){
+    var name=(el.querySelector('#ckName').value||'').trim();
+    var phone=(el.querySelector('#ckPhone').value||'').trim();
+    var addr=(el.querySelector('#ckAddr').value||'').trim();
+    var addr2=(el.querySelector('#ckAddr2').value||'').trim();
+    if(!name||!phone||!addr){ showModal('✍️','배송지를 확인하세요','받는 사람 · 연락처 · 배송 주소를 입력해 주세요. (시연용)','확인',null,false); return; }
+    if(state.points<prod.cost){ showModal('😅','포인트가 부족해요','<b>'+prod.n+'</b> 교환에는 '+prod.cost+'P가 필요해요. 현재 '+state.points+'P.','확인',function(){ go('shop'); },false); return; }
+    state.shipping={name:name,phone:phone,addr:addr,addr2:addr2}; save();
+    showModal('📦','이 배송지로 발주할까요?', '<b>'+esc(name)+'</b> · '+esc(phone)+'<br>'+esc(addr)+(addr2?' '+esc(addr2):'')+'<br><br><b>'+prod.n+'</b> · '+prod.cost+'P 사용 (교환 후 '+(state.points-prod.cost)+'P)<br><span style="font-size:11px">주문이 루덴스 몰로 전달돼 발주됩니다. (모의)</span>','교환·발주하기',function(){
+      state.points-=prod.cost;
+      var ord={id:orderNo(), pid:prod.id, name:prod.n, cost:prod.cost, to:name, at:TODAY_KEY};
+      state.purchases.push({id:prod.id,at:TODAY_KEY}); state.orders.push(ord); save();
+      renderOrderDone(prod,ord);
     },true);
   });
+}
+function renderOrderDone(prod,ord){
+  var el=document.getElementById('s-checkout');
+  var sh=state.shipping||{name:'',phone:'',addr:'',addr2:''};
+  el.innerHTML=''
+    +'<div class="card" style="text-align:center">'
+      +'<div style="font-size:46px;margin:6px 0 2px">🎉</div>'
+      +'<div class="sectitle" style="text-align:center">교환 완료 · 발주 접수</div>'
+      +'<p class="lead" style="text-align:center;margin-bottom:6px"><b>'+prod.n+'</b> · '+prod.cost+'P 교환이 접수됐어요.</p>'
+      +'<div class="order-badge" style="margin:4px auto 2px">주문번호 '+esc(ord.id)+'</div></div>'
+    +'<div class="card"><div class="sectitle">주문 처리 상태 (모의)</div>'
+      +'<ul class="order-steps">'
+        +'<li><span class="os-dot">✓</span><div><div class="os-t">주문 접수</div><div class="os-s">'+prod.cost+'P 차감 · 남은 포인트 '+state.points+'P</div></div></li>'
+        +'<li><span class="os-dot">✓</span><div><div class="os-t">루덴스 몰로 발주 전달됨</div><div class="os-s">주문이 루덴스 몰로 전달되어 발주됐어요. (실제 몰 연동은 2단계)</div></div></li>'
+        +'<li class="pending"><span class="os-dot">3</span><div><div class="os-t">배송 준비 중</div><div class="os-s">받는 사람 '+esc(sh.name)+' · '+esc(sh.phone)+'<br>'+esc(sh.addr)+(sh.addr2?' '+esc(sh.addr2):'')+'</div></div></li>'
+      +'</ul>'
+      +'<div class="mock-note" style="margin-top:8px">실제 발송·결제·몰 연동은 없습니다. \'루덴스 몰로 발주 전달\'은 모의 표시입니다. · Draft · 시연용 모의</div></div>'
+    +'<div class="btnrow"><button class="btn ghost" id="odShop" style="flex:1">쇼핑 계속하기</button><button class="btn primary" id="odHome" style="flex:1">홈으로</button></div>';
+  el.querySelector('#odShop').addEventListener('click',function(){ go('shop'); });
+  el.querySelector('#odHome').addEventListener('click',function(){ go('home'); });
 }
 
 /* ---------------- CALENDAR + SCORE ---------------- */
@@ -1187,6 +1312,35 @@ function scoreRow(label,val,max,extra){
 }
 
 /* ---------------- BRUSH REPLACE ---------------- */
+function brushWearSVG(worn){
+  var S=worn?'B':'A';
+  var defs='<defs>'
+    +'<linearGradient id="bwhead'+S+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2CC3B1"/><stop offset="1" stop-color="#0C7F72"/></linearGradient>'
+    +'<linearGradient id="bwhand'+S+'" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#17B2A0"/><stop offset="1" stop-color="#0C7F72"/></linearGradient>'
+    +'<linearGradient id="bwtuft'+S+'" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#BFE4DD"/><stop offset="1" stop-color="#FCFFFE"/></linearGradient>'
+    +'</defs>';
+  var head='<rect x="6" y="52" width="56" height="16" rx="8" fill="url(#bwhead'+S+')"/><rect x="12" y="54.5" width="40" height="4" rx="2" fill="#fff" opacity=".35"/>';
+  var handle='<rect x="56" y="56" width="98" height="9" rx="4.5" fill="url(#bwhand'+S+')"/><rect x="60" y="58" width="84" height="2.4" rx="1.2" fill="#fff" opacity=".4"/>';
+  var bristles;
+  if(!worn){
+    var xs=[12,19,26,33,40,47,54], s='';
+    xs.forEach(function(x){ s+='<line x1="'+x+'" y1="53" x2="'+x+'" y2="19" stroke="url(#bwtuftA)" stroke-width="3.6" stroke-linecap="round"/>'; });
+    s+='<line x1="10" y1="20" x2="56" y2="20" stroke="#CFF0E9" stroke-width="2" stroke-linecap="round" opacity=".55"/>';
+    bristles=s;
+  } else {
+    bristles=''
+      +'<path d="M12 53 Q2 32 -3 21" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<path d="M19 53 Q12 32 8 23" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<path d="M26 53 Q23 33 21 27" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<path d="M33 53 L34 31" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<path d="M40 53 Q44 33 48 26" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<path d="M47 53 Q54 32 60 24" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<path d="M54 53 Q64 33 71 27" fill="none" stroke="url(#bwtuftB)" stroke-width="3.6" stroke-linecap="round"/>'
+      +'<g stroke="#E79A86" stroke-width="1.4" stroke-linecap="round" opacity=".85">'
+      +'<path d="M-3 21 l-4 -3"/><path d="M8 23 l-4 -4"/><path d="M60 24 l5 -3"/><path d="M71 27 l5 -2"/></g>';
+  }
+  return '<svg viewBox="-12 12 178 62" aria-label="'+(worn?'모가 바깥으로 벌어진 교체 시기 칫솔':'모가 가지런한 새 칫솔')+'">'+defs+bristles+head+handle+'</svg>';
+}
 function brushDays(){ var reg=new Date(state.brushRegisterDate); var ms=TODAY-reg; return Math.max(0,Math.floor(ms/86400000)); }
 function renderReplace(){
   var days=brushDays(); var LIMIT=90; var frac=Math.min(1,days/LIMIT); var remain=LIMIT-days;
@@ -1210,6 +1364,13 @@ function renderReplace(){
         +'<button class="btn warn sm" id="repShop" style="flex:1">포인트 샵에서 재구매</button>'
         +'<button class="btn ghost sm" id="repReset" style="flex:1">새 칫솔로 교체</button>'
       +'</div></div>'
+    +'<div class="card"><div class="sectitle">새 칫솔 vs 교체 시기 칫솔</div>'
+      +'<div class="brush-compare">'
+        +'<div class="bc-item good">'+brushWearSVG(false)+'<div class="bct">새 칫솔</div><div class="bcs">모가 가지런해요</div></div>'
+        +'<div class="bc-item bad">'+brushWearSVG(true)+'<div class="bct">교체 시기 칫솔</div><div class="bcs">모가 바깥으로 벌어졌어요</div></div>'
+      +'</div>'
+      +'<div class="bc-caption">모가 이렇게 <b>바깥으로 벌어지면 교체</b>하세요 — 벌어진 모는 세정력이 떨어져요.</div></div>'
+    +'<div class="card" style="padding:14px"><div class="m-item" id="repBristle" style="box-shadow:none;border:0;padding:0;cursor:pointer"><span class="m-badge">🔎</span><span class="mt"><b>내게 맞는 칫솔모 찾기</b><span>잇몸 상태로 칫솔모 추천 (참고용)</span></span><span class="chev" style="margin-left:auto;color:var(--ink-soft);font-size:18px">›</span></div></div>'
     +'<div class="card"><div class="sectitle">칫솔 교체, 왜 중요할까요?</div>'
       +'<ol class="steps"><li><span class="num">1</span><p>칫솔모가 벌어지면 세정력이 크게 떨어져요.</p></li>'
       +'<li><span class="num">2</span><p>보통 <b>3개월(약 90일)</b>마다 교체해요. 모가 벌어지면 그 전에도.</p></li>'
@@ -1217,6 +1378,7 @@ function renderReplace(){
       +'<div class="tipbox">사진으로 모 벌어짐을 \'정상/교체권장\'으로 거칠게 봐주는 기능은 2단계에서 고도화 예정이에요.</div></div>'
     +'<div class="foot-note">Draft · 시연용 모의 · 사용 기간 타이머는 등록일 기준으로 계산합니다.</div>';
   document.getElementById('repShop').addEventListener('click',function(){ go('shop'); });
+  document.getElementById('repBristle').addEventListener('click',function(){ openBristle('replace'); });
   document.getElementById('repReset').addEventListener('click',function(){
     showModal('🪥','새 칫솔로 교체','오늘 날짜로 칫솔을 새로 등록할까요?<br><span style="font-size:11px">사용 기간이 0일부터 다시 시작돼요.</span>','교체하기',function(){
       state.brushRegisterDate=TODAY_KEY; save(); renderReplace();
@@ -1346,7 +1508,9 @@ function renderTrivia(){
     +'<div class="card"><div class="sectitle">구강청결 상식 8가지</div>'
       +'<p class="lead" style="margin-bottom:6px">치과 감수 전제의 초안 샘플이에요.</p>'+flist
       +'<div class="tipbox">증상이 있거나 아플 때는 상식에 의존하지 말고 치과 진료를 받으세요.</div></div>'
+    +'<div class="card" style="padding:14px"><div class="m-item" id="trBristle" style="box-shadow:none;border:0;padding:0;cursor:pointer"><span class="m-badge">🔎</span><span class="mt"><b>내게 맞는 칫솔모 찾기</b><span>잇몸 상태로 칫솔모 추천 (참고용)</span></span><span class="chev" style="margin-left:auto;color:var(--ink-soft);font-size:18px">›</span></div></div>'
     +'<div class="foot-note">Draft · 시연용 모의 · 치과 감수 전제 초안. 질병의 진단·치료 목적이 아닙니다.</div>';
+  document.getElementById('trBristle').addEventListener('click',function(){ openBristle('trivia'); });
 }
 
 /* ---------------- DOCTOR (맞춤 구강주치의) ---------------- */
@@ -1355,32 +1519,101 @@ function renderDoctor(){
   var requested=state.doctorRequested;
   el.innerHTML=''
     +'<div class="card"><div class="sectitle">맞춤 구강주치의</div>'
-      +'<p class="lead">양치 인증 때 찍은 구강 사진을 <b>본인(또는 보호자) 동의 하에</b> 파트너 치과로 전달해 검진으로 연결하는 서비스예요.</p>'
+      +'<p class="lead"><b>양치 습관 기록과 양치 습관 점수</b>를 본인(또는 보호자) 동의 하에 파트너 치과로 전달해 검진·상담으로 연결하는 서비스예요. 구강 사진은 <b>원할 때만</b> 선택 첨부해요.</p>'
       +'<div class="flow" style="margin-top:14px">'
-        +'<div class="fstep"><div class="fc">📸</div><div class="fl">인증 시 구강 사진</div></div>'
+        +'<div class="fstep"><div class="fc">📊</div><div class="fl">양치 습관·점수</div></div>'
         +'<div class="arr">→</div>'
         +'<div class="fstep"><div class="fc">✅</div><div class="fl">본인 동의</div></div>'
         +'<div class="arr">→</div>'
         +'<div class="fstep"><div class="fc">🏥</div><div class="fl">파트너 치과 전달</div></div>'
         +'<div class="arr">→</div>'
-        +'<div class="fstep"><div class="fc">🔎</div><div class="fl">검진 연계</div></div>'
+        +'<div class="fstep"><div class="fc">🔎</div><div class="fl">검진·상담</div></div>'
       +'</div></div>'
     +'<div class="card"><div class="consent-box"><div class="cb-t">전달되는 정보 (동의 시)</div>'
-      +'<ul><li>양치 인증 중 촬영한 구강 사진</li><li>가입 시 기본정보(나이·성별) 일부</li><li>건강 민감정보이므로 <b>별도 동의</b>와 보안 처리, 아동은 <b>법정대리인</b> 동의가 필요해요.</li></ul></div>'
+      +'<ul><li><b>양치 습관 기록</b> (연속일 · 하루 3회 달성률 · 시간대 규칙성)</li><li><b>양치 습관 점수</b></li><li>가입 시 기본정보(나이·성별) 일부</li><li>구강 사진은 <b>선택</b>이에요. 첨부하지 않아도 신청돼요.</li></ul></div>'
       +(requested
-        ? '<div class="rep-ok">✅ 신청이 접수됐어요. 파트너 치과 안내를 기다려 주세요. (모의)</div><button class="btn ghost" id="docCancel">신청 취소 (모의)</button>'
-        : '<button class="btn primary" id="docApply">동의하고 신청하기</button>')
-      +'<div class="foot-note">동의는 언제든 철회할 수 있어요. 사진은 동의 범위 안에서만 쓰여요. · Draft · 시연용 모의</div></div>'
+        ? '<div class="rep-ok">✅ 신청이 접수됐어요'+(state.doctorPhoto?' (구강 사진 첨부 포함)':' (구강 사진 미첨부)')+'. 파트너 치과 안내를 기다려 주세요. (모의)</div><button class="btn ghost" id="docCancel">신청 취소 (모의)</button>'
+        : '<label class="photo-opt" for="docPhoto"><input type="checkbox" id="docPhoto"'+(state.doctorPhoto?' checked':'')+'><span><span class="po-t">구강 사진 첨부 (선택)</span><span class="po-s">원하면 양치 인증 때 찍은 구강 사진을 함께 보낼 수 있어요. 건강 민감정보라 <b>별도 동의</b>가 필요하고, 아동은 <b>법정대리인</b> 동의가 필요해요. 첨부하지 않아도 신청돼요.</span></span></label>'
+          +'<button class="btn primary" id="docApply">동의하고 신청하기</button>')
+      +'<div class="foot-note">양치 습관·점수는 건강 상태 진단이 아닙니다. 동의는 언제든 철회할 수 있어요. · Draft · 시연용 모의</div></div>'
     +'<div class="foot-note">실제 전송은 없으며, 동의 흐름을 보여주는 데모입니다.</div>';
   if(!requested){
     el.querySelector('#docApply').addEventListener('click',function(){
-      showModal('🏥','구강주치의 신청','구강 사진을 파트너 치과로 전달하는 데 동의할까요?<br><span style="font-size:11px">민감정보 제공에 대한 동의예요. (시연용 모의 · 실제 전송 없음)</span>','동의하고 신청',function(){
-        state.doctorRequested=true; save(); renderDoctor();
+      var photo=el.querySelector('#docPhoto').checked;
+      showModal('🏥','구강주치의 신청','<b>양치 습관·점수</b>를 파트너 치과로 전달하는 데 동의할까요?'+(photo?'<br>구강 사진도 함께 첨부돼요.':'<br>구강 사진은 첨부하지 않아요.')+'<br><span style="font-size:11px">시연용 모의 · 실제 전송 없음</span>','동의하고 신청',function(){
+        state.doctorRequested=true; state.doctorPhoto=photo; save(); renderDoctor();
       },true);
     });
   } else {
-    el.querySelector('#docCancel').addEventListener('click',function(){ state.doctorRequested=false; save(); renderDoctor(); });
+    el.querySelector('#docCancel').addEventListener('click',function(){ state.doctorRequested=false; state.doctorPhoto=false; save(); renderDoctor(); });
   }
+}
+
+/* ---------------- BRISTLE FINDER (내게 맞는 칫솔모) ---------------- */
+var BRISTLE={
+  reg:{name:'일반모', icon:'reg', who:'잇몸이 튼튼하고, 세정력·착색 제거를 중시하는 보통 성인에게 맞는 표준 칫솔모예요.'},
+  slim:{name:'슬림모 (미세모)', icon:'slim', who:'잇몸을 보호하면서 치아 사이까지 닦고 싶은, 보통~약간 예민한 잇몸에 맞는 칫솔모예요.'},
+  dual:{name:'이중슬림모 (이중미세모)', icon:'dual', who:'잇몸이 약하거나 출혈·시림·치주 치료 이력이 있는 분께 맞는, 부드럽고 가는 칫솔모예요. 잇몸 사이를 섬세하게 닦아줘요.'}
+};
+var BQ=[
+  ['q1','양치할 때 잇몸에서 피가 자주 난다'],
+  ['q2','찬물·단것에 이가 시리다'],
+  ['q3','잇몸(치주) 치료를 받은 적 있다'],
+  ['q4','양치 후에도 이 사이에 음식물이 잘 낀다']
+];
+var bristleA={q1:null,q2:null,q3:null,q4:null};
+function openBristle(from){ SCREEN_META.bristle.parent=from||'replace'; go('bristle'); }
+function bristleIcon(kind){
+  var w = kind==='reg'?3.4 : kind==='slim'?2.1 : 1.3;
+  var n = kind==='reg'?6 : kind==='slim'?9 : 13;
+  var lines='';
+  for(var i=0;i<n;i++){ var x=8+i*(28/(n-1)); lines+='<line x1="'+x.toFixed(1)+'" y1="33" x2="'+x.toFixed(1)+'" y2="9" stroke="#17B2A0" stroke-width="'+w+'" stroke-linecap="round"/>'; }
+  return '<svg class="bti" viewBox="0 0 44 44" aria-hidden="true"><rect x="5" y="32" width="34" height="7" rx="3.5" fill="#0E8C7E"/>'+lines+'</svg>';
+}
+function bristleResult(){
+  var a=bristleA;
+  if(a.q1==='y'||a.q2==='y'||a.q3==='y') return 'dual';
+  if(a.q4==='y') return 'slim';
+  return 'reg';
+}
+function renderBristle(){
+  bristleA={q1:null,q2:null,q3:null,q4:null};
+  var el=document.getElementById('s-bristle');
+  var qs=''; BQ.forEach(function(q){
+    qs+='<div class="q-row"><div class="qq">'+q[1]+'</div><div class="yn" data-q="'+q[0]+'">'
+      +'<button class="yes" data-v="y">예</button><button class="no" data-v="n">아니오</button></div></div>';
+  });
+  el.innerHTML=''
+    +'<div class="card"><div class="sectitle">내게 맞는 칫솔모 찾기</div>'
+      +'<p class="lead">4개 문항에 답하면 <b>지금 내 잇몸 상태에 맞는 칫솔모</b>를 참고용으로 알려드려요. 더 좋고 나쁜 모가 아니라, 상태에 맞는 모를 고르는 거예요.</p></div>'
+    +'<div class="card">'+qs
+      +'<button class="btn primary" id="brResult" style="margin-top:8px" disabled>결과 보기</button></div>'
+    +'<div class="foot-note">Draft · 시연용 모의 · 참고용 추천이며 진단이 아닙니다.</div>';
+  el.querySelectorAll('.yn').forEach(function(g){
+    g.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return;
+      bristleA[g.getAttribute('data-q')]=b.getAttribute('data-v');
+      g.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      document.getElementById('brResult').disabled=!(bristleA.q1&&bristleA.q2&&bristleA.q3&&bristleA.q4);
+    });
+  });
+  document.getElementById('brResult').addEventListener('click',function(){ renderBristleResult(bristleResult()); });
+}
+function renderBristleResult(type){
+  var el=document.getElementById('s-bristle');
+  var order=[type].concat(['reg','slim','dual'].filter(function(k){return k!==type;}));
+  var cards=''; order.forEach(function(k){ var t=BRISTLE[k], rec=(k===type);
+    cards+='<div class="bt-card'+(rec?' rec':'')+'">'+bristleIcon(t.icon)+'<div class="btt"><b>'+t.name+'</b>'+(rec?'<span class="rec-badge">내 상태 추천</span>':'')+'<p>'+t.who+'</p></div></div>';
+  });
+  var extra = (type==='dual') ? '<div class="tipbox" style="margin-top:12px">치아 사이가 넓거나 음식물이 잘 낀다면 <b>치간칫솔을 함께</b> 쓰면 좋아요.</div>' : '';
+  el.innerHTML=''
+    +'<div class="card"><div class="sectitle">내 상태에 맞는 칫솔모</div>'
+      +'<p class="lead" style="margin-bottom:10px">입력하신 답변 기준, 지금 상태엔 <b>'+BRISTLE[type].name+'</b>가 맞아요. (참고용 추천)</p>'
+      +'<div class="bristle-types">'+cards+'</div>'+extra+'</div>'
+    +'<div class="card"><div class="rep-warn" style="background:#FFF3E6;border-color:#F3D8A6;color:#B5631A;margin:0">🔔 잇몸 출혈이 <b>2주 이상 계속</b>되면 칫솔 문제가 아닐 수 있어요. 치과 상담을 권합니다.</div>'
+      +'<button class="btn ghost" id="brAgain" style="margin-top:12px">다시 체크하기</button></div>'
+    +'<div class="foot-note">Draft · 시연용 모의 · 참고용 추천이며 진단이 아닙니다. 치간칫솔·치실은 보조로 함께.</div>';
+  document.getElementById('brAgain').addEventListener('click',function(){ renderBristle(); });
+  document.getElementById('screens').scrollTop=0;
 }
 
 /* ---------------- MENU (전체메뉴) ---------------- */
